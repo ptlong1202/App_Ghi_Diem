@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sổ Ghi Điểm Pro</title>
+    <style>
+        :root { --win: #28a745; --lose: #dc3545; --bg: #f8f9fa; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h3 { margin-top: 0; color: #333; text-align: center; }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .input-box { display: flex; flex-direction: column; }
+        label { font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
+        input:focus { border-color: #007aff; }
+        .btn-group { display: flex; gap: 10px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .btn-add { background: #007aff; color: white; }
+        .btn-reset { background: #6c757d; color: white; }
+        .btn-del { background: #ff9500; color: white; margin-top: 10px; width: 100%; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+        th { background: #eee; padding: 10px; font-size: 13px; }
+        td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #eee; font-size: 15px; }
+        .total-row { background: #333 !important; color: white; font-weight: bold; position: sticky; bottom: 0; }
+        .winner { color: var(--win); font-weight: bold; }
+        .loser { color: var(--lose); }
+        .history-container { max-height: 400px; overflow-y: auto; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h3>Ghi Điểm Ván Mới</h3>
+    <div class="input-group">
+        <div class="input-box"><label>Long</label><input type="number" id="p0" placeholder="Thua..."></div>
+        <div class="input-box"><label>Hải</label><input type="number" id="p1" placeholder="Thua..."></div>
+        <div class="input-box"><label>Tuấn</label><input type="number" id="p2" placeholder="Thua..."></div>
+        <div class="input-box"><label>Văn</label><input type="number" id="p3" placeholder="Thua..."></div>
+    </div>
+    <div class="btn-group">
+        <button class="btn-add" onclick="addRound()">Thêm Ván</button>
+        <button class="btn-reset" onclick="resetGame()">Xóa Hết</button>
+    </div>
+    <button class="btn-del" onclick="deleteLast()">Xóa ván vừa nhập (Ghi lại)</button>
+</div>
+
+<div class="history-container">
+    <table id="scoreTable">
+        <thead>
+            <tr>
+                <th>Ván</th><th>Long</th><th>Hải</th><th>Tuấn</th><th>Văn</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td>TỔNG</td><td id="t0">0</td><td id="t1">0</td><td id="t2">0</td><td id="t3">0</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    let gameData = JSON.parse(localStorage.getItem('pokerHistory')) || [];
+
+    function saveData() {
+        localStorage.setItem('pokerHistory', JSON.stringify(gameData));
+        renderTable();
+    }
+
+    function addRound() {
+        let inputs = [
+            document.getElementById('p0').value,
+            document.getElementById('p1').value,
+            document.getElementById('p2').value,
+            document.getElementById('p3').value
+        ];
+        
+        let nums = inputs.map(v => v === "" ? null : parseInt(v));
+        let emptyIndex = nums.map((v, i) => v === null ? i : -1).filter(i => i !== -1);
+
+        if (emptyIndex.length !== 1) {
+            alert("Hãy nhập điểm âm cho 3 người thua, để trống duy nhất 1 người thắng!");
+            return;
+        }
+
+        let sumNeg = nums.reduce((a, b) => a + (b || 0), 0);
+        nums[emptyIndex[0]] = -sumNeg; // Tính điểm người thắng
+
+        gameData.push(nums);
+        saveData();
+        
+        // Xóa sạch input để nhập ván tiếp
+        inputs.forEach((_, i) => document.getElementById('p'+i).value = "");
+    }
+
+    function deleteLast() {
+        if(confirm("Bạn muốn xóa ván cuối cùng vừa nhập?")) {
+            gameData.pop();
+            saveData();
+        }
+    }
+
+    function resetGame() {
+        if(confirm("Bạn có chắc muốn XÓA TẤT CẢ và tính điểm lại từ đầu?")) {
+            gameData = [];
+            saveData();
+        }
+    }
+
+    function renderTable() {
+        let tbody = document.getElementById('tableBody');
+        tbody.innerHTML = "";
+        let totals = [0, 0, 0, 0];
+
+        gameData.forEach((round, idx) => {
+            let row = `<tr><td>${idx + 1}</td>`;
+            round.forEach((val, i) => {
+                totals[i] += val;
+                row += `<td class="${val > 0 ? 'winner' : 'loser'}">${val}</td>`;
+            });
+            row += "</tr>";
+            tbody.innerHTML += row;
+        });
+
+        totals.forEach((t, i) => {
+            document.getElementById('t' + i).innerText = t;
+        });
+    }
+
+    // Chạy lần đầu khi mở app
+    renderTable();
+</script>
+
+</body>
+</html>
