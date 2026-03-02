@@ -3,33 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Poker Score Pro - Perfect UI</title>
+    <title>Poker Score Pro - Newest First</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --win: #28a745; --lose: #dc3545; --bg: #f0f2f5; --primary: #007aff; }
-        
-        /* 1. FIX QUAN TRỌNG NHẤT: Ép mọi phần tử tính toán kích thước chuẩn */
-        *, *::before, *::after { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); padding: 10px; overflow-x: hidden; }
 
-        body { 
-            font-family: -apple-system, system-ui, sans-serif; 
-            background: var(--bg); 
-            padding: 10px; 
-            overflow-x: hidden; 
-        }
+        /* BIỂU TƯỢNG SỐ VÁN */
+        .game-counter { display: flex; justify-content: center; margin-bottom: 10px; margin-top: 5px; }
+        .badge { background: white; color: #555; padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 5px; }
+        .badge span { color: var(--primary); }
 
         /* HEADER & BẢNG ĐIỂM */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 5px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px; }
         .history-container { width: 100%; border-radius: 15px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; } /* Cố định chiều rộng cột */
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th { background: #f8f9fa; padding: 12px 2px; font-size: 11px; color: #888; text-transform: uppercase; }
-        td { padding: 14px 2px; text-align: center; border-bottom: 1px solid #f1f1f1; font-size: 15px; overflow: hidden; text-overflow: ellipsis; }
+        td { padding: 14px 2px; text-align: center; border-bottom: 1px solid #f1f1f1; font-size: 15px; }
         
-        .total-row { background: #222 !important; color: white; font-weight: bold; position: sticky; bottom: 0; }
+        /* TỔNG ĐIỂM GIỜ ĐẨY LÊN TRÊN CÙNG (DƯỚI TIÊU ĐỀ) */
+        .total-row { background: #222 !important; color: white; font-weight: bold; }
         .winner { color: var(--win); font-weight: bold; }
         .loser { color: var(--lose); }
         .is-hidden { filter: blur(7px); user-select: none; }
@@ -37,44 +31,15 @@
         /* NÚT BẤM LƠ LỬNG */
         .fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 5px 20px rgba(0,122,255,0.4); border: none; z-index: 99; }
 
-        /* MODAL BẬT RA - ĐÃ FIX LỆCH KHUNG */
+        /* MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; padding: 15px; backdrop-filter: blur(4px); }
-        
-        .modal-content { 
-            background: white; 
-            width: 100%; 
-            max-width: 360px; /* Thu nhỏ lại một chút để không chạm mép */
-            border-radius: 20px; 
-            padding: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: slideUp 0.25s ease-out;
-        }
-
+        .modal-content { background: white; width: 100%; max-width: 360px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideUp 0.25s ease-out; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* FIX LỖI TRÀN Ô NHẬP */
-        .input-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            column-gap: 15px; /* Khoảng cách giữa 2 cột */
-            row-gap: 12px; 
-            margin: 20px 0;
-            width: 100%;
-        }
-
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 15px; row-gap: 12px; margin: 20px 0; width: 100%; }
         .input-box { width: 100%; display: flex; flex-direction: column; }
         label { font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
-        
-        input { 
-            width: 100%; /* Luôn 100% của cột */
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 10px; 
-            font-size: 16px; /* Chống zoom iPhone */
-            outline: none; 
-            background: #f9f9f9;
-            -webkit-appearance: none; /* Bỏ style mặc định của iOS */
-        }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; background: #f9f9f9; -webkit-appearance: none; }
 
         .btn-group { display: flex; gap: 10px; margin-top: 5px; }
         button.action { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; }
@@ -82,11 +47,14 @@
         .btn-close { background: #f0f0f2; color: #444; }
         .btn-privacy { background: #34c759; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 13px; font-weight: bold; }
         .btn-reset { background: none; color: #999; border: none; font-size: 12px; text-decoration: underline; margin: 15px 0; width: 100%; }
-
         .editing-row { background: #fff9c4 !important; }
     </style>
 </head>
 <body>
+
+    <div class="game-counter">
+        <div class="badge">Ván chơi: <span id="roundCount">0</span></div>
+    </div>
 
     <div class="header">
         <h3 style="font-size: 18px;">Bảng Điểm Cầu Lông 🏸</h3>
@@ -98,23 +66,22 @@
             <thead>
                 <tr><th style="width: 50px;">Ván</th><th>Long</th><th>Hải</th><th>Tuấn</th><th>Văn</th></tr>
             </thead>
-            <tbody id="tableBody"></tbody>
-            <tfoot>
-                <tr class="total-row" id="totalRow">
-                    <td>TỔNG</td>
-                    <td id="t0">0</td><td id="t1">0</td><td id="t2">0</td><td id="t3">0</td>
-                </tr>
-            </tfoot>
+            <tr class="total-row" id="totalRow">
+                <td>TỔNG</td>
+                <td id="t0">0</td><td id="t1">0</td><td id="t2">0</td><td id="t3">0</td>
+            </tr>
+            <tbody id="tableBody">
+                </tbody>
         </table>
     </div>
     
-    <button class="btn-reset" onclick="resetGame()">RESET toàn bộ dữ liệu</button>
+    <button class="btn-reset" onclick="resetGame()">Làm mới toàn bộ dữ liệu</button>
 
     <button class="fab" onclick="openModal()">+</button>
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
-            <h3 id="modalTitle" style="text-align: center; color: #222;">Thêm Ván Mới</h3>
+            <h3 id="modalTitle" style="text-align: center; color: #222;">Thêm Ván Mới 🏸</h3>
             <div class="input-grid">
                 <div class="input-box"><label>Long</label><input type="number" id="p0" placeholder="0"></div>
                 <div class="input-box"><label>Hải</label><input type="number" id="p1" placeholder="0"></div>
@@ -123,7 +90,7 @@
             </div>
             <div class="btn-group">
                 <button class="action btn-close" onclick="closeModal()">Hủy</button>
-                <button class="action btn-save" id="btnSave" onclick="processRound()">Lưu Ván</button>
+                <button class="action btn-save" id="btnSave" onclick="processRound()">Lưu Ván 🗃️</button>
             </div>
         </div>
     </div>
@@ -137,14 +104,14 @@
         editIndex = index;
         document.getElementById('modalOverlay').style.display = 'flex';
         if (index >= 0) {
-            document.getElementById('modalTitle').innerText = "Sửa Ván " + (index + 1);
+            document.getElementById('modalTitle').innerText = "Sửa Ván 🔧" + (index + 1);
             document.getElementById('btnSave').innerText = "Cập Nhật";
             gameData[index].forEach((val, i) => {
                 document.getElementById('p'+i).value = val > 0 ? "" : val;
             });
         } else {
-            document.getElementById('modalTitle').innerText = "Thêm Ván Mới";
-            document.getElementById('btnSave').innerText = "Lưu Ván";
+            document.getElementById('modalTitle').innerText = "Thêm Ván Mới 🏸";
+            document.getElementById('btnSave').innerText = "Lưu Ván 🗃️";
             [0,1,2,3].forEach(i => document.getElementById('p'+i).value = "");
         }
     }
@@ -165,7 +132,7 @@
         let emptyIndices = nums.map((v, i) => v === null ? i : -1).filter(i => i !== -1);
 
         if (emptyIndices.length !== 1) {
-            alert("Để trống 1 người thắng duy nhất!");
+            alert("Để trống 1 người thắng!");
             return;
         }
 
@@ -212,24 +179,33 @@
         tbody.innerHTML = "";
         let totals = [0, 0, 0, 0];
 
-        gameData.forEach((round, idx) => {
-            let row = `<tr onclick="openModal(${idx})" class="${idx === editIndex ? 'editing-row' : ''}">
-                        <td>${idx + 1}</td>`;
+        document.getElementById('roundCount').innerText = gameData.length;
+
+        // Tính tổng điểm trước
+        gameData.forEach(round => {
+            round.forEach((val, i) => totals[i] += val);
+        });
+
+        // Đổ tổng điểm lên hàng TỔNG (đã cố định ở đầu bảng)
+        totals.forEach((t, i) => {
+            document.getElementById('t' + i).innerText = t;
+        });
+
+        // Tạo bản sao dữ liệu và đảo ngược để hiển thị ván mới lên đầu
+        let displayData = [...gameData].reverse();
+
+        displayData.forEach((round, reverseIdx) => {
+            // Tính lại chỉ số gốc của ván bài
+            let originalIdx = gameData.length - 1 - reverseIdx;
+            
+            let row = `<tr onclick="openModal(${originalIdx})" class="${originalIdx === editIndex ? 'editing-row' : ''}">
+                        <td>${originalIdx + 1}</td>`;
             round.forEach((val, i) => {
-                totals[i] += val;
                 row += `<td class="${val > 0 ? 'winner' : 'loser'}">${val}</td>`;
             });
             row += "</tr>";
             tbody.innerHTML += row;
         });
-
-        totals.forEach((t, i) => {
-            document.getElementById('t' + i).innerText = t;
-        });
-        
-        // Tự động cuộn bảng điểm xuống cuối cùng
-        const container = document.querySelector('.history-container');
-        container.scrollTop = container.scrollHeight;
     }
 
     renderTable();
