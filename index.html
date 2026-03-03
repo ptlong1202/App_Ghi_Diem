@@ -3,271 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hội Đam Mê Cầu Lông</title>
+    <title>Badminton Scoreboard</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root { --win: #28a745; --lose: #dc3545; --bg: #f0f2f5; --primary: #007aff; --dark: #1c1c1e; }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: #333; }
+        :root { 
+            --primary: #007AFF; --success: #34C759; --danger: #FF3B30; --warning: #FF9500;
+            --bg: #F8F9FA; --card: #FFFFFF; --text: #1C1C1E; --gray: #8E8E93;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        /* LOBBY */
-        #lobby { padding: 20px; display: block; }
-        .lobby-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .table-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.03); }
-        .table-info h4 { font-size: 18px; margin-bottom: 5px; color: var(--dark); }
-        .table-info p { font-size: 13px; color: #888; }
-        .btn-add-table { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        /* UI ELEMENTS */
+        .page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* GAME ROOM */
-        #gameRoom { display: none; padding: 10px; }
-        .game-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 5px; }
-        .btn-back { background: #eee; border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; font-size: 14px; }
-        .badge { background: white; color: #555; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); }
-        .badge span { color: var(--primary); }
+        .header-main { padding: 20px 4px; }
+        .table-item { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; position: sticky; top: 0; background: var(--bg); z-index: 100; }
+        .btn-circle { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--card); box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .privacy-pill { background: #E9E9EB; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .privacy-active { background: #1C1C1E; color: white; }
 
-        /* TABLE */
-        .history-container { width: 100%; border-radius: 15px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 300px; }
-        th { background: #f8f9fa; padding: 12px 5px; font-size: 11px; color: #888; text-transform: uppercase; }
-        td { padding: 12px 5px; text-align: center; border-bottom: 1px solid #f1f1f1; font-size: 14px; }
-        .total-row { background: var(--dark) !important; color: white; font-weight: bold; }
-        .winner { color: var(--win); font-weight: bold; }
-        .loser { color: var(--lose); }
-        .is-hidden { filter: blur(7px); user-select: none; }
+        /* TABLE STYLING */
+        .table-container { background: var(--card); border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.04); margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        thead th { background: #FDFDFD; padding: 16px 4px; font-size: 11px; color: var(--gray); text-transform: uppercase; border-bottom: 1px solid #F2F2F2; position: sticky; top: 0; z-index: 10; line-height: 1.2; vertical-align: bottom; height: 70px; }
+        
+        .total-row { background: #F8F9FA; border-bottom: 2px solid #EEE; }
+        .total-row td { padding: 22px 8px; font-weight: 800; font-size: 18px; position: relative; text-align: center; }
+        .mask-text { color: #D1D1D6; font-size: 14px; letter-spacing: 2px; }
 
-        .game-utils { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .btn-privacy { background: #34c759; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; }
+        /* BADGES */
+        .rank-icon { position: absolute; top: 4px; right: 50%; transform: translateX(50%); font-size: 12px; }
+        .fire-badge { display: block; color: var(--warning); font-size: 11px; margin-top: 4px; font-weight: 800; animation: pulse 0.8s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.15); opacity: 1; } }
+
+        tbody td { padding: 16px 8px; text-align: center; font-size: 15px; border-bottom: 1px solid #F9F9F9; }
+        .win { color: var(--success); font-weight: 600; }
+        .lose { color: var(--danger); font-weight: 600; }
 
         /* MODALS */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; backdrop-filter: blur(5px); }
-        .modal-content { background: white; width: 100%; max-width: 380px; border-radius: 25px; padding: 25px; max-height: 85vh; overflow-y: auto; }
-        
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #666; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; background: #f9f9f9; outline: none; }
-        
-        .player-row { display: flex; gap: 10px; margin-bottom: 8px; animation: fadeIn 0.2s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-        .btn-remove { background: #ff3b30; color: white; border: none; padding: 0 12px; border-radius: 8px; font-weight: bold; }
-        
-        .btn-action { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; }
-        .btn-save { background: var(--primary); color: white; }
-        .btn-cancel { background: #f2f2f7; color: #333; }
-
-        .fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 5px 20px rgba(0,122,255,0.4); border: none; z-index: 99; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; z-index: 1000; backdrop-filter: blur(10px); }
+        .modal-sheet { background: var(--card); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        input { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid #E5E5E5; background: #F9F9F9; font-size: 16px; margin-bottom: 12px; outline: none; }
+        .btn-action { width: 100%; padding: 18px; border-radius: 16px; border: none; font-weight: 700; font-size: 16px; cursor: pointer; }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-link { background: none; color: var(--gray); margin-top: 10px; }
+        .fab { position: fixed; bottom: 30px; right: 24px; width: 64px; height: 64px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 8px 25px rgba(0,122,255,0.4); border: none; z-index: 90; }
     </style>
 </head>
 <body>
 
-    <div id="lobby">
-        <div class="lobby-header">
-            <h2>🏸 Sảnh Chờ Cầu Lông 🏸</h2>
-            <span style="font-size: 12px; color: #888;" id="tableCount">0 bàn</span>
+    <div id="pLobby" class="page active-page">
+        <div class="header-main">
+            <h1>🏸 Sân Chơi Cầu Lông 🏸</h1>
+            <p style="color:var(--gray); font-size: 14px;">Hội Đam Mê Cầu Lông</p>
         </div>
-        <div id="tableList"></div>
-        <button class="btn-add-table" onclick="showCreateTableModal()">+ Tạo Bàn Chơi Mới</button>
+        <div id="listTables"></div>
+        <button id="addTableBtn" class="btn-action btn-blue" style="margin-top: 20px;">+ Tạo Sân Mới</button>
     </div>
 
-    <div id="gameRoom">
-        <div class="game-header">
-            <button class="btn-back" onclick="goBackLobby()">← Sảnh</button>
-            <div class="badge">Ván: <span id="roundCount">0</span></div>
-            <h3 id="currentGameTitle" style="font-size: 16px;">Bàn</h3>
+    <div id="pGame" class="page">
+        <div class="nav">
+            <button id="backBtn" class="btn-circle">✕</button>
+            <div id="privacyBtn" class="privacy-pill">
+                <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
+            </div>
+            <div style="font-weight: 700; font-size: 14px; color: var(--primary);" id="roundLabel">Ván 0</div>
         </div>
-        <div class="game-utils">
-            <button class="btn-privacy" id="btnPrivacy" onclick="togglePrivacy()">Ẩn Tổng 😶‍🌫️</button>
-        </div>
-        <div class="history-container">
+        <h2 id="tableName" style="margin: 10px 0 20px 5px; font-size: 26px;">Tên Sân</h2>
+        <div class="table-container">
             <table>
-                <thead id="gameHead"></thead>
-                <tr id="gameTotal" class="total-row"></tr>
-                <tbody id="gameBody"></tbody>
+                <thead id="hHead"></thead>
+                <tr id="hTotal" class="total-row"></tr>
+                <tbody id="hBody"></tbody>
             </table>
         </div>
-        <button class="fab" onclick="showAddScoreModal()">+</button>
+        <button id="addRoundBtn" class="fab">+</button>
     </div>
 
-    <div class="modal-overlay" id="modalCreateTable">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px; text-align: center;">Cài Đặt Bàn Mới</h3>
-            <div class="input-group">
-                <label>Tên bàn chơi</label>
-                <input type="text" id="newTableName" placeholder="Ví dụ: Hội Cầu Lông Đêm">
+    <div id="mCreate" class="modal">
+        <div class="modal-sheet">
+            <h2 style="margin-bottom: 20px;">Cài Đặt Sân</h2>
+            <input type="text" id="inTableName" placeholder="Tên sân chơi">
+            <div id="inPlayers">
+                <input type="text" class="p-name-in" placeholder="Người 1"><input type="text" class="p-name-in" placeholder="Người 2">
             </div>
-            <div class="input-group">
-                <label>Người chơi (Tối thiểu 2)</label>
-                <div id="newPlayerList">
-                    <div class="player-row"><input type="text" class="new-p-name" placeholder="Tên người 1"></div>
-                    <div class="player-row"><input type="text" class="new-p-name" placeholder="Tên người 2"></div>
-                </div>
-                <button onclick="addPlayerField()" style="color: var(--primary); background: none; border: none; font-size: 14px; font-weight: bold; margin-top: 10px; cursor: pointer;">+ Thêm người chơi</button>
-            </div>
-            <button class="btn-action btn-save" onclick="createNewTable()">Bắt Đầu Chơi 🏃‍♂️‍➡️</button>
-            <button class="btn-action btn-cancel" onclick="closeModals()">Hủy</button>
+            <button id="addPField" style="color:var(--primary); background:none; border:none; font-weight:700; margin-bottom: 20px;">+ Thêm thành viên</button>
+            <button id="confirmTable" class="btn-action btn-blue">Bắt Đầu</button>
+            <button class="btn-action btn-link close-m">Hủy</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modalAddScore">
-        <div class="modal-content">
-            <h3 id="scoreModalTitle" style="text-align: center;">Thêm Ván</h3>
-            <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0;"></div>
-            <p style="font-size: 11px; color: #888; text-align: center; margin-bottom: 15px;">* Để trống người thắng</p>
-            <button class="btn-action btn-save" onclick="saveScore()">Lưu 🎉</button>
-            <button class="btn-action btn-cancel" onclick="closeModals()">Hủy</button>
-            <button id="btnDeleteRound" class="btn-action" style="background: #fff0f0; color: #ff3b30; display: none;" onclick="deleteCurrentRound()">Xóa ván này</button>
+    <div id="mScore" class="modal">
+        <div class="modal-sheet">
+            <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ván Mới</h2>
+            <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
+            <button id="saveScore" class="btn-action btn-blue">Xác Nhận</button>
+            <button id="delRound" class="btn-action" style="background: #FFF5F5; color: var(--danger); display: none; margin-top: 10px;">Xóa Ván</button>
+            <button class="btn-action btn-link close-m">Đóng</button>
         </div>
     </div>
 
 <script>
-    let tables = JSON.parse(localStorage.getItem('poker_pro_tables')) || [];
-    let currentTableId = null;
-    let editingRoundIdx = -1;
-    let isPrivate = false;
+    let appData = JSON.parse(localStorage.getItem('pkr_v7_exec')) || [];
+    let curId = null;
+    let editIdx = -1;
+    let isMasked = false;
 
-    function renderLobby() {
-        document.getElementById('lobby').style.display = 'block';
-        document.getElementById('gameRoom').style.display = 'none';
-        const list = document.getElementById('tableList');
-        list.innerHTML = "";
-        document.getElementById('tableCount').innerText = tables.length + " bàn";
-        tables.forEach(t => {
-            list.innerHTML += `
-                <div class="table-card" onclick="joinTable('${t.id}')">
-                    <div class="table-info">
-                        <h4>${t.name}</h4>
-                        <p>${t.players.join(', ')}</p>
-                        <p style="font-size: 11px; color: var(--primary); margin-top: 4px;">${t.history.length} ván</p>
-                    </div>
-                    <button onclick="deleteTable(event, '${t.id}')" style="background:none; border:none; font-size: 18px;">🗑️</button>
-                </div>`;
-        });
-    }
+    const save = () => localStorage.setItem('pkr_v7_exec', JSON.stringify(appData));
+    const route = (id) => { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); };
+    const hideModals = () => { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); editIdx = -1; };
 
-    function showCreateTableModal() {
-        // Reset modal tạo bàn về trạng thái 2 người
-        document.getElementById('newTableName').value = "";
-        document.getElementById('newPlayerList').innerHTML = `
-            <div class="player-row"><input type="text" class="new-p-name" placeholder="Tên người 1"></div>
-            <div class="player-row"><input type="text" class="new-p-name" placeholder="Tên người 2"></div>
-        `;
-        document.getElementById('modalCreateTable').style.display = 'flex';
-    }
+    const renderLobby = () => {
+        const list = document.getElementById('listTables');
+        if (appData.length === 0) list.innerHTML = `<div style="text-align:center; padding:50px; color:var(--gray);">Chưa có dữ liệu</div>`;
+        else list.innerHTML = appData.map(t => `<div class="table-item" onclick="enterTable('${t.id}')"><div><div style="font-weight:700; font-size:17px;">${t.name}</div><div style="color:var(--gray); font-size:12px;">${t.players.length} người • ${t.history.length} ván</div></div><div style="color:var(--danger); font-size:18px; padding:10px;" onclick="removeTable(event, '${t.id}')">✕</div></div>`).join('');
+    };
 
-    function addPlayerField() {
-        const div = document.createElement('div');
-        div.className = 'player-row';
-        div.innerHTML = `<input type="text" class="new-p-name" placeholder="Tên người tiếp theo">
-                         <button class="btn-remove" onclick="this.parentElement.remove()">✕</button>`;
-        document.getElementById('newPlayerList').appendChild(div);
-    }
+    const enterTable = (id) => { curId = id; route('pGame'); renderGame(); };
+    const removeTable = (e, id) => { e.stopPropagation(); if(confirm("Xóa sân chơi?")) { appData = appData.filter(x => x.id !== id); save(); renderLobby(); } };
 
-    function createNewTable() {
-        const name = document.getElementById('newTableName').value || "Bàn " + (tables.length + 1);
-        const playerInps = document.querySelectorAll('.new-p-name');
-        let pList = [];
-        playerInps.forEach(inp => { if(inp.value.trim()) pList.push(inp.value.trim()); });
-
-        if (pList.length < 2) return alert("Vui lòng nhập ít nhất 2 người chơi!");
-
-        const newTable = { id: 't_' + Date.now(), name: name, players: pList, history: [] };
-        tables.push(newTable);
-        saveData();
-        closeModals();
-        renderLobby();
-        joinTable(newTable.id);
-    }
-
-    function deleteTable(e, id) {
-        e.stopPropagation();
-        if(confirm("Xóa bàn này?")) {
-            tables = tables.filter(t => t.id !== id);
-            saveData();
-            renderLobby();
+    const getWinStreaks = (history, numPlayers) => {
+        let streaks = new Array(numPlayers).fill(0);
+        for (let i = 0; i < numPlayers; i++) {
+            let count = 0;
+            for (let j = history.length - 1; j >= 0; j--) {
+                if (history[j][i] > 0) count++;
+                else break;
+            }
+            streaks[i] = count;
         }
-    }
+        return streaks;
+    };
 
-    function joinTable(id) {
-        currentTableId = id;
-        const t = tables.find(x => x.id === id);
-        document.getElementById('lobby').style.display = 'none';
-        document.getElementById('gameRoom').style.display = 'block';
-        document.getElementById('currentGameTitle').innerText = t.name;
+    const renderGame = () => {
+        const t = appData.find(x => x.id === curId);
+        document.getElementById('tableName').innerText = t.name;
+        document.getElementById('roundLabel').innerText = `Ván ${t.history.length}`;
+        
+        const streaks = getWinStreaks(t.history, t.players.length);
+
+        // Header: Lửa 🔥 luốn hiện kể cả khi Masked
+        document.getElementById('hHead').innerHTML = `<tr><th style="width:45px">#</th>` + 
+            t.players.map((p, i) => {
+                let fire = (streaks[i] >= 3) ? `<span class="fire-badge">🔥${streaks[i]}</span>` : "";
+                return `<th>${p}${fire}</th>`;
+            }).join('') + `</tr>`;
+        
+        let sums = new Array(t.players.length).fill(0);
+        t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
+        
+        let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
+
+        // Tổng: 👑 và 🐟 chỉ hiện khi KHÔNG Masked
+        document.getElementById('hTotal').innerHTML = `<td style="font-size:10px; color:var(--gray)">Σ</td>` + 
+            sums.map((s, i) => {
+                let badge = "";
+                if (!isMasked && hasData) {
+                    if (s === maxS && s > 0) badge = `<span class="rank-icon">👑</span>`;
+                    else if (s === minS && s < 0) badge = `<span class="rank-icon">🐟</span>`;
+                }
+                return `<td>${badge}${isMasked ? '<span class="mask-text">••••</span>' : s}</td>`;
+            }).join('');
+
+        const tbody = document.getElementById('hBody');
+        tbody.innerHTML = [...t.history].reverse().map((r, i) => {
+            let idx = t.history.length - 1 - i;
+            return `<tr onclick="openScore(${idx})"><td style="color:var(--gray); font-size:11px;">${idx+1}</td>${r.map(s => `<td class="${s>0?'win':'lose'}">${s}</td>`).join('')}</tr>`;
+        }).join('');
+    };
+
+    document.getElementById('addTableBtn').onclick = () => {
+        document.getElementById('inTableName').value = "";
+        document.getElementById('inPlayers').innerHTML = `<input type="text" class="p-name-in" placeholder="Người 1"><input type="text" class="p-name-in" placeholder="Người 2">`;
+        document.getElementById('mCreate').style.display = 'flex';
+    };
+
+    document.getElementById('addPField').onclick = () => {
+        const inp = document.createElement('input'); inp.className = 'p-name-in'; inp.placeholder = "Tên thành viên mới";
+        document.getElementById('inPlayers').appendChild(inp);
+    };
+
+    document.getElementById('confirmTable').onclick = () => {
+        const name = document.getElementById('inTableName').value || "Sân mới";
+        const ps = [...document.querySelectorAll('.p-name-in')].map(i => i.value.trim()).filter(v => v);
+        if(ps.length < 2) return alert("Cần tối thiểu 2 người");
+        const newT = { id: 't_'+Date.now(), name, players: ps, history: [] };
+        appData.push(newT); save(); renderLobby(); hideModals(); enterTable(newT.id);
+    };
+
+    document.getElementById('privacyBtn').onclick = function() {
+        isMasked = !isMasked;
+        this.classList.toggle('privacy-active', isMasked);
+        document.getElementById('pStatusIcon').innerText = isMasked ? "🔒" : "🔓";
+        document.getElementById('pStatusText').innerText = isMasked ? "Bảo mật" : "Công khai";
         renderGame();
-    }
+    };
 
-    function goBackLobby() { currentTableId = null; renderLobby(); }
-
-    function renderGame() {
-        const t = tables.find(x => x.id === currentTableId);
-        document.getElementById('roundCount').innerText = t.history.length;
-        document.getElementById('gameHead').innerHTML = `<tr><th style="width:45px">Ván</th>${t.players.map(p => `<th>${p}</th>`).join('')}</tr>`;
-        let totals = new Array(t.players.length).fill(0);
-        t.history.forEach(r => r.forEach((s, i) => totals[i] += s));
-        document.getElementById('gameTotal').innerHTML = `<td>TỔNG</td>${totals.map(s => `<td>${s}</td>`).join('')}`;
-        const tbody = document.getElementById('gameBody');
-        tbody.innerHTML = "";
-        [...t.history].reverse().forEach((round, revIdx) => {
-            let origIdx = t.history.length - 1 - revIdx;
-            let row = `<tr onclick="showAddScoreModal(${origIdx})"><td>${origIdx + 1}</td>`;
-            round.forEach(s => row += `<td class="${s > 0 ? 'winner' : 'loser'}">${s}</td>`);
-            tbody.innerHTML += row + "</tr>";
-        });
-    }
-
-    function showAddScoreModal(idx = -1) {
-        editingRoundIdx = idx;
-        const t = tables.find(x => x.id === currentTableId);
+    const openScore = (idx = -1) => {
+        editIdx = idx;
+        const t = appData.find(x => x.id === curId);
         const area = document.getElementById('scoreInputs');
-        area.innerHTML = "";
-        t.players.forEach((p, i) => {
+        area.innerHTML = t.players.map((p, i) => {
             let val = (idx >= 0 && t.history[idx][i] <= 0) ? t.history[idx][i] : "";
-            area.innerHTML += `<div class="input-group"><label>${p}</label>
-                <input type="number" class="score-input" data-idx="${i}" value="${val}" placeholder="0"></div>`;
-        });
-        document.getElementById('scoreModalTitle').innerText = idx >= 0 ? "Sửa Ván " + (idx+1) : "Thêm Ván";
-        document.getElementById('btnDeleteRound').style.display = idx >= 0 ? "block" : "none";
-        document.getElementById('modalAddScore').style.display = 'flex';
-    }
+            return `<div><label style="font-size:10px; font-weight:700; color:var(--gray); display:block; margin-bottom:5px;">${p.toUpperCase()}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" placeholder="Thắng"></div>`;
+        }).join('');
+        document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa Ván " + (idx+1) : "Ván Mới";
+        document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
+        document.getElementById('mScore').style.display = 'flex';
+    };
 
-    function saveScore() {
-        const t = tables.find(x => x.id === currentTableId);
-        const inps = document.querySelectorAll('.score-input');
+    document.getElementById('addRoundBtn').onclick = () => openScore(-1);
+
+    document.getElementById('saveScore').onclick = () => {
+        const t = appData.find(x => x.id === curId);
+        const inps = document.querySelectorAll('.score-v');
         let scores = new Array(t.players.length).fill(null);
-        let winIdx = -1, emptyCount = 0;
+        let winI = -1, emp = 0;
         inps.forEach(inp => {
             let v = inp.value === "" ? null : parseInt(inp.value);
-            let i = parseInt(inp.getAttribute('data-idx'));
-            scores[i] = v;
-            if (v === null) { emptyCount++; winIdx = i; }
+            let i = parseInt(inp.dataset.idx);
+            scores[i] = v; if(v === null) { emp++; winI = i; }
         });
-        if (emptyCount !== 1) return alert("Để trống 1 người thắng!");
-        let sumThua = scores.reduce((a, b) => a + (b || 0), 0);
-        scores[winIdx] = -sumThua;
-        if (editingRoundIdx === -1) {
+        if(emp !== 1) return alert("Để trống đúng 1 người thắng");
+        scores[winI] = -scores.reduce((a, b) => a + (b || 0), 0);
+        if(editIdx === -1) {
             t.history.push(scores);
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 } });
-        } else { t.history[editingRoundIdx] = scores; }
-        saveData(); closeModals(); renderGame();
-    }
+            confetti({ particleCount: 150, spread: 60, origin: { y: 0.8 } });
+        } else t.history[editIdx] = scores;
+        save(); hideModals(); renderGame();
+    };
 
-    function deleteCurrentRound() {
-        if(confirm("Xóa ván này?")) {
-            const t = tables.find(x => x.id === currentTableId);
-            t.history.splice(editingRoundIdx, 1);
-            saveData(); closeModals(); renderGame();
+    document.getElementById('delRound').onclick = () => {
+        if(confirm("Xóa ván?")) {
+            const t = appData.find(x => x.id === curId);
+            t.history.splice(editIdx, 1);
+            save(); hideModals(); renderGame();
         }
-    }
+    };
 
-    function togglePrivacy() {
-        isPrivate = !isPrivate;
-        document.getElementById('gameTotal').className = isPrivate ? 'total-row is-hidden' : 'total-row';
-        document.getElementById('btnPrivacy').innerText = isPrivate ? "Hiện Tổng 🕵️" : "Ẩn Tổng 😶‍🌫️";
-        document.getElementById('btnPrivacy').style.background = isPrivate ? "#ff3b30" : "#34c759";
-    }
-
-    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); editingRoundIdx = -1; }
-    function saveData() { localStorage.setItem('poker_pro_tables', JSON.stringify(tables)); }
-    window.onclick = (e) => { if(e.target.classList.contains('modal-overlay')) closeModals(); };
+    document.getElementById('backBtn').onclick = () => { route('pLobby'); renderLobby(); };
+    document.querySelectorAll('.close-m').forEach(b => b.onclick = hideModals);
     renderLobby();
 </script>
 </body>
