@@ -209,7 +209,7 @@
         const area = document.getElementById('scoreInputs');
         area.innerHTML = t.players.map((p, i) => {
             let val = (idx >= 0 && t.history[idx][i] <= 0) ? t.history[idx][i] : "";
-            return `<div><label style="font-size:10px; font-weight:700; color:var(--gray); display:block; margin-bottom:5px;">${p.toUpperCase()}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" placeholder="Thắng"></div>`;
+            return `<div><label style="font-size:10px; font-weight:700; color:var(--gray); display:block; margin-bottom:5px;">${p.toUpperCase()}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" placeholder="Điểm"></div>`;
         }).join('');
         document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa Ván " + (idx+1) : "Ván Mới";
         document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
