@@ -83,7 +83,7 @@
         }
         
         .total-row { background: #FFF; border-bottom: 3px solid var(--bg); }
-        .total-row td { padding: 24px 8px; font-size: 20px; font-weight: 800; color: var(--primary); }
+        .total-row td { padding: 12px 8px; font-size: 20px; font-weight: 800; color: var(--primary); }
         
         tbody tr { border-bottom: 1px solid #F2F2F7; transition: background 0.2s; }
         tbody tr:active { background: #F9F9FB; }
@@ -277,15 +277,20 @@
         t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
         let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
 
-        // Total Row
+        // Total Row - UPDATE: Icons stacked above numbers
         document.getElementById('hTotal').innerHTML = `<td style="font-size:10px; color:var(--gray); font-weight:700;">TOTAL</td>` + 
             sums.map((s, i) => {
-                let badge = "";
+                let badge = "&nbsp;"; // Tạo khoảng trống mặc định để giữ chiều cao dòng
                 if (!isMasked && hasData) {
-                    if (s === maxS && s > 0) badge = `<span class="rank-icon">👑</span>`;
-                    else if (s === minS && s < 0) badge = `<span class="rank-icon">🐟</span>`;
+                    if (s === maxS && s > 0) badge = `👑`;
+                    else if (s === minS && s < 0) badge = `🐟`;
                 }
-                return `<td>${badge}${isMasked ? '<span class="mask-text">••••</span>' : s}</td>`;
+                return `<td>
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <span style="font-size: 14px; line-height: 1; margin-bottom: 2px; height: 16px;">${badge}</span>
+                        <span>${isMasked ? '••••' : s}</span>
+                    </div>
+                </td>`;
             }).join('');
 
         // Body History
@@ -375,4 +380,3 @@
 </script>
 </body>
 </html>
- 
