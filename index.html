@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🎾 Badminton Scoreboard</title>
+    <title>🏸 Badminton Scoreboard</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { 
@@ -144,7 +144,7 @@
     <div id="pLobby" class="page active-page">
         <div class="app-header">
             <p style="text-transform: uppercase; font-size: 11px; font-weight: 700; color: var(--primary); letter-spacing: 1px; margin-bottom: 4px;">Premium Scoreboard</p>
-            <h1>🏸 Badminton Pro</h1>
+            <h1>🏆 Badminton Pro 🏆</h1>
         </div>
         <div id="listTables"></div>
         <button id="addTableBtn" class="btn-main" style="background: var(--primary);">+ Khởi tạo sân mới</button>
@@ -229,7 +229,7 @@
                         <div>
                             <div style="font-weight:800; font-size:18px; margin-bottom: 4px;">${t.name}</div>
                             <div style="color:var(--gray); font-size:12px; font-weight: 600;">
-                                👤 ${t.players.length} vận động viên • 🎾 ${t.history.length} hiệp
+                                👤 ${t.players.length} vận động viên • 🏸 ${t.history.length} hiệp
                             </div>
                         </div>
                         <div style="color:var(--danger); font-size:20px; width:40px; height:40px; display:flex; align-items:center; justify-content:center;" onclick="removeTable(event, '${t.id}')">×</div>
