@@ -2,137 +2,258 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🕵️ Badminton Scoreboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pro Badminton Scoreboard</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { 
-            --primary: #007AFF; --success: #34C759; --danger: #FF3B30; --warning: #FF9500;
-            --bg: #F8F9FA; --card: #FFFFFF; --text: #1C1C1E; --gray: #8E8E93;
+            --primary: #007AFF; 
+            --success: #34C759; 
+            --danger: #FF3B30; 
+            --warning: #FF9500;
+            --bg: #F2F2F7; 
+            --card: #FFFFFF; 
+            --text: #1C1C1E; 
+            --gray: #8E8E93;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow: 0 8px 32px rgba(0,0,0,0.05);
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg); color: var(--text); line-height: 1.5;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
 
-        /* UI ELEMENTS */
-        .page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
+        /* TYPOGRAPHY */
+        h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+        h2 { font-size: 22px; font-weight: 700; }
+
+        /* LAYOUT */
+        .page { display: none; padding: 20px 16px; min-height: 100vh; animation: pageIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .active-page { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header-main { padding: 20px 4px; }
-        .table-item { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
-        .nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; position: sticky; top: 0; background: var(--bg); z-index: 100; }
-        .btn-circle { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--card); box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .privacy-pill { background: #E9E9EB; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        /* HEADER & NAV */
+        .app-header { margin-bottom: 24px; padding-top: 10px; }
+        .nav-bar { 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; background: rgba(242, 242, 247, 0.8);
+            backdrop-filter: blur(20px); z-index: 1000; padding: 12px 0;
+        }
+
+        /* BUTTONS LUXURY */
+        .btn-glass {
+            background: var(--card); border: none; width: 42px; height: 42px;
+            border-radius: 50%; box-shadow: var(--shadow);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+            transition: transform 0.2s active;
+        }
+        .btn-glass:active { transform: scale(0.9); }
+
+        .privacy-pill { 
+            background: #E3E3E8; padding: 8px 16px; border-radius: 40px; 
+            font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05);
+        }
         .privacy-active { background: #1C1C1E; color: white; }
 
-        /* TABLE STYLING */
-        .table-container { background: var(--card); border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.04); margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        thead th { background: #FDFDFD; padding: 16px 4px; font-size: 11px; color: var(--gray); text-transform: uppercase; border-bottom: 1px solid #F2F2F2; position: sticky; top: 0; z-index: 10; line-height: 1.2; vertical-align: bottom; height: 70px; }
+        /* CARDS */
+        .pro-card {
+            background: var(--card); border-radius: var(--radius-lg); padding: 20px;
+            margin-bottom: 16px; box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.7);
+            transition: transform 0.2s;
+        }
+        .pro-card:active { transform: scale(0.98); }
+
+        /* TABLE PRO EXTRAS */
+        .table-wrapper { 
+            background: var(--card); border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow); margin-top: 12px;
+        }
+        table { width: 100%; border-collapse: collapse; }
         
-        .total-row { background: #F8F9FA; border-bottom: 2px solid #EEE; }
-        .total-row td { padding: 22px 8px; font-weight: 800; font-size: 18px; position: relative; text-align: center; }
-        .mask-text { color: #D1D1D6; font-size: 14px; letter-spacing: 2px; }
+        thead th { 
+            background: #F9F9FB; padding: 18px 8px; font-size: 10px; color: var(--gray);
+            text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #F2F2F7;
+        }
+        
+        .total-row { background: #FFF; border-bottom: 3px solid var(--bg); }
+        .total-row td { padding: 24px 8px; font-size: 20px; font-weight: 800; color: var(--primary); }
+        
+        tbody tr { border-bottom: 1px solid #F2F2F7; transition: background 0.2s; }
+        tbody tr:active { background: #F9F9FB; }
+        tbody td { padding: 16px 8px; text-align: center; font-variant-numeric: tabular-nums; }
 
-        /* BADGES */
-        .rank-icon { position: absolute; top: 4px; right: 50%; transform: translateX(50%); font-size: 12px; }
-        .fire-badge { display: block; color: var(--warning); font-size: 11px; margin-top: 4px; font-weight: 800; animation: pulse 0.8s infinite alternate; }
-        @keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.15); opacity: 1; } }
+        /* STATUS BADGES */
+        .score-badge {
+            padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 14px;
+        }
+        .win { background: #E8F9EE; color: var(--success); }
+        .lose { background: #FFF0F0; color: var(--danger); }
 
-        tbody td { padding: 16px 8px; text-align: center; font-size: 15px; border-bottom: 1px solid #F9F9F9; }
-        .win { color: var(--success); font-weight: 600; }
-        .lose { color: var(--danger); font-weight: 600; }
+        .fire-badge { 
+            font-size: 11px; color: var(--warning); font-weight: 800;
+            display: flex; align-items: center; justify-content: center; gap: 2px;
+            margin-top: 4px;
+        }
 
-        /* MODALS */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; z-index: 1000; backdrop-filter: blur(10px); }
-        .modal-sheet { background: var(--card); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px; animation: slideUp 0.3s ease-out; }
+        /* FLOATING ACTION BUTTON */
+        .fab {
+            position: fixed; bottom: 34px; right: 24px; width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--primary), #0056b3);
+            color: white; border-radius: 22px; display: flex; align-items: center;
+            justify-content: center; font-size: 28px; border: none;
+            box-shadow: 0 12px 24px rgba(0,122,255,0.3); z-index: 100;
+        }
+
+        /* MODALS PRO */
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.3); 
+            display: none; align-items: flex-end; z-index: 2000; backdrop-filter: blur(8px); 
+        }
+        .modal-sheet { 
+            background: var(--card); width: 100%; border-radius: 32px 32px 0 0;
+            padding: 32px 24px 48px 24px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        input { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid #E5E5E5; background: #F9F9F9; font-size: 16px; margin-bottom: 12px; outline: none; }
-        .btn-action { width: 100%; padding: 18px; border-radius: 16px; border: none; font-weight: 700; font-size: 16px; cursor: pointer; }
-        .btn-blue { background: var(--primary); color: white; }
-        .btn-link { background: none; color: var(--gray); margin-top: 10px; }
-        .fab { position: fixed; bottom: 30px; right: 24px; width: 64px; height: 64px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 8px 25px rgba(0,122,255,0.4); border: none; z-index: 90; }
+
+        .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--gray); margin-bottom: 8px; margin-left: 4px; }
+        input { 
+            width: 100%; padding: 16px; border-radius: var(--radius-md); border: 2px solid #F2F2F7;
+            background: #F9F9FB; font-size: 16px; font-weight: 600; margin-bottom: 20px; outline: none; transition: all 0.2s;
+        }
+        input:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+
+        .btn-main {
+            width: 100%; padding: 18px; border-radius: var(--radius-md); border: none;
+            background: var(--text); color: white; font-weight: 700; font-size: 16px;
+            transition: all 0.2s;
+        }
+        .btn-main:active { transform: scale(0.97); opacity: 0.9; }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
     </style>
 </head>
 <body>
 
     <div id="pLobby" class="page active-page">
-        <div class="header-main">
-            <h1>🏸 Sân Chơi Cầu Lông 🏸</h1>
-            <p style="color:var(--gray); font-size: 14px;">Hội Đam Mê Cầu Lông</p>
+        <div class="app-header">
+            <p style="text-transform: uppercase; font-size: 11px; font-weight: 700; color: var(--primary); letter-spacing: 1px; margin-bottom: 4px;">Premium Scoreboard</p>
+            <h1>🏸 Badminton Pro</h1>
         </div>
         <div id="listTables"></div>
-        <button id="addTableBtn" class="btn-action btn-blue" style="margin-top: 20px;">+ Tạo Sân Mới</button>
+        <button id="addTableBtn" class="btn-main" style="background: var(--primary);">+ Khởi tạo sân mới</button>
     </div>
 
     <div id="pGame" class="page">
-        <div class="nav">
-            <button id="backBtn" class="btn-circle">✕</button>
+        <div class="nav-bar">
+            <button id="backBtn" class="btn-glass">←</button>
             <div id="privacyBtn" class="privacy-pill">
                 <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
             </div>
-            <div style="font-weight: 700; font-size: 14px; color: var(--primary);" id="roundLabel">Ván 0</div>
+            <div id="roundLabel" style="font-weight: 800; font-size: 13px; color: var(--gray);">Ván 0</div>
         </div>
-        <h2 id="tableName" style="margin: 10px 0 20px 5px; font-size: 26px;">Tên Sân</h2>
-        <div class="table-container">
+
+        <h2 id="tableName" style="margin: 20px 0;">Sân chính</h2>
+
+        <div class="table-wrapper">
             <table>
                 <thead id="hHead"></thead>
                 <tr id="hTotal" class="total-row"></tr>
                 <tbody id="hBody"></tbody>
             </table>
         </div>
+        
         <button id="addRoundBtn" class="fab">+</button>
     </div>
 
     <div id="mCreate" class="modal">
         <div class="modal-sheet">
-            <h2 style="margin-bottom: 20px;">Cài Đặt Sân</h2>
-            <input type="text" id="inTableName" placeholder="Tên sân chơi">
-            <div id="inPlayers">
-                <input type="text" class="p-name-in" placeholder="Người 1"><input type="text" class="p-name-in" placeholder="Người 2">
+            <h2 style="margin-bottom: 24px;">Cài đặt sân đấu</h2>
+            <div class="input-group">
+                <label>TÊN SÂN</label>
+                <input type="text" id="inTableName" placeholder="Ví dụ: Sân số 4 - ĐH Y Dược">
             </div>
-            <button id="addPField" style="color:var(--primary); background:none; border:none; font-weight:700; margin-bottom: 20px;">+ Thêm thành viên</button>
-            <button id="confirmTable" class="btn-action btn-blue">Bắt Đầu</button>
-            <button class="btn-action btn-link close-m">Hủy</button>
+            <div class="input-group">
+                <label>DANH SÁCH TAY VỢT</label>
+                <div id="inPlayers">
+                    <input type="text" class="p-name-in" placeholder="Tên người chơi 1">
+                    <input type="text" class="p-name-in" placeholder="Tên người chơi 2">
+                </div>
+            </div>
+            <button id="addPField" style="background: none; border: none; color: var(--primary); font-weight: 700; margin-bottom: 24px; font-size: 14px;">+ Thêm thành viên</button>
+            <button id="confirmTable" class="btn-main" style="background: var(--primary);">Bắt đầu trận đấu</button>
+            <button class="btn-main close-m" style="background: none; color: var(--gray); margin-top: 8px;">Hủy bỏ</button>
         </div>
     </div>
 
     <div id="mScore" class="modal">
         <div class="modal-sheet">
-            <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ván Mới</h2>
-            <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-            <button id="saveScore" class="btn-action btn-blue">Xác Nhận</button>
-            <button id="delRound" class="btn-action" style="background: #FFF5F5; color: var(--danger); display: none; margin-top: 10px;">Xóa Ván</button>
-            <button class="btn-action btn-link close-m">Đóng</button>
+            <h2 id="scoreTitle" style="text-align: center; margin-bottom: 24px;">Kết quả ván</h2>
+            <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"></div>
+            <p style="font-size: 12px; color: var(--gray); text-align: center; margin: 16px 0;">* Người thắng để trống điểm để tự động tính tổng</p>
+            <button id="saveScore" class="btn-main" style="background: var(--success);">Lưu kết quả</button>
+            <button id="delRound" class="btn-main" style="background: var(--danger); display: none; margin-top: 12px;">Xóa ván đấu</button>
+            <button class="btn-main close-m" style="background: none; color: var(--gray); margin-top: 8px;">Đóng</button>
         </div>
     </div>
 
 <script>
-    let appData = JSON.parse(localStorage.getItem('pkr_v7_exec')) || [];
+    let appData = JSON.parse(localStorage.getItem('pro_badminton_v8')) || [];
     let curId = null;
     let editIdx = -1;
     let isMasked = false;
 
-    const save = () => localStorage.setItem('pkr_v7_exec', JSON.stringify(appData));
-    const route = (id) => { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); };
+    const save = () => localStorage.setItem('pro_badminton_v8', JSON.stringify(appData));
+    const route = (id) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(id).classList.add('active-page');
+        window.scrollTo(0,0);
+    };
+
     const hideModals = () => { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); editIdx = -1; };
 
     const renderLobby = () => {
         const list = document.getElementById('listTables');
-        if (appData.length === 0) list.innerHTML = `<div style="text-align:center; padding:50px; color:var(--gray);">Chưa có dữ liệu</div>`;
-        else list.innerHTML = appData.map(t => `<div class="table-item" onclick="enterTable('${t.id}')"><div><div style="font-weight:700; font-size:17px;">${t.name}</div><div style="color:var(--gray); font-size:12px;">${t.players.length} người • ${t.history.length} ván</div></div><div style="color:var(--danger); font-size:18px; padding:10px;" onclick="removeTable(event, '${t.id}')">✕</div></div>`).join('');
+        if (appData.length === 0) {
+            list.innerHTML = `<div class="empty-state"><div style="font-size: 50px;">🏸</div><p>Chưa có trận đấu nào.<br>Hãy tạo sân để bắt đầu ghi điểm!</p></div>`;
+        } else {
+            list.innerHTML = appData.map(t => `
+                <div class="pro-card" onclick="enterTable('${t.id}')">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight:800; font-size:18px; margin-bottom: 4px;">${t.name}</div>
+                            <div style="color:var(--gray); font-size:12px; font-weight: 600;">
+                                👤 ${t.players.length} vận động viên • 🎾 ${t.history.length} hiệp
+                            </div>
+                        </div>
+                        <div style="color:var(--danger); font-size:20px; width:40px; height:40px; display:flex; align-items:center; justify-content:center;" onclick="removeTable(event, '${t.id}')">×</div>
+                    </div>
+                </div>
+            `).join('');
+        }
     };
 
     const enterTable = (id) => { curId = id; route('pGame'); renderGame(); };
-    const removeTable = (e, id) => { e.stopPropagation(); if(confirm("Xóa sân chơi?")) { appData = appData.filter(x => x.id !== id); save(); renderLobby(); } };
+    const removeTable = (e, id) => {
+        e.stopPropagation();
+        if(confirm("Xóa dữ liệu sân này?")) {
+            appData = appData.filter(x => x.id !== id);
+            save(); renderLobby();
+        }
+    };
 
     const getWinStreaks = (history, numPlayers) => {
         let streaks = new Array(numPlayers).fill(0);
         for (let i = 0; i < numPlayers; i++) {
             let count = 0;
             for (let j = history.length - 1; j >= 0; j--) {
-                if (history[j][i] > 0) count++;
-                else break;
+                if (history[j][i] > 0) count++; else break;
             }
             streaks[i] = count;
         }
@@ -142,24 +263,22 @@
     const renderGame = () => {
         const t = appData.find(x => x.id === curId);
         document.getElementById('tableName').innerText = t.name;
-        document.getElementById('roundLabel').innerText = `Ván ${t.history.length}`;
-        
+        document.getElementById('roundLabel').innerText = `VÁN ${t.history.length}`;
         const streaks = getWinStreaks(t.history, t.players.length);
 
-        // Header: Lửa 🔥 luốn hiện kể cả khi Masked
-        document.getElementById('hHead').innerHTML = `<tr><th style="width:45px">#</th>` + 
+        // Header
+        document.getElementById('hHead').innerHTML = `<tr><th style="width:50px">Hiệp</th>` + 
             t.players.map((p, i) => {
-                let fire = (streaks[i] >= 3) ? `<span class="fire-badge">🔥${streaks[i]}</span>` : "";
-                return `<th>${p}${fire}</th>`;
+                let fire = (streaks[i] >= 3) ? `<span class="fire-badge">🔥 ${streaks[i]}</span>` : "";
+                return `<th><div>${p}</div>${fire}</th>`;
             }).join('') + `</tr>`;
         
         let sums = new Array(t.players.length).fill(0);
         t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
-        
         let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
 
-        // Tổng: 👑 và 🐟 chỉ hiện khi KHÔNG Masked
-        document.getElementById('hTotal').innerHTML = `<td style="font-size:10px; color:var(--gray)">Tổng</td>` + 
+        // Total Row
+        document.getElementById('hTotal').innerHTML = `<td style="font-size:10px; color:var(--gray); font-weight:700;">TOTAL</td>` + 
             sums.map((s, i) => {
                 let badge = "";
                 if (!isMasked && hasData) {
@@ -169,28 +288,33 @@
                 return `<td>${badge}${isMasked ? '<span class="mask-text">••••</span>' : s}</td>`;
             }).join('');
 
+        // Body History
         const tbody = document.getElementById('hBody');
         tbody.innerHTML = [...t.history].reverse().map((r, i) => {
             let idx = t.history.length - 1 - i;
-            return `<tr onclick="openScore(${idx})"><td style="color:var(--gray); font-size:11px;">${idx+1}</td>${r.map(s => `<td class="${s>0?'win':'lose'}">${s}</td>`).join('')}</tr>`;
+            return `<tr onclick="openScore(${idx})">
+                <td style="color:var(--gray); font-size:12px; font-weight:700;">${idx+1}</td>
+                ${r.map(s => `<td><span class="score-badge ${s>0?'win':'lose'}">${s}</span></td>`).join('')}
+            </tr>`;
         }).join('');
     };
 
+    // --- CÁC HÀM XỬ LÝ EVENT ---
     document.getElementById('addTableBtn').onclick = () => {
         document.getElementById('inTableName').value = "";
-        document.getElementById('inPlayers').innerHTML = `<input type="text" class="p-name-in" placeholder="Người 1"><input type="text" class="p-name-in" placeholder="Người 2">`;
+        document.getElementById('inPlayers').innerHTML = `<input type="text" class="p-name-in" placeholder="Tên người chơi 1"><input type="text" class="p-name-in" placeholder="Tên người chơi 2">`;
         document.getElementById('mCreate').style.display = 'flex';
     };
 
     document.getElementById('addPField').onclick = () => {
-        const inp = document.createElement('input'); inp.className = 'p-name-in'; inp.placeholder = "Tên thành viên mới";
+        const inp = document.createElement('input'); inp.className = 'p-name-in'; inp.placeholder = "Tên người chơi tiếp theo";
         document.getElementById('inPlayers').appendChild(inp);
     };
 
     document.getElementById('confirmTable').onclick = () => {
-        const name = document.getElementById('inTableName').value || "Sân mới";
+        const name = document.getElementById('inTableName').value || "Sân đấu mới";
         const ps = [...document.querySelectorAll('.p-name-in')].map(i => i.value.trim()).filter(v => v);
-        if(ps.length < 2) return alert("Cần tối thiểu 2 người");
+        if(ps.length < 2) return alert("Cần ít nhất 2 người chơi");
         const newT = { id: 't_'+Date.now(), name, players: ps, history: [] };
         appData.push(newT); save(); renderLobby(); hideModals(); enterTable(newT.id);
     };
@@ -199,7 +323,7 @@
         isMasked = !isMasked;
         this.classList.toggle('privacy-active', isMasked);
         document.getElementById('pStatusIcon').innerText = isMasked ? "🔒" : "🔓";
-        document.getElementById('pStatusText').innerText = isMasked ? "Bảo mật" : "Công khai";
+        document.getElementById('pStatusText').innerText = isMasked ? "Đang ẩn" : "Công khai";
         renderGame();
     };
 
@@ -209,9 +333,9 @@
         const area = document.getElementById('scoreInputs');
         area.innerHTML = t.players.map((p, i) => {
             let val = (idx >= 0 && t.history[idx][i] <= 0) ? t.history[idx][i] : "";
-            return `<div><label style="font-size:10px; font-weight:700; color:var(--gray); display:block; margin-bottom:5px;">${p.toUpperCase()}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" placeholder="Điểm"></div>`;
+            return `<div><label>${p}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" placeholder="0"></div>`;
         }).join('');
-        document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa Ván " + (idx+1) : "Ván Mới";
+        document.getElementById('scoreTitle').innerText = idx >= 0 ? "Chỉnh sửa hiệp " + (idx+1) : "Ghi điểm hiệp mới";
         document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
         document.getElementById('mScore').style.display = 'flex';
     };
@@ -228,17 +352,17 @@
             let i = parseInt(inp.dataset.idx);
             scores[i] = v; if(v === null) { emp++; winI = i; }
         });
-        if(emp !== 1) return alert("Để trống đúng 1 người thắng");
+        if(emp !== 1) return alert("Vui lòng để trống DUY NHẤT 1 người thắng để hệ thống tự cộng điểm");
         scores[winI] = -scores.reduce((a, b) => a + (b || 0), 0);
         if(editIdx === -1) {
             t.history.push(scores);
-            confetti({ particleCount: 150, spread: 60, origin: { y: 0.8 } });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.8 }, colors: ['#007AFF', '#34C759'] });
         } else t.history[editIdx] = scores;
         save(); hideModals(); renderGame();
     };
 
     document.getElementById('delRound').onclick = () => {
-        if(confirm("Xóa ván?")) {
+        if(confirm("Xóa hiệp đấu này?")) {
             const t = appData.find(x => x.id === curId);
             t.history.splice(editIdx, 1);
             save(); hideModals(); renderGame();
