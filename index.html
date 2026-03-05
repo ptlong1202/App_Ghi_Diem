@@ -24,7 +24,7 @@
         
         html, body {
             height: 100%;
-            overflow: hidden; /* Ngăn toàn bộ trang bị kéo trượt lên trên */
+            overflow: hidden;
             background: var(--bg);
         }
 
@@ -34,23 +34,20 @@
             display: flex; justify-content: center;
         }
 
-        /* Container cố định chiều cao theo iPhone */
         .app-container {
             width: 100%; max-width: 500px; 
-            height: 100dvh; /* Chiều cao động chuẩn iPhone */
+            height: 100dvh;
             display: flex; flex-direction: column;
             position: relative;
         }
 
-        /* Khoảng đệm an toàn tuyệt đối cho Tai thỏ */
         .safe-top {
             height: calc(env(safe-area-inset-top) + 10px);
-            min-height: 50px; /* Đảm bảo luôn có ít nhất 50px trống ở đầu */
+            min-height: 50px;
             background: var(--bg);
             flex-shrink: 0;
         }
 
-        /* Khu vực nội dung có thể cuộn */
         .scroll-content {
             flex-grow: 1;
             overflow-y: auto;
@@ -58,11 +55,23 @@
             padding: 0 16px 120px 16px;
         }
 
+        /* CSS MỚI: CANH GIỮA MÀN HÌNH CHỜ */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh; /* Đưa nội dung ra giữa khu vực hiển thị */
+            text-align: center;
+            color: var(--text);
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .page { display: none; animation: pageIn 0.3s ease-out; }
         .active-page { display: block; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* NAV BAR cố định trong phần cuộn */
         .nav-bar { 
             display: flex; justify-content: space-between; align-items: center; 
             background: rgba(242, 242, 247, 0.9);
@@ -96,7 +105,11 @@
         
         table { width: 100%; border-collapse: collapse; }
         thead th { background: #F9F9FB; padding: 15px 8px; font-size: 10px; color: var(--gray); text-transform: uppercase; }
+        
+        /* CHỈNH NHỎ CHỮ TỔNG TẠI ĐÂY */
+        .total-row td:first-child { font-size: 12px; font-weight: 800; color: var(--gray); }
         .total-row td { padding: 15px 8px; font-size: 20px; font-weight: 800; color: var(--primary); text-align: center; }
+        
         tbody td { padding: 14px 8px; text-align: center; font-weight: 600; border-top: 1px solid #F2F2F7; }
 
         .score-badge { padding: 5px 10px; border-radius: 8px; font-size: 14px; }
@@ -205,29 +218,25 @@
 
     const save = () => localStorage.setItem('pro_badminton_v10', JSON.stringify(appData));
     
-    // HÀM CHUYỂN TRANG FIX LỖI TRÔI MÀN HÌNH
     const route = (id) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
         document.getElementById(id).classList.add('active-page');
         document.getElementById('addRoundBtn').style.display = (id === 'pGame') ? 'flex' : 'none';
-        
-        // Cực kỳ quan trọng: Luôn cuộn về đầu khi chuyển trang để fix lỗi iPhone
         document.getElementById('mainScroll').scrollTo(0,0);
         window.scrollTo(0,0);
     };
 
     const hideModals = () => { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); };
 
-    // HÀM RENDER LOBBY VỚI EMPTY STATE BẠN THÍCH
     const renderLobby = () => {
         const list = document.getElementById('listTables');
         if (appData.length === 0) {
             list.innerHTML = `
                 <div class="empty-state">
-                    <div style="font-size: 64px; margin-bottom: 20px;">🏸</div>
+                    <div style="font-size: 80px; margin-bottom: 10px;">🏸</div>
                     <p style="font-weight: 600; line-height: 1.5;">
                         Chưa có trận đấu nào.<br>
-                        <span style="font-weight: 400; opacity: 0.6;">Hãy tạo sân để bắt đầu ghi điểm!</span>
+                        <span style="font-weight: 400; opacity: 0.6; font-size: 14px;">Hãy tạo sân để bắt đầu ghi điểm!</span>
                     </p>
                 </div>`;
         } else {
@@ -266,7 +275,7 @@
                 if(s === maxS && s > 0) icon = "👑";
                 else if(s === minS && s < 0) icon = "🐟";
             }
-            return `<td><div style="font-size:12px">${icon}</div>${isMasked ? '•••' : s}</td>`;
+            return `<td><div style="font-size:12px; height: 16px;">${icon}</div>${isMasked ? '•••' : s}</td>`;
         }).join('');
 
         document.getElementById('hBody').innerHTML = [...t.history].reverse().map((r, i) => {
