@@ -1,11 +1,11 @@
 {
-  "name": "Badminton Pro Scoreboard",
-  "short_name": "BadmintonPro",
-  "description": "Premium Scoreboard for Badminton Players",
+  "name": "Badminton THVL Scoreboard",
+  "short_name": "BadmintonTHVL",
+  "description": "Premium Scoreboard by THVL",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F8F9FC",
-  "theme_color": "#007AFF",
+  "theme_color": "#ED1C24",
   "icons": [
     {
       "src": "icon-192.png",
