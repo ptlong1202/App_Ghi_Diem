@@ -1,7 +1,7 @@
 {
   "name": "Badminton THVL Scoreboard",
   "short_name": "BadmintonTHVL",
-  "description": "Premium Scoreboard by THVL",
+  "description": "Ứng dụng ghi điểm cầu lông chuyên nghiệp của THVL",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
