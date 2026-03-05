@@ -55,13 +55,13 @@
             padding: 0 16px 120px 16px;
         }
 
-        /* CSS MỚI: CANH GIỮA MÀN HÌNH CHỜ */
+        /* EMPTY STATE RA GIỮA MÀN HÌNH */
         .empty-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 50vh; /* Đưa nội dung ra giữa khu vực hiển thị */
+            min-height: 50vh;
             text-align: center;
             color: var(--text);
             animation: fadeIn 0.5s ease-out;
@@ -106,8 +106,8 @@
         table { width: 100%; border-collapse: collapse; }
         thead th { background: #F9F9FB; padding: 15px 8px; font-size: 10px; color: var(--gray); text-transform: uppercase; }
         
-        /* CHỈNH NHỎ CHỮ TỔNG TẠI ĐÂY */
-        .total-row td:first-child { font-size: 12px; font-weight: 800; color: var(--gray); }
+        /* CHỮ TỔNG NHỎ LẠI */
+        .total-row td:first-child { font-size: 11px; font-weight: 800; color: var(--gray); }
         .total-row td { padding: 15px 8px; font-size: 20px; font-weight: 800; color: var(--primary); text-align: center; }
         
         tbody td { padding: 14px 8px; text-align: center; font-weight: 600; border-top: 1px solid #F2F2F7; }
@@ -115,6 +115,13 @@
         .score-badge { padding: 5px 10px; border-radius: 8px; font-size: 14px; }
         .win { background: #E8F9EE; color: var(--success); }
         .lose { background: #FFF0F0; color: var(--danger); }
+
+        /* HIỆU ỨNG STREAK LỬA */
+        .streak-fire {
+            display: inline-block;
+            animation: burn 0.5s infinite alternate;
+        }
+        @keyframes burn { from { transform: scale(1); filter: drop-shadow(0 0 2px orange); } to { transform: scale(1.2); filter: drop-shadow(0 0 5px red); } }
 
         .fab {
             position: absolute; bottom: calc(env(safe-area-inset-bottom) + 20px); 
@@ -167,7 +174,7 @@
                 <div id="privacyBtn" class="privacy-pill">
                     <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
                 </div>
-                <div id="roundLabel" style="font-weight: 800; font-size: 12px; color: var(--gray);">VÁN 0</div>
+                <div id="roundLabel" style="font-weight: 800; font-size: 11px; background: #1c1c1e; color: white; padding: 4px 10px; border-radius: 8px;">VÁN 0</div>
             </div>
 
             <h2 id="tableName" style="margin-bottom: 15px; font-size: 22px;">Sân THVL</h2>
@@ -257,6 +264,22 @@
     const enterTable = (id) => { curId = id; route('pGame'); renderGame(); };
     const removeTable = (e, id) => { e.stopPropagation(); if(confirm("Xóa sân?")) { appData = appData.filter(x => x.id !== id); save(); renderLobby(); }};
 
+    // LOGIC TÍNH STREAK (LỬA)
+    const getStreaks = (history) => {
+        if (history.length === 0) return [];
+        let numPlayers = history[0].length;
+        let streaks = new Array(numPlayers).fill(0);
+        for (let i = 0; i < numPlayers; i++) {
+            let count = 0;
+            for (let j = history.length - 1; j >= 0; j--) {
+                if (history[j][i] > 0) count++;
+                else break;
+            }
+            streaks[i] = count;
+        }
+        return streaks;
+    };
+
     const renderGame = () => {
         const t = appData.find(x => x.id === curId);
         if(!t) return;
@@ -267,15 +290,18 @@
         
         let sums = new Array(t.players.length).fill(0);
         t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
+        
+        const streaks = getStreaks(t.history);
         let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
 
         document.getElementById('hTotal').innerHTML = `<td>TỔNG</td>` + sums.map((s, i) => {
-            let icon = "";
+            let badge = "";
             if(!isMasked && hasData) {
-                if(s === maxS && s > 0) icon = "👑";
-                else if(s === minS && s < 0) icon = "🐟";
+                if(streaks[i] >= 3) badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
+                else if(s === maxS && s > 0) badge = "👑";
+                else if(s === minS && s < 0) badge = "🐟";
             }
-            return `<td><div style="font-size:12px; height: 16px;">${icon}</div>${isMasked ? '•••' : s}</td>`;
+            return `<td><div style="font-size:12px; height: 16px;">${badge}</div>${isMasked ? '•••' : s}</td>`;
         }).join('');
 
         document.getElementById('hBody').innerHTML = [...t.history].reverse().map((r, i) => {
@@ -301,7 +327,7 @@
         editIdx = idx; const t = appData.find(x => x.id === curId);
         document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
             let val = (idx >= 0 && t.history[idx][i] <= 0) ? t.history[idx][i] : "";
-            return `<div><label style="font-size:12px; font-weight:700; color:gray;">${p}</label><input type="number" class="score-v" data-idx="${i}" value="${val}"></div>`;
+            return `<div><label style="font-size:12px; font-weight:700; color:gray;">${p}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" inputmode="numeric"></div>`;
         }).join('');
         document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx+1) : "Ghi điểm hiệp mới";
         document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
