@@ -24,7 +24,7 @@
         
         html, body {
             height: 100%;
-            overflow: hidden;
+            overflow: hidden; /* Ngăn toàn bộ trang bị kéo trượt lên trên */
             background: var(--bg);
         }
 
@@ -34,20 +34,23 @@
             display: flex; justify-content: center;
         }
 
+        /* Container cố định chiều cao theo iPhone */
         .app-container {
             width: 100%; max-width: 500px; 
-            height: 100dvh;
+            height: 100dvh; /* Chiều cao động chuẩn iPhone */
             display: flex; flex-direction: column;
             position: relative;
         }
 
+        /* Khoảng đệm an toàn tuyệt đối cho Tai thỏ */
         .safe-top {
             height: calc(env(safe-area-inset-top) + 10px);
-            min-height: 50px;
+            min-height: 50px; /* Đảm bảo luôn có ít nhất 50px trống ở đầu */
             background: var(--bg);
             flex-shrink: 0;
         }
 
+        /* Khu vực nội dung có thể cuộn */
         .scroll-content {
             flex-grow: 1;
             overflow-y: auto;
@@ -59,31 +62,13 @@
         .active-page { display: block; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GIAO DIỆN KHI CHƯA CÓ TRẬN ĐẤU */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text);
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+        /* NAV BAR cố định trong phần cuộn */
         .nav-bar { 
             display: flex; justify-content: space-between; align-items: center; 
             background: rgba(242, 242, 247, 0.9);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); 
             padding: 10px 0; margin-bottom: 15px;
             position: sticky; top: 0; z-index: 999;
-        }
-
-        .round-box {
-            background: #1C1C1E;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
         }
 
         .btn-glass {
@@ -109,14 +94,12 @@
         }
         .table-scroll { width: 100%; overflow-x: auto; }
         
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        thead th { background: #F9F9FB; padding: 15px 4px; font-size: 11px; color: var(--text); font-weight: 800; text-transform: uppercase; }
-        th:first-child, td:first-child { width: 50px; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { background: #F9F9FB; padding: 15px 8px; font-size: 10px; color: var(--gray); text-transform: uppercase; }
+        .total-row td { padding: 15px 8px; font-size: 20px; font-weight: 800; color: var(--primary); text-align: center; }
+        tbody td { padding: 14px 8px; text-align: center; font-weight: 600; border-top: 1px solid #F2F2F7; }
 
-        .total-row td { padding: 18px 4px; font-size: 20px; font-weight: 900; color: var(--primary); text-align: center; }
-        tbody td { padding: 14px 4px; text-align: center; font-weight: 700; border-top: 1px solid #F2F2F7; font-size: 15px; }
-
-        .score-badge { display: inline-block; min-width: 35px; padding: 5px 8px; border-radius: 8px; font-size: 14px; }
+        .score-badge { padding: 5px 10px; border-radius: 8px; font-size: 14px; }
         .win { background: #E8F9EE; color: var(--success); }
         .lose { background: #FFF0F0; color: var(--danger); }
 
@@ -130,11 +113,24 @@
             box-shadow: 0 10px 25px rgba(0,122,255,0.4); z-index: 100;
         }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; z-index: 2000; backdrop-filter: blur(8px); }
-        .modal-sheet { background: var(--card); width: 100%; max-width: 500px; margin: 0 auto; border-radius: 30px 30px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px; }
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); 
+            display: none; align-items: flex-end; z-index: 2000; backdrop-filter: blur(8px); 
+        }
+        .modal-sheet { 
+            background: var(--card); width: 100%; max-width: 500px; margin: 0 auto;
+            border-radius: 30px 30px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px; 
+        }
 
-        input { width: 100%; padding: 16px; border-radius: var(--radius-md); border: 2px solid #F2F2F7; background: #F9F9FB; font-size: 16px; margin-bottom: 15px; outline: none; }
-        .btn-main { width: 100%; padding: 18px; border-radius: var(--radius-md); border: none; background: var(--primary); color: white; font-weight: 700; font-size: 16px; }
+        input { 
+            width: 100%; padding: 16px; border-radius: var(--radius-md); border: 2px solid #F2F2F7;
+            background: #F9F9FB; font-size: 16px; margin-bottom: 15px; outline: none;
+        }
+
+        .btn-main {
+            width: 100%; padding: 18px; border-radius: var(--radius-md); border: none;
+            background: var(--primary); color: white; font-weight: 700; font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -148,9 +144,7 @@
                 <p style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 5px;">PREMIUM SCOREBOARD</p>
                 <h1 style="font-size: 26px;">🏆 Badminton Pro</h1>
             </div>
-            
             <div id="listTables"></div>
-            
             <button id="addTableBtn" class="btn-main" style="margin-top: 10px;">+ Khởi tạo sân mới</button>
         </div>
 
@@ -160,9 +154,11 @@
                 <div id="privacyBtn" class="privacy-pill">
                     <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
                 </div>
-                <div id="roundLabel" class="round-box">VÁN 0</div>
+                <div id="roundLabel" style="font-weight: 800; font-size: 12px; color: var(--gray);">VÁN 0</div>
             </div>
+
             <h2 id="tableName" style="margin-bottom: 15px; font-size: 22px;">Sân THVL</h2>
+
             <div class="table-wrapper">
                 <div class="table-scroll">
                     <table>
@@ -209,10 +205,13 @@
 
     const save = () => localStorage.setItem('pro_badminton_v10', JSON.stringify(appData));
     
+    // HÀM CHUYỂN TRANG FIX LỖI TRÔI MÀN HÌNH
     const route = (id) => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
         document.getElementById(id).classList.add('active-page');
         document.getElementById('addRoundBtn').style.display = (id === 'pGame') ? 'flex' : 'none';
+        
+        // Cực kỳ quan trọng: Luôn cuộn về đầu khi chuyển trang để fix lỗi iPhone
         document.getElementById('mainScroll').scrollTo(0,0);
         window.scrollTo(0,0);
     };
@@ -267,7 +266,7 @@
                 if(s === maxS && s > 0) icon = "👑";
                 else if(s === minS && s < 0) icon = "🐟";
             }
-            return `<td><div style="font-size:12px; height: 15px;">${icon}</div>${isMasked ? '•••' : s}</td>`;
+            return `<td><div style="font-size:12px">${icon}</div>${isMasked ? '•••' : s}</td>`;
         }).join('');
 
         document.getElementById('hBody').innerHTML = [...t.history].reverse().map((r, i) => {
@@ -293,7 +292,7 @@
         editIdx = idx; const t = appData.find(x => x.id === curId);
         document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
             let val = (idx >= 0 && t.history[idx][i] <= 0) ? t.history[idx][i] : "";
-            return `<div><label style="font-size:12px; font-weight:700; color:gray;">${p}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" inputmode="numeric"></div>`;
+            return `<div><label style="font-size:12px; font-weight:700; color:gray;">${p}</label><input type="number" class="score-v" data-idx="${i}" value="${val}"></div>`;
         }).join('');
         document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx+1) : "Ghi điểm hiệp mới";
         document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
@@ -337,14 +336,6 @@
     document.getElementById('delRound').onclick = () => { if(confirm("Xóa hiệp?")) { appData.find(x => x.id === curId).history.splice(editIdx, 1); save(); hideModals(); renderGame(); }};
     
     renderLobby();
-	// Đăng ký Service Worker để có thể cài đặt ứng dụng (PWA)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW đã đăng ký thành công!', reg))
-            .catch(err => console.log('SW đăng ký thất bại!', err));
-    });
-}
 </script>
 </body>
 </html>
