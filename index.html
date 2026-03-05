@@ -117,6 +117,8 @@
         .streak-fire {
             display: inline-block;
             animation: burn 0.5s infinite alternate;
+            color: var(--warning); /* Cập nhật màu số streak trùng màu lửa */
+            font-weight: 800;
         }
         @keyframes burn { from { transform: scale(1); filter: drop-shadow(0 0 2px orange); } to { transform: scale(1.2); filter: drop-shadow(0 0 5px red); } }
 
@@ -273,11 +275,9 @@
         document.getElementById('hTotal').innerHTML = `<td>TỔNG</td>` + sums.map((s, i) => {
             let badge = "";
             if(hasData) {
-                // Luôn hiện Streak lửa
                 if(streaks[i] >= 3) {
                     badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
                 } 
-                // Chỉ hiện Vương miện và Con cá khi KHÔNG ở chế độ ẩn
                 else if(!isMasked) {
                     if(s === maxS && s > 0) badge = "👑";
                     else if(s === minS && s < 0) badge = "🐟";
@@ -335,6 +335,13 @@
     };
 
     document.getElementById('privacyBtn').onclick = function() {
+        // Nếu đang ở trạng thái ẩn (Masked = true), yêu cầu xác nhận trước khi hiện
+        if (isMasked) {
+            if (!confirm("Moment of truth...")) {
+                return; // Nếu bấm Hủy, thoát hàm và không làm gì cả
+            }
+        }
+        
         isMasked = !isMasked;
         this.classList.toggle('privacy-active', isMasked);
         document.getElementById('pStatusIcon').innerText = isMasked ? "🔒" : "🔓";
