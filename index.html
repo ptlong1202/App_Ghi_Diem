@@ -235,26 +235,9 @@
     const renderLobby = () => {
         const list = document.getElementById('listTables');
         if (appData.length === 0) {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div style="font-size: 80px; margin-bottom: 10px;">🏸</div>
-                    <p style="font-weight: 600; line-height: 1.5;">
-                        Chưa có trận đấu nào.<br>
-                        <span style="font-weight: 400; opacity: 0.6; font-size: 14px;">Hãy tạo sân để bắt đầu ghi điểm!</span>
-                    </p>
-                </div>`;
+            list.innerHTML = `<div class="empty-state"><div style="font-size: 80px; margin-bottom: 10px;">🏸</div><p style="font-weight: 600; line-height: 1.5;">Chưa có trận đấu nào.<br><span style="font-weight: 400; opacity: 0.6; font-size: 14px;">Hãy tạo sân để bắt đầu ghi điểm!</span></p></div>`;
         } else {
-            list.innerHTML = appData.map(t => `
-                <div class="pro-card" onclick="enterTable('${t.id}')">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight:800; font-size:18px;">${t.name}</div>
-                            <div style="color:var(--gray); font-size:12px;">👤 ${t.players.length} người • 🏸 ${t.history.length} hiệp</div>
-                        </div>
-                        <div style="color:var(--danger); font-size:22px; padding:5px" onclick="removeTable(event, '${t.id}')">×</div>
-                    </div>
-                </div>
-            `).join('');
+            list.innerHTML = appData.map(t => `<div class="pro-card" onclick="enterTable('${t.id}')"><div style="display: flex; justify-content: space-between; align-items: center;"><div><div style="font-weight:800; font-size:18px;">${t.name}</div><div style="color:var(--gray); font-size:12px;">👤 ${t.players.length} người • 🏸 ${t.history.length} hiệp</div></div><div style="color:var(--danger); font-size:22px; padding:5px" onclick="removeTable(event, '${t.id}')">×</div></div></div>`).join('');
         }
     };
 
@@ -268,8 +251,7 @@
         for (let i = 0; i < numPlayers; i++) {
             let count = 0;
             for (let j = history.length - 1; j >= 0; j--) {
-                if (history[j][i] > 0) count++;
-                else break;
+                if (history[j][i] > 0) count++; else break;
             }
             streaks[i] = count;
         }
@@ -281,21 +263,25 @@
         if(!t) return;
         document.getElementById('tableName').innerText = t.name;
         document.getElementById('roundLabel').innerText = `VÁN ${t.history.length}`;
-
         document.getElementById('hHead').innerHTML = `<tr><th>Hiệp</th>` + t.players.map(p => `<th>${p}</th>`).join('') + `</tr>`;
         
         let sums = new Array(t.players.length).fill(0);
         t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
-        
         const streaks = getStreaks(t.history);
         let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
 
         document.getElementById('hTotal').innerHTML = `<td>TỔNG</td>` + sums.map((s, i) => {
             let badge = "";
-            if(!isMasked && hasData) {
-                if(streaks[i] >= 3) badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
-                else if(s === maxS && s > 0) badge = "👑";
-                else if(s === minS && s < 0) badge = "🐟";
+            if(hasData) {
+                // Luôn hiện Streak lửa
+                if(streaks[i] >= 3) {
+                    badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
+                } 
+                // Chỉ hiện Vương miện và Con cá khi KHÔNG ở chế độ ẩn
+                else if(!isMasked) {
+                    if(s === maxS && s > 0) badge = "👑";
+                    else if(s === minS && s < 0) badge = "🐟";
+                }
             }
             return `<td><div style="font-size:12px; height: 16px;">${badge}</div>${isMasked ? '•••' : s}</td>`;
         }).join('');
@@ -323,7 +309,6 @@
         editIdx = idx; const t = appData.find(x => x.id === curId);
         document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
             let val = (idx >= 0 && t.history[idx][i] <= 0) ? t.history[idx][i] : "";
-            // Gỡ bỏ inputmode="numeric" để hiện bàn phím đầy đủ
             return `<div><label style="font-size:12px; font-weight:700; color:gray;">${p}</label><input type="number" class="score-v" data-idx="${i}" value="${val}"></div>`;
         }).join('');
         document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx+1) : "Ghi điểm hiệp mới";
@@ -344,14 +329,8 @@
         });
         if(emp !== 1) return alert("Phải có duy nhất 1 người thắng (để trống)");
         scores[winI] = -scores.reduce((a, b) => a + (b || 0), 0);
-        
-        if(editIdx === -1) { 
-            t.history.push(scores); 
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 } }); 
-        } else {
-            t.history[editIdx] = scores;
-        }
-        
+        if(editIdx === -1) { t.history.push(scores); confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 } }); } 
+        else { t.history[editIdx] = scores; }
         save(); hideModals(); renderGame();
     };
 
