@@ -55,7 +55,6 @@
             padding: 0 16px 120px 16px;
         }
 
-        /* EMPTY STATE RA GIỮA MÀN HÌNH */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -106,7 +105,6 @@
         table { width: 100%; border-collapse: collapse; }
         thead th { background: #F9F9FB; padding: 15px 8px; font-size: 10px; color: var(--gray); text-transform: uppercase; }
         
-        /* CHỮ TỔNG NHỎ LẠI */
         .total-row td:first-child { font-size: 11px; font-weight: 800; color: var(--gray); }
         .total-row td { padding: 15px 8px; font-size: 20px; font-weight: 800; color: var(--primary); text-align: center; }
         
@@ -116,7 +114,6 @@
         .win { background: #E8F9EE; color: var(--success); }
         .lose { background: #FFF0F0; color: var(--danger); }
 
-        /* HIỆU ỨNG STREAK LỬA */
         .streak-fire {
             display: inline-block;
             animation: burn 0.5s infinite alternate;
@@ -264,7 +261,6 @@
     const enterTable = (id) => { curId = id; route('pGame'); renderGame(); };
     const removeTable = (e, id) => { e.stopPropagation(); if(confirm("Xóa sân?")) { appData = appData.filter(x => x.id !== id); save(); renderLobby(); }};
 
-    // LOGIC TÍNH STREAK (LỬA)
     const getStreaks = (history) => {
         if (history.length === 0) return [];
         let numPlayers = history[0].length;
@@ -323,11 +319,12 @@
         appData.push(newT); save(); renderLobby(); hideModals(); enterTable(newT.id);
     };
 
+    // FIX BÀN PHÍM TẠI ĐÂY: Dùng type="text" và inputmode="numeric"
     const openScore = (idx = -1) => {
         editIdx = idx; const t = appData.find(x => x.id === curId);
         document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
             let val = (idx >= 0 && t.history[idx][i] <= 0) ? t.history[idx][i] : "";
-            return `<div><label style="font-size:12px; font-weight:700; color:gray;">${p}</label><input type="number" class="score-v" data-idx="${i}" value="${val}" inputmode="numeric"></div>`;
+            return `<div><label style="font-size:12px; font-weight:700; color:gray;">${p}</label><input type="text" inputmode="numeric" class="score-v" data-idx="${i}" value="${val}"></div>`;
         }).join('');
         document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx+1) : "Ghi điểm hiệp mới";
         document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
