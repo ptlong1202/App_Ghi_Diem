@@ -1,12 +1,12 @@
 {
-  "name": "Badminton THVL Scoreboard",
-  "short_name": "BadmintonTHVL",
-  "description": "Ứng dụng ghi điểm cầu lông chuyên nghiệp của THVL",
+  "name": "Badminton Pro Scoreboard",
+  "short_name": "BadmintonPro",
+  "description": "Ứng dụng ghi điểm cầu lông chuyên nghiệp hỗ trợ tính toán tự động.",
   "start_url": "./index.html",
   "display": "standalone",
+  "background_color": "#F2F2F7",
+  "theme_color": "#007AFF",
   "orientation": "portrait",
-  "background_color": "#F8F9FC",
-  "theme_color": "#ED1C24",
   "icons": [
     {
       "src": "icon-192.png",
@@ -18,7 +18,7 @@
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
