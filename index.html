@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <meta name="theme-color" content="#007AFF">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,477 +11,195 @@
 
     <title>🏸 Badminton Pro Scoreboard</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
+    
     <style>
-        :root {
-            --primary: #007AFF;
-            --success: #34C759;
-            --danger: #FF3B30;
-            --warning: #FF9500;
-            --bg: #F2F2F7;
-            --card: #FFFFFF;
-            --text: #1C1C1E;
-            --gray: #8E8E93;
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        :root { 
+            --primary: #007AFF; --success: #34C759; --danger: #FF3B30; --warning: #FF9500;
+            --bg: #F2F2F7; --card: #FFFFFF; --text: #1C1C1E; --gray: #8E8E93;
+            --radius-lg: 24px; --radius-md: 16px; --shadow: 0 8px 32px rgba(0,0,0,0.05);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html,
-        body {
-            height: 100%;
-            overflow: hidden;
-            background: var(--bg);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow: hidden; background: var(--bg); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--text); display: flex; justify-content: center; }
 
         /* Container & Layout */
-        .app-container {
-            width: 100%;
-            max-width: 500px;
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .safe-top {
-            height: calc(env(safe-area-inset-top) + 10px);
-            min-height: 50px;
-            flex-shrink: 0;
-        }
-
-        .scroll-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 0 16px 120px 16px;
-        }
+        .app-container { width: 100%; max-width: 500px; height: 100dvh; display: flex; flex-direction: column; position: relative; }
+        .safe-top { height: calc(env(safe-area-inset-top) + 10px); min-height: 50px; flex-shrink: 0; }
+        .scroll-content { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 16px 120px 16px; }
 
         /* Navigation & UI */
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(242, 242, 247, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 10px 0;
-            margin-bottom: 15px;
-            position: sticky;
-            top: 0;
-            z-index: 999;
+        .nav-bar { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(242, 242, 247, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            padding: 10px 0; margin-bottom: 15px; position: sticky; top: 0; z-index: 999;
         }
-
-        .btn-glass {
-            background: var(--card);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .privacy-pill {
-            background: #E3E3E8;
-            padding: 8px 14px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .privacy-active {
-            background: #1C1C1E;
-            color: white;
-        }
+        .btn-glass { background: var(--card); border: none; width: 40px; height: 40px; border-radius: 50%; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; }
+        .privacy-pill { background: #E3E3E8; padding: 8px 14px; border-radius: 40px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .privacy-active { background: #1C1C1E; color: white; }
 
         /* Cards & Tables */
-        .pro-card {
-            background: var(--card);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .table-wrapper {
-            background: var(--card);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .table-scroll {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead th {
-            background: #F9F9FB;
-            padding: 15px 8px;
-            font-size: 10px;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .total-row td {
-            padding: 15px 8px;
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--primary);
-            text-align: center;
-            border-bottom: 2px solid #F2F2F7;
-        }
-
-        tbody td {
-            padding: 14px 8px;
-            text-align: center;
-            font-weight: 600;
-            border-top: 1px solid #F2F2F7;
-            font-size: 15px;
-        }
-
-        .score-badge {
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: inline-block;
-            min-width: 35px;
-        }
-
-        .win {
-            background: #E8F9EE;
-            color: var(--success);
-        }
-
-        .lose {
-            background: #FFF0F0;
-            color: var(--danger);
-        }
+        .pro-card { background: var(--card); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+        .table-wrapper { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden; }
+        .table-scroll { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { background: #F9F9FB; padding: 15px 8px; font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+        .total-row td { padding: 15px 8px; font-size: 22px; font-weight: 800; color: var(--primary); text-align: center; border-bottom: 2px solid #F2F2F7; }
+        tbody td { padding: 14px 8px; text-align: center; font-weight: 600; border-top: 1px solid #F2F2F7; font-size: 15px; }
+        .score-badge { padding: 5px 10px; border-radius: 8px; font-size: 14px; display: inline-block; min-width: 35px; }
+        .win { background: #E8F9EE; color: var(--success); }
+        .lose { background: #FFF0F0; color: var(--danger); }
 
         /* JACKPOT (SÂM) EFFECT */
         #jackpotOverlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 9998;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            z-index: 9998; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
         }
-
-        #jackpotOverlay.show {
-            opacity: 1;
-        }
+        #jackpotOverlay.show { opacity: 1; }
 
         #jackpotMsg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 85%;
-            max-width: 350px;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 85%; max-width: 350px;
             background: linear-gradient(135deg, #FFD700, #FF8C00, #FF4500);
-            color: white;
-            padding: 40px 20px;
-            border-radius: 35px;
-            font-size: 42px;
-            font-weight: 900;
-            text-align: center;
-            z-index: 9999;
-            border: 4px solid #FFFFFF;
+            color: white; padding: 40px 20px; border-radius: 35px;
+            font-size: 42px; font-weight: 900; text-align: center;
+            z-index: 9999; border: 4px solid #FFFFFF;
             box-shadow: 0 0 100px rgba(255, 215, 0, 0.6);
-            pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+            pointer-events: none; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.3);
         }
-
-        #jackpotMsg span {
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            display: block;
-            margin-top: 15px;
-            opacity: 0.9;
-        }
-
-        #jackpotMsg.show {
-            transform: translate(-50%, -50%) scale(1);
-            animation: pulseGlow 1.5s infinite alternate;
-        }
+        #jackpotMsg span { font-size: 16px; font-weight: 700; letter-spacing: 3px; display: block; margin-top: 15px; opacity: 0.9; }
+        #jackpotMsg.show { transform: translate(-50%, -50%) scale(1); animation: pulseGlow 1.5s infinite alternate; }
 
         @keyframes pulseGlow {
-            from {
-                box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            to {
-                box-shadow: 0 0 80px rgba(255, 140, 0, 0.8);
-                transform: translate(-50%, -50%) scale(1.05);
-            }
+            from { box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); transform: translate(-50%, -50%) scale(1); }
+            to { box-shadow: 0 0 80px rgba(255, 140, 0, 0.8); transform: translate(-50%, -50%) scale(1.05); }
         }
 
-        .shake-ani {
-            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
-        }
-
+        .shake-ani { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake {
-
-            10%,
-            90% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            20%,
-            80% {
-                transform: translate3d(2px, 0, 0);
-            }
-
-            30%,
-            50%,
-            70% {
-                transform: translate3d(-4px, 0, 0);
-            }
-
-            40%,
-            60% {
-                transform: translate3d(4px, 0, 0);
-            }
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
         /* Buttons & Forms */
         .fab {
-            position: absolute;
-            bottom: calc(env(safe-area-inset-bottom) + 20px);
-            left: 50%;
-            transform: translateX(-50%);
-            width: 68px;
-            height: 68px;
+            position: absolute; bottom: calc(env(safe-area-inset-bottom) + 20px); 
+            left: 50%; transform: translateX(-50%); width: 68px; height: 68px;
             background: linear-gradient(135deg, var(--primary), #0056b3);
-            color: white;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            border: none;
-            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.4);
-            z-index: 100;
+            color: white; border-radius: 24px; display: flex; align-items: center;
+            justify-content: center; font-size: 30px; border: none;
+            box-shadow: 0 10px 25px rgba(0,122,255,0.4); z-index: 100;
         }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; z-index: 2000; backdrop-filter: blur(8px); }
+        .modal-sheet { background: var(--card); width: 100%; max-width: 500px; margin: 0 auto; border-radius: 30px 30px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px; }
+        input { width: 100%; padding: 16px; border-radius: var(--radius-md); border: 2px solid #F2F2F7; background: #F9F9FB; font-size: 16px; margin-bottom: 12px; outline: none; }
+        .btn-main { width: 100%; padding: 18px; border-radius: var(--radius-md); border: none; background: var(--primary); color: white; font-weight: 700; font-size: 16px; }
+        .streak-fire { display: inline-block; animation: burn 0.5s infinite alternate; color: var(--warning); font-weight: 800; }
+        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.2); } }
 
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: none;
-            align-items: flex-end;
-            z-index: 2000;
-            backdrop-filter: blur(8px);
-        }
-
-        .modal-sheet {
-            background: var(--card);
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            border-radius: 30px 30px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 16px;
-            border-radius: var(--radius-md);
-            border: 2px solid #F2F2F7;
-            background: #F9F9FB;
-            font-size: 16px;
-            margin-bottom: 12px;
-            outline: none;
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 18px;
-            border-radius: var(--radius-md);
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .streak-fire {
-            display: inline-block;
-            animation: burn 0.5s infinite alternate;
-            color: var(--warning);
-            font-weight: 800;
-        }
-
-        @keyframes burn {
-            from {
-                transform: scale(1);
-            }
-
-            to {
-                transform: scale(1.2);
-            }
-        }
-
-        .page {
-            display: none;
-            animation: pageIn 0.3s ease-out;
-        }
-
-        .active-page {
-            display: block;
-        }
-
-        @keyframes pageIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .page { display: none; animation: pageIn 0.3s ease-out; }
+        .active-page { display: block; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-
 <body>
 
-    <div id="jackpotOverlay"></div>
-    <div id="jackpotMsg">
-        ♦️♥️♣️♠️ SÂM ♦️♥️♣️♠️
-        <span>BÚ ĐẪM</span>
-    </div>
+<div id="jackpotOverlay"></div>
+<div id="jackpotMsg">
+    ♦️♥️♣️♠️ 
+    SÂM ♦️♥️♣️♠️
+    <span>BÚ ĐẪM</span>
+</div>
 
-    <div class="app-container">
-        <div class="safe-top"></div>
+<div class="app-container">
+    <div class="safe-top"></div>
 
-        <div class="scroll-content" id="mainScroll">
-            <div id="pLobby" class="page active-page">
-                <div style="margin-bottom: 25px;">
-                    <p
-                        style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 5px;">
-                        PREMIUM SCOREBOARD</p>
-                    <h1 style="font-size: 28px; letter-spacing: -0.5px;">🏸 Badminton Pro</h1>
-                </div>
-                <div id="listTables"></div>
-                <button id="addTableBtn" class="btn-main" style="margin-top: 10px;">+ Khởi tạo sân mới</button>
+    <div class="scroll-content" id="mainScroll">
+        <div id="pLobby" class="page active-page">
+            <div style="margin-bottom: 25px;">
+                <p style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 5px;">PREMIUM SCOREBOARD</p>
+                <h1 style="font-size: 28px; letter-spacing: -0.5px;">🏸 Badminton Pro</h1>
             </div>
-
-            <div id="pGame" class="page">
-                <div class="nav-bar">
-                    <button id="backBtn" class="btn-glass">←</button>
-                    <div id="privacyBtn" class="privacy-pill">
-                        <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
-                    </div>
-                    <div id="roundLabel"
-                        style="font-weight: 800; font-size: 11px; background: #1c1c1e; color: white; padding: 4px 10px; border-radius: 8px;">
-                        VÁN 0</div>
-                </div>
-
-                <h2 id="tableName" style="margin-bottom: 15px; font-size: 24px;">Tên sân</h2>
-
-                <div class="table-wrapper">
-                    <div class="table-scroll">
-                        <table>
-                            <thead id="hHead"></thead>
-                            <tr id="hTotal" class="total-row"></tr>
-                            <tbody id="hBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <div id="listTables"></div>
+            <button id="addTableBtn" class="btn-main" style="margin-top: 10px;">+ Khởi tạo sân mới</button>
         </div>
 
-        <button id="addRoundBtn" class="fab" style="display:none;">+</button>
-
-        <div id="mCreate" class="modal">
-            <div class="modal-sheet">
-                <h2 style="margin-bottom: 20px;">Cài đặt sân đấu</h2>
-                <input type="text" id="inTableName" placeholder="Tên sân (VD: Sân THVL)">
-                <div id="inPlayers">
-                    <input type="text" class="p-name-in" placeholder="Tên người chơi 1">
-                    <input type="text" class="p-name-in" placeholder="Tên người chơi 2">
+        <div id="pGame" class="page">
+            <div class="nav-bar">
+                <button id="backBtn" class="btn-glass">←</button>
+                <div id="privacyBtn" class="privacy-pill">
+                    <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
                 </div>
-                <button id="addPField"
-                    style="background: none; border: none; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">+
-                    Thêm thành viên</button>
-                <button id="confirmTable" class="btn-main">Bắt đầu trận đấu</button>
-                <button class="close-m"
-                    style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Hủy
-                    bỏ</button>
+                <div id="roundLabel" style="font-weight: 800; font-size: 11px; background: #1c1c1e; color: white; padding: 4px 10px; border-radius: 8px;">VÁN 0</div>
             </div>
-        </div>
 
-        <div id="mScore" class="modal">
-            <div class="modal-sheet">
-                <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ghi điểm</h2>
-                <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Nhập số dương cho
-                    người thua. Người thắng để trống.</p>
-                <button id="saveScore" class="btn-main" style="background: var(--success);">Lưu kết quả</button>
-                <button id="delRound" class="btn-main"
-                    style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
-                <button class="close-m"
-                    style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Đóng</button>
+            <h2 id="tableName" style="margin-bottom: 15px; font-size: 24px;">Tên sân</h2>
+
+            <div class="table-wrapper">
+                <div class="table-scroll">
+                    <table>
+                        <thead id="hHead"></thead>
+                        <tr id="hTotal" class="total-row"></tr>
+                        <tbody id="hBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+    
+    <button id="addRoundBtn" class="fab" style="display:none;">+</button>
 
-    <script>
-        let appData = JSON.parse(localStorage.getItem('pro_badminton_final')) || [];
-        let curId = null, editIdx = -1, isMasked = false;
+    <div id="mCreate" class="modal">
+        <div class="modal-sheet">
+            <h2 style="margin-bottom: 20px;">Cài đặt sân đấu</h2>
+            <input type="text" id="inTableName" placeholder="Tên sân (VD: Sân THVL)">
+            <div id="inPlayers">
+                <input type="text" class="p-name-in" placeholder="Tên người chơi 1">
+                <input type="text" class="p-name-in" placeholder="Tên người chơi 2">
+            </div>
+            <button id="addPField" style="background: none; border: none; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">+ Thêm thành viên</button>
+            <button id="confirmTable" class="btn-main">Bắt đầu trận đấu</button>
+            <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Hủy bỏ</button>
+        </div>
+    </div>
 
-        const save = () => localStorage.setItem('pro_badminton_final', JSON.stringify(appData));
+    <div id="mScore" class="modal">
+        <div class="modal-sheet">
+            <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ghi điểm</h2>
+            <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
+            <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Nhập số dương cho người thua. Người thắng để trống.</p>
+            <button id="saveScore" class="btn-main" style="background: var(--success);">Lưu kết quả</button>
+            <button id="delRound" class="btn-main" style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
+            <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Đóng</button>
+        </div>
+    </div>
+</div>
 
-        const route = (id) => {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(id).classList.add('active-page');
-            document.getElementById('addRoundBtn').style.display = (id === 'pGame') ? 'flex' : 'none';
-            document.getElementById('mainScroll').scrollTo(0, 0);
-        };
+<script>
+    let appData = JSON.parse(localStorage.getItem('pro_badminton_final')) || [];
+    let curId = null, editIdx = -1, isMasked = false;
 
-        const hideModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    const save = () => localStorage.setItem('pro_badminton_final', JSON.stringify(appData));
+    
+    const route = (id) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(id).classList.add('active-page');
+        document.getElementById('addRoundBtn').style.display = (id === 'pGame') ? 'flex' : 'none';
+        document.getElementById('mainScroll').scrollTo(0,0);
+    };
 
-        const renderLobby = () => {
-            const list = document.getElementById('listTables');
-            if (appData.length === 0) {
-                list.innerHTML = `<div style="text-align:center; padding:50px 0;"><div style="font-size: 60px;">🏸</div><p style="color:gray;">Chưa có dữ liệu</p></div>`;
-            } else {
-                list.innerHTML = appData.map(t => `
+    const hideModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+
+    const renderLobby = () => {
+        const list = document.getElementById('listTables');
+        if (appData.length === 0) {
+            list.innerHTML = `<div style="text-align:center; padding:50px 0;"><div style="font-size: 60px;">🏸</div><p style="color:gray;">Chưa có dữ liệu</p></div>`;
+        } else {
+            list.innerHTML = appData.map(t => `
                 <div class="pro-card" onclick="enterTable('${t.id}')">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
@@ -493,138 +209,137 @@
                         <div style="color:var(--danger); font-size:24px; padding:10px" onclick="removeTable(event, '${t.id}')">×</div>
                     </div>
                 </div>`).join('');
+        }
+    };
+
+    const enterTable = (id) => { curId = id; route('pGame'); renderGame(); };
+    const removeTable = (e, id) => { e.stopPropagation(); if(confirm("Xóa sân này?")) { appData = appData.filter(x => x.id !== id); save(); renderLobby(); }};
+
+    const getStreaks = (history) => {
+        if (!history.length) return [];
+        let numP = history[0].length, streaks = new Array(numP).fill(0);
+        for (let i = 0; i < numP; i++) {
+            let count = 0;
+            for (let j = history.length - 1; j >= 0; j--) {
+                if (history[j][i] > 0) count++; else break;
             }
-        };
+            streaks[i] = count;
+        }
+        return streaks;
+    };
 
-        const enterTable = (id) => { curId = id; route('pGame'); renderGame(); };
-        const removeTable = (e, id) => { e.stopPropagation(); if (confirm("Xóa sân này?")) { appData = appData.filter(x => x.id !== id); save(); renderLobby(); } };
+    const renderGame = () => {
+        const t = appData.find(x => x.id === curId);
+        if(!t) return;
+        document.getElementById('tableName').innerText = t.name;
+        document.getElementById('roundLabel').innerText = `VÁN ${t.history.length}`;
+        document.getElementById('hHead').innerHTML = `<tr><th>Hiệp</th>` + t.players.map(p => `<th>${p}</th>`).join('') + `</tr>`;
+        
+        let sums = new Array(t.players.length).fill(0);
+        t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
+        const streaks = getStreaks(t.history);
+        let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
 
-        const getStreaks = (history) => {
-            if (!history.length) return [];
-            let numP = history[0].length, streaks = new Array(numP).fill(0);
-            for (let i = 0; i < numP; i++) {
-                let count = 0;
-                for (let j = history.length - 1; j >= 0; j--) {
-                    if (history[j][i] > 0) count++; else break;
+        document.getElementById('hTotal').innerHTML = `<td>TỔNG</td>` + sums.map((s, i) => {
+            let badge = "";
+            if(hasData) {
+                if(streaks[i] >= 3) badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
+                else if(!isMasked) {
+                    if(s === maxS && s > 0) badge = "👑";
+                    else if(s === minS && s < 0) badge = "🐟";
                 }
-                streaks[i] = count;
             }
-            return streaks;
-        };
+            return `<td><div style="font-size:11px; height:14px;">${badge}</div>${isMasked ? '•••' : s}</td>`;
+        }).join('');
 
-        const renderGame = () => {
-            const t = appData.find(x => x.id === curId);
-            if (!t) return;
-            document.getElementById('tableName').innerText = t.name;
-            document.getElementById('roundLabel').innerText = `VÁN ${t.history.length}`;
-            document.getElementById('hHead').innerHTML = `<tr><th>Hiệp</th>` + t.players.map(p => `<th>${p}</th>`).join('') + `</tr>`;
+        document.getElementById('hBody').innerHTML = [...t.history].reverse().map((r, i) => {
+            let idx = t.history.length - 1 - i;
+            return `<tr onclick="openScore(${idx})"><td>${idx+1}</td>${r.map(s => `<td><span class="score-badge ${s>0?'win':'lose'}">${s}</span></td>`).join('')}</tr>`;
+        }).join('');
+    };
 
-            let sums = new Array(t.players.length).fill(0);
-            t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
-            const streaks = getStreaks(t.history);
-            let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
-
-            document.getElementById('hTotal').innerHTML = `<td>TỔNG</td>` + sums.map((s, i) => {
-                let badge = "";
-                if (hasData) {
-                    if (streaks[i] >= 3) badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
-                    else if (!isMasked) {
-                        if (s === maxS && s > 0) badge = "👑";
-                        else if (s === minS && s < 0) badge = "🐟";
-                    }
-                }
-                return `<td><div style="font-size:11px; height:14px;">${badge}</div>${isMasked ? '•••' : s}</td>`;
-            }).join('');
-
-            document.getElementById('hBody').innerHTML = [...t.history].reverse().map((r, i) => {
-                let idx = t.history.length - 1 - i;
-                return `<tr onclick="openScore(${idx})"><td>${idx + 1}</td>${r.map(s => `<td><span class="score-badge ${s > 0 ? 'win' : 'lose'}">${s}</span></td>`).join('')}</tr>`;
-            }).join('');
-        };
-
-        const openScore = (idx = -1) => {
-            editIdx = idx; const t = appData.find(x => x.id === curId);
-            document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
-                let val = (idx >= 0 && t.history[idx][i] < 0) ? Math.abs(t.history[idx][i]) : "";
-                return `<div><label style="font-size:11px; font-weight:700; color:gray;">${p}</label>
+    const openScore = (idx = -1) => {
+        editIdx = idx; const t = appData.find(x => x.id === curId);
+        document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
+            let val = (idx >= 0 && t.history[idx][i] < 0) ? Math.abs(t.history[idx][i]) : "";
+            return `<div><label style="font-size:11px; font-weight:700; color:gray;">${p}</label>
                     <input type="number" inputmode="numeric" class="score-v" data-idx="${i}" value="${val}"></div>`;
-            }).join('');
-            document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx + 1) : "Ghi điểm mới";
-            document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
-            document.getElementById('mScore').style.display = 'flex';
-        };
+        }).join('');
+        document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx+1) : "Ghi điểm mới";
+        document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
+        document.getElementById('mScore').style.display = 'flex';
+    };
 
-        document.getElementById('saveScore').onclick = () => {
-            const t = appData.find(x => x.id === curId);
-            const inps = document.querySelectorAll('.score-v');
-            let scores = new Array(t.players.length).fill(null), winI = -1, emp = 0;
+    document.getElementById('saveScore').onclick = () => {
+        const t = appData.find(x => x.id === curId);
+        const inps = document.querySelectorAll('.score-v');
+        let scores = new Array(t.players.length).fill(null), winI = -1, emp = 0;
+        
+        inps.forEach(inp => {
+            let i = parseInt(inp.dataset.idx);
+            if (inp.value === "") { emp++; winI = i; } 
+            else { scores[i] = Math.abs(parseInt(inp.value)) * -1; }
+        });
 
-            inps.forEach(inp => {
-                let i = parseInt(inp.dataset.idx);
-                if (inp.value === "") { emp++; winI = i; }
-                else { scores[i] = Math.abs(parseInt(inp.value)) * -1; }
-            });
+        if(emp !== 1) return alert("Phải có duy nhất 1 người thắng (để trống điểm)");
+        
+        const winnerPoint = -scores.reduce((a, b) => a + (b || 0), 0);
+        scores[winI] = winnerPoint;
 
-            if (emp !== 1) return alert("Phải có duy nhất 1 người thắng (để trống điểm)");
+        // KIỂM TRA SÂM (JACKPOT)
+        const isJackpot = (winnerPoint === 60 && t.players.length === 4 && scores.filter(s => s === -20).length === 3);
 
-            const winnerPoint = -scores.reduce((a, b) => a + (b || 0), 0);
-            scores[winI] = winnerPoint;
+        if (isJackpot) {
+            document.body.classList.add('shake-ani');
+            setTimeout(() => document.body.classList.remove('shake-ani'), 500);
+            
+            const msg = document.getElementById('jackpotMsg');
+            const overlay = document.getElementById('jackpotOverlay');
+            msg.classList.add('show');
+            overlay.classList.add('show');
 
-            // KIỂM TRA SÂM (JACKPOT)
-            const isJackpot = (winnerPoint === 60 && t.players.length === 4 && scores.filter(s => s === -20).length === 3);
+            setTimeout(() => { msg.classList.remove('show'); overlay.classList.remove('show'); }, 3000);
 
-            if (isJackpot) {
-                document.body.classList.add('shake-ani');
-                setTimeout(() => document.body.classList.remove('shake-ani'), 500);
+            var end = Date.now() + 3000;
+            (function frame() {
+                confetti({ particleCount: 15, angle: 60, spread: 60, origin: { x: 0, y: 0.6 }, colors: ['#FFD700', '#FFA500'] });
+                confetti({ particleCount: 15, angle: 120, spread: 60, origin: { x: 1, y: 0.6 }, colors: ['#FFD700', '#FFA500'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        } else {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
+        }
 
-                const msg = document.getElementById('jackpotMsg');
-                const overlay = document.getElementById('jackpotOverlay');
-                msg.classList.add('show');
-                overlay.classList.add('show');
+        if(editIdx === -1) t.history.push(scores); else t.history[editIdx] = scores;
+        save(); hideModals(); renderGame();
+    };
 
-                setTimeout(() => { msg.classList.remove('show'); overlay.classList.remove('show'); }, 3000);
+    document.getElementById('privacyBtn').onclick = function() {
+        if (isMasked && !confirm("Hiển thị lại điểm số?")) return;
+        isMasked = !isMasked;
+        this.classList.toggle('privacy-active', isMasked);
+        document.getElementById('pStatusIcon').innerText = isMasked ? "🔒" : "🔓";
+        document.getElementById('pStatusText').innerText = isMasked ? "Đang ẩn" : "Công khai";
+        renderGame();
+    };
 
-                var end = Date.now() + 3000;
-                (function frame() {
-                    confetti({ particleCount: 15, angle: 60, spread: 60, origin: { x: 0, y: 0.6 }, colors: ['#FFD700', '#FFA500'] });
-                    confetti({ particleCount: 15, angle: 120, spread: 60, origin: { x: 1, y: 0.6 }, colors: ['#FFD700', '#FFA500'] });
-                    if (Date.now() < end) requestAnimationFrame(frame);
-                }());
-            } else {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
-            }
-
-            if (editIdx === -1) t.history.push(scores); else t.history[editIdx] = scores;
-            save(); hideModals(); renderGame();
-        };
-
-        document.getElementById('privacyBtn').onclick = function () {
-            if (isMasked && !confirm("Hiển thị lại điểm số?")) return;
-            isMasked = !isMasked;
-            this.classList.toggle('privacy-active', isMasked);
-            document.getElementById('pStatusIcon').innerText = isMasked ? "🔒" : "🔓";
-            document.getElementById('pStatusText').innerText = isMasked ? "Đang ẩn" : "Công khai";
-            renderGame();
-        };
-
-        document.getElementById('addTableBtn').onclick = () => { document.getElementById('mCreate').style.display = 'flex'; };
-        document.getElementById('addPField').onclick = () => {
-            const inp = document.createElement('input'); inp.className = 'p-name-in'; inp.placeholder = "Tên người chơi";
-            document.getElementById('inPlayers').appendChild(inp);
-        };
-        document.getElementById('confirmTable').onclick = () => {
-            const ps = [...document.querySelectorAll('.p-name-in')].map(i => i.value.trim()).filter(v => v);
-            if (ps.length < 2) return alert("Cần ít nhất 2 người");
-            const newT = { id: 't' + Date.now(), name: document.getElementById('inTableName').value || "Sân mới", players: ps, history: [] };
-            appData.push(newT); save(); renderLobby(); hideModals(); enterTable(newT.id);
-        };
-        document.getElementById('addRoundBtn').onclick = () => openScore(-1);
-        document.getElementById('backBtn').onclick = () => { route('pLobby'); renderLobby(); };
-        document.querySelectorAll('.close-m').forEach(b => b.onclick = hideModals);
-        document.getElementById('delRound').onclick = () => { if (confirm("Xóa hiệp này?")) { appData.find(x => x.id === curId).history.splice(editIdx, 1); save(); hideModals(); renderGame(); } };
-
-        renderLobby();
-    </script>
+    document.getElementById('addTableBtn').onclick = () => { document.getElementById('mCreate').style.display = 'flex'; };
+    document.getElementById('addPField').onclick = () => {
+        const inp = document.createElement('input'); inp.className = 'p-name-in'; inp.placeholder = "Tên người chơi";
+        document.getElementById('inPlayers').appendChild(inp);
+    };
+    document.getElementById('confirmTable').onclick = () => {
+        const ps = [...document.querySelectorAll('.p-name-in')].map(i => i.value.trim()).filter(v => v);
+        if(ps.length < 2) return alert("Cần ít nhất 2 người");
+        const newT = { id: 't'+Date.now(), name: document.getElementById('inTableName').value || "Sân mới", players: ps, history: [] };
+        appData.push(newT); save(); renderLobby(); hideModals(); enterTable(newT.id);
+    };
+    document.getElementById('addRoundBtn').onclick = () => openScore(-1);
+    document.getElementById('backBtn').onclick = () => { route('pLobby'); renderLobby(); };
+    document.querySelectorAll('.close-m').forEach(b => b.onclick = hideModals);
+    document.getElementById('delRound').onclick = () => { if(confirm("Xóa hiệp này?")) { appData.find(x => x.id === curId).history.splice(editIdx, 1); save(); hideModals(); renderGame(); }};
+    
+    renderLobby();
+</script>
 </body>
-
 </html>
