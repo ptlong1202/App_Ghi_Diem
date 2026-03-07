@@ -208,13 +208,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            width: 85%;
-            max-width: 350px;
+            width: auto;
+            min-width: 280px;
+            max-width: 90%;
             background: linear-gradient(135deg, #FFD700, #FF8C00, #FF4500);
             color: white;
-            padding: 40px 20px;
+            padding: 40px 30px;
             border-radius: 35px;
-            font-size: 35px;
+            font-size: 32px;
             font-weight: 900;
             text-align: center;
             z-index: 9999;
@@ -223,15 +224,16 @@
             pointer-events: none;
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+            white-space: nowrap; /* Fix icon xuống dòng */
         }
 
         #jackpotMsg span {
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 3px;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
             display: block;
             margin-top: 15px;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         #jackpotMsg.show {
@@ -427,8 +429,8 @@
     <div id="jackpotOverlay"></div>
     <div id="dragonEntity">🐉</div>
     <div id="jackpotMsg">
-        <div id="effTitle">♦️♥️♣️♠️ SÂM ♦️♥️♣️♠️</div>
-        <span id="effSub">BÚ ĐẪM</span>
+        <div id="effTitle">🔥 JUMP SMASH 🔥</div>
+        <span id="effSub">🥳 +60</span>
     </div>
 
     <div class="app-container">
@@ -642,15 +644,15 @@
 
                 // Set nội dung tương ứng
                 if (isDragon) {
-                    eTitle.innerText = "🐉RỒNG🐉";
+                    eTitle.innerText = "🐉 RỒNG 🐉";
                     eSub.innerText = "🤩 +120";
                     dragon.style.display = 'block';
                     dragon.style.animation = "dragonCircle 2.5s linear infinite";
                 } else if (isJumpSmash) {
-                    eTitle.innerText = "🔥JUMP SMASH🔥";
+                    eTitle.innerText = "🔥 JUMP SMASH 🔥";
                     eSub.innerText = "🥳 +60";
                 } else if (isTrickShot) {
-                    eTitle.innerText = "🏸TRICK SHOT🏸";
+                    eTitle.innerText = "🏸 TRICK SHOT 🏸";
                     eSub.innerText = "😎 +20";
                 }
 
