@@ -50,7 +50,6 @@
             justify-content: center;
         }
 
-        /* Container & Layout */
         .app-container {
             width: 100%;
             max-width: 500px;
@@ -73,7 +72,6 @@
             padding: 0 16px 120px 16px;
         }
 
-        /* Navigation & UI */
         .nav-bar {
             display: flex;
             justify-content: space-between;
@@ -116,7 +114,6 @@
             color: white;
         }
 
-        /* Cards & Tables */
         .pro-card {
             background: var(--card);
             border-radius: var(--radius-lg);
@@ -186,7 +183,38 @@
             color: var(--danger);
         }
 
-        /* EFFECTS SECTION */
+        /* HIỆU ỨNG ĐIỂM SỐ ĐẶC BIỆT */
+        .score-trick {
+            color: #A020F0 !important;
+            font-weight: 900 !important;
+        }
+
+        .score-jump {
+            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900 !important;
+            animation: rainbow-text 2s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes rainbow-text {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .score-dragon {
+            color: #FFD700 !important;
+            font-weight: 900 !important;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+            animation: blink-gold 0.8s ease-in-out infinite;
+        }
+
+        @keyframes blink-gold {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
         #jackpotOverlay {
             position: fixed;
             inset: 0;
@@ -199,9 +227,7 @@
             -webkit-backdrop-filter: blur(5px);
         }
 
-        #jackpotOverlay.show {
-            opacity: 1;
-        }
+        #jackpotOverlay.show { opacity: 1; }
 
         #jackpotMsg {
             position: fixed;
@@ -224,7 +250,7 @@
             pointer-events: none;
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
-            white-space: nowrap; /* Fix icon xuống dòng */
+            white-space: nowrap;
         }
 
         #jackpotMsg span {
@@ -241,7 +267,6 @@
             animation: pulseGlow 1.5s infinite alternate;
         }
 
-        /* Con rồng VIP */
         #dragonEntity {
             position: fixed;
             top: 50%;
@@ -255,75 +280,30 @@
         }
 
         @keyframes dragonCircle {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg) translateX(120px) rotate(0deg);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg) translateX(120px) rotate(-360deg);
-            }
+            0% { transform: translate(-50%, -50%) rotate(0deg) translateX(120px) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) translateX(120px) rotate(-360deg); }
         }
 
         @keyframes pulseGlow {
-            from {
-                box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            to {
-                box-shadow: 0 0 80px rgba(255, 140, 0, 0.8);
-                transform: translate(-50%, -50%) scale(1.05);
-            }
+            from { box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); transform: translate(-50%, -50%) scale(1); }
+            to { box-shadow: 0 0 80px rgba(255, 140, 0, 0.8); transform: translate(-50%, -50%) scale(1.05); }
         }
 
-        .shake-ani {
-            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
-        }
-
+        .shake-ani { animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both; }
         @keyframes shake {
-
-            10%,
-            90% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            20%,
-            80% {
-                transform: translate3d(2px, 0, 0);
-            }
-
-            30%,
-            50%,
-            70% {
-                transform: translate3d(-4px, 0, 0);
-            }
-
-            40%,
-            60% {
-                transform: translate3d(4px, 0, 0);
-            }
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* Rung cực mạnh cho rồng */
-        .ultra-shake {
-            animation: ultraShake 0.1s infinite;
-        }
-
+        .ultra-shake { animation: ultraShake 0.1s infinite; }
         @keyframes ultraShake {
-            0% {
-                transform: translate(3px, 3px);
-            }
-
-            50% {
-                transform: translate(-3px, -3px);
-            }
-
-            100% {
-                transform: translate(3px, 3px);
-            }
+            0% { transform: translate(3px, 3px); }
+            50% { transform: translate(-3px, -3px); }
+            100% { transform: translate(3px, 3px); }
         }
 
-        /* Buttons & Forms */
         .fab {
             position: absolute;
             bottom: calc(env(safe-area-inset-bottom) + 20px);
@@ -391,36 +371,11 @@
             font-weight: 800;
         }
 
-        @keyframes burn {
-            from {
-                transform: scale(1);
-            }
+        @keyframes burn { from { transform: scale(1); } to { transform: scale(1.2); } }
 
-            to {
-                transform: scale(1.2);
-            }
-        }
-
-        .page {
-            display: none;
-            animation: pageIn 0.3s ease-out;
-        }
-
-        .active-page {
-            display: block;
-        }
-
-        @keyframes pageIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .page { display: none; animation: pageIn 0.3s ease-out; }
+        .active-page { display: block; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 
@@ -439,9 +394,7 @@
         <div class="scroll-content" id="mainScroll">
             <div id="pLobby" class="page active-page">
                 <div style="margin-bottom: 25px;">
-                    <p
-                        style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 5px;">
-                        PREMIUM SCOREBOARD</p>
+                    <p style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 5px;">PREMIUM SCOREBOARD</p>
                     <h1 style="font-size: 28px; letter-spacing: -0.5px;">🏸 Badminton Pro</h1>
                 </div>
                 <div id="listTables"></div>
@@ -454,13 +407,9 @@
                     <div id="privacyBtn" class="privacy-pill">
                         <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
                     </div>
-                    <div id="roundLabel"
-                        style="font-weight: 800; font-size: 11px; background: #1c1c1e; color: white; padding: 4px 10px; border-radius: 8px;">
-                        VÁN 0</div>
+                    <div id="roundLabel" style="font-weight: 800; font-size: 11px; background: #1c1c1e; color: white; padding: 4px 10px; border-radius: 8px;">VÁN 0</div>
                 </div>
-
                 <h2 id="tableName" style="margin-bottom: 15px; font-size: 24px;">Tên sân</h2>
-
                 <div class="table-wrapper">
                     <div class="table-scroll">
                         <table>
@@ -483,13 +432,9 @@
                     <input type="text" class="p-name-in" placeholder="Tên người chơi 1">
                     <input type="text" class="p-name-in" placeholder="Tên người chơi 2">
                 </div>
-                <button id="addPField"
-                    style="background: none; border: none; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">+
-                    Thêm thành viên</button>
+                <button id="addPField" style="background: none; border: none; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">+ Thêm thành viên</button>
                 <button id="confirmTable" class="btn-main">Bắt đầu trận đấu</button>
-                <button class="close-m"
-                    style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Hủy
-                    bỏ</button>
+                <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Hủy bỏ</button>
             </div>
         </div>
 
@@ -497,13 +442,10 @@
             <div class="modal-sheet">
                 <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ghi điểm</h2>
                 <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Nhập số dương cho
-                    người thua. Người thắng để trống.</p>
+                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Nhập số dương cho người thua. Người thắng để trống.</p>
                 <button id="saveScore" class="btn-main" style="background: var(--success);">Lưu kết quả</button>
-                <button id="delRound" class="btn-main"
-                    style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
-                <button class="close-m"
-                    style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Đóng</button>
+                <button id="delRound" class="btn-main" style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
+                <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Đóng</button>
             </div>
         </div>
     </div>
@@ -583,7 +525,21 @@
 
             document.getElementById('hBody').innerHTML = [...t.history].reverse().map((r, i) => {
                 let idx = t.history.length - 1 - i;
-                return `<tr onclick="openScore(${idx})"><td>${idx + 1}</td>${r.map(s => `<td><span class="score-badge ${s > 0 ? 'win' : 'lose'}">${s}</span></td>`).join('')}</tr>`;
+                const is4 = r.length === 4;
+                const winPoint = Math.max(...r);
+
+                return `<tr onclick="openScore(${idx})">
+                    <td>${idx + 1}</td>
+                    ${r.map(s => {
+                        let effectClass = "";
+                        if (is4 && s === winPoint && s > 0) {
+                            if (s === 120 && r.filter(x => x === -40).length === 3) effectClass = "score-dragon";
+                            else if (s === 60 && r.filter(x => x === -20).length === 3) effectClass = "score-jump";
+                            else if (s === 20 && r.filter(x => x === -20).length === 1 && r.filter(x => x === 0).length === 2) effectClass = "score-trick";
+                        }
+                        return `<td><span class="score-badge ${s > 0 ? 'win' : 'lose'} ${effectClass}">${s}</span></td>`;
+                    }).join('')}
+                </tr>`;
             }).join('');
         };
 
@@ -591,9 +547,7 @@
             editIdx = idx; const t = appData.find(x => x.id === curId);
             document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
                 let val = (idx >= 0 && t.history[idx][i] < 0) ? Math.abs(t.history[idx][i]) : "";
-                // Hiển thị số 0 nếu giá trị trong lịch sử là 0
                 if (idx >= 0 && t.history[idx][i] === 0 && t.history[idx].find(s => s > 0) !== t.history[idx][i]) val = "0";
-
                 return `<div><label style="font-size:11px; font-weight:700; color:gray;">${p}</label>
                     <input type="number" inputmode="numeric" class="score-v" data-idx="${i}" value="${val}"></div>`;
             }).join('');
@@ -609,28 +563,20 @@
 
             inps.forEach(inp => {
                 let i = parseInt(inp.dataset.idx);
-                if (inp.value === "") {
-                    emp++; winI = i;
-                } else {
-                    scores[i] = Math.abs(parseInt(inp.value)) * -1;
-                    // Xử lý riêng trường hợp nhập 0 thì giữ nguyên là 0
-                    if (parseInt(inp.value) === 0) scores[i] = 0;
-                }
+                if (inp.value === "") { emp++; winI = i; } 
+                else { scores[i] = Math.abs(parseInt(inp.value)) * -1; if (parseInt(inp.value) === 0) scores[i] = 0; }
             });
 
             if (emp !== 1) return alert("Phải có duy nhất 1 người thắng (để trống điểm)");
-
             const winnerPoint = -scores.reduce((a, b) => a + (b || 0), 0);
             scores[winI] = winnerPoint;
 
-            // XÁC ĐỊNH CÁC ĐIỀU KIỆN HIỆU ỨNG (Chỉ áp dụng khi đủ 4 người)
             const is4Players = t.players.length === 4;
             const isJumpSmash = is4Players && winnerPoint === 60 && scores.filter(s => s === -20).length === 3;
             const isDragon = is4Players && winnerPoint === 120 && scores.filter(s => s === -40).length === 3;
             const isTrickShot = is4Players && winnerPoint === 20 && scores.filter(s => s === -20).length === 1 && scores.filter(s => s === 0).length === 2;
 
             if (isJumpSmash || isDragon || isTrickShot) {
-                // Rung màn hình (Dragon rung mạnh và lâu hơn)
                 const shakeClass = isDragon ? 'ultra-shake' : 'shake-ani';
                 document.body.classList.add(shakeClass);
                 setTimeout(() => document.body.classList.remove(shakeClass), isDragon ? 4000 : 500);
@@ -638,34 +584,15 @@
                 const msg = document.getElementById('jackpotMsg');
                 const overlay = document.getElementById('jackpotOverlay');
                 const dragon = document.getElementById('dragonEntity');
-
                 const eTitle = document.getElementById('effTitle');
                 const eSub = document.getElementById('effSub');
 
-                // Set nội dung tương ứng
-                if (isDragon) {
-                    eTitle.innerText = "🐉 RỒNG 🐉";
-                    eSub.innerText = "🤩 +120";
-                    dragon.style.display = 'block';
-                    dragon.style.animation = "dragonCircle 2.5s linear infinite";
-                } else if (isJumpSmash) {
-                    eTitle.innerText = "🔥 JUMP SMASH 🔥";
-                    eSub.innerText = "🥳 +60";
-                } else if (isTrickShot) {
-                    eTitle.innerText = "🏸 TRICK SHOT 🏸";
-                    eSub.innerText = "😎 +20";
-                }
+                if (isDragon) { eTitle.innerText = "🐉 RỒNG 🐉"; eSub.innerText = "🤩 +120"; dragon.style.display = 'block'; dragon.style.animation = "dragonCircle 2.5s linear infinite"; } 
+                else if (isJumpSmash) { eTitle.innerText = "🔥 JUMP SMASH 🔥"; eSub.innerText = "🥳 +60"; } 
+                else if (isTrickShot) { eTitle.innerText = "🏸 TRICK SHOT 🏸"; eSub.innerText = "😎 +20"; }
 
-                msg.classList.add('show');
-                overlay.classList.add('show');
-
-                // Tắt hiệu ứng sau 4s
-                setTimeout(() => {
-                    msg.classList.remove('show');
-                    overlay.classList.remove('show');
-                    dragon.style.display = 'none';
-                    dragon.style.animation = 'none';
-                }, 4000);
+                msg.classList.add('show'); overlay.classList.add('show');
+                setTimeout(() => { msg.classList.remove('show'); overlay.classList.remove('show'); dragon.style.display = 'none'; }, 4000);
 
                 var end = Date.now() + 4000;
                 (function frame() {
@@ -673,9 +600,7 @@
                     confetti({ particleCount: 15, angle: 120, spread: 60, origin: { x: 1, y: 0.6 }, colors: ['#FFD700', '#FFA500'] });
                     if (Date.now() < end) requestAnimationFrame(frame);
                 }());
-            } else {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
-            }
+            } else { confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } }); }
 
             if (editIdx === -1) t.history.push(scores); else t.history[editIdx] = scores;
             save(); hideModals(); renderGame();
@@ -709,5 +634,4 @@
         renderLobby();
     </script>
 </body>
-
 </html>
