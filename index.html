@@ -396,7 +396,7 @@
             for (let i = 0; i < numP; i++) {
                 let count = 0;
                 for (let j = history.length - 1; j >= 0; j--) { if (history[j][i] > 0) count++; else break; }
-                streaks[i] = count;
+                 streaks[i] = count;
             }
             return streaks;
         };
@@ -445,9 +445,9 @@
             document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
                 let val = (idx >= 0) ? t.history[idx][i] : "";
                 if (idx >= 0 && t.history[idx][i] === Math.max(...t.history[idx])) val = ""; 
-                // Thay đổi type="text" và inputmode="text" để hiện bàn phím đầy đủ (có dấu gạch ngang)
+                // Sử dụng inputmode="tel" để hiện bàn phím số kèm các ký tự đặc biệt như + và -
                 return `<div><label style="font-size:11px; font-weight:700; color:gray;">${p}</label>
-                    <input type="text" inputmode="text" class="score-v" data-idx="${i}" value="${val}"></div>`;
+                    <input type="text" inputmode="tel" class="score-v" data-idx="${i}" value="${val}"></div>`;
             }).join('');
             document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx + 1) : "Ghi điểm mới";
             document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
@@ -463,7 +463,6 @@
                 let i = parseInt(inp.dataset.idx);
                 if (inp.value === "") { emp++; winI = i; } 
                 else { 
-                    // Lấy chính xác giá trị người dùng nhập (không dùng Math.abs hay tự thêm dấu trừ)
                     scores[i] = parseInt(inp.value) || 0;
                 }
             });
