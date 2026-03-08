@@ -36,19 +36,14 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html,
-        body {
+        html, body {
             height: 100%;
             overflow: hidden;
             background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-        }
+        body { display: flex; justify-content: center; }
 
         .app-container {
             width: 100%;
@@ -59,11 +54,7 @@
             position: relative;
         }
 
-        .safe-top {
-            height: calc(env(safe-area-inset-top) + 10px);
-            min-height: 50px;
-            flex-shrink: 0;
-        }
+        .safe-top { height: calc(env(safe-area-inset-top) + 10px); min-height: 50px; flex-shrink: 0; }
 
         .scroll-content {
             flex-grow: 1;
@@ -109,10 +100,7 @@
             gap: 6px;
         }
 
-        .privacy-active {
-            background: #1C1C1E;
-            color: white;
-        }
+        .privacy-active { background: #1C1C1E; color: white; }
 
         .pro-card {
             background: var(--card);
@@ -129,15 +117,9 @@
             overflow: hidden;
         }
 
-        .table-scroll {
-            width: 100%;
-            overflow-x: auto;
-        }
+        .table-scroll { width: 100%; overflow-x: auto; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
 
         thead th {
             background: #F9F9FB;
@@ -173,32 +155,30 @@
             min-width: 35px;
         }
 
-        .win {
-            background: #E8F9EE;
-            color: var(--success);
-        }
+        .win { background: #E8F9EE; color: var(--success); }
+        .lose { background: #FFF0F0; color: var(--danger); }
 
-        .lose {
-            background: #FFF0F0;
-            color: var(--danger);
-        }
-
-        /* HIỆU ỨNG ĐIỂM SỐ ĐẶC BIỆT */
+        /* --- HIỆU ỨNG ĐIỂM SỐ ĐẶC BIỆT --- */
         .score-trick {
             color: #A020F0 !important;
             font-weight: 900 !important;
         }
 
         .score-jump {
-            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
-            -webkit-background-clip: text;
+            border: 2px solid transparent !important;
+            background: 
+                linear-gradient(var(--card), var(--card)) padding-box, 
+                linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff) border-box !important;
+            background-image: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+            -webkit-background-clip: text, border-box;
             -webkit-text-fill-color: transparent;
             font-weight: 900 !important;
-            animation: rainbow-text 2s linear infinite;
+            animation: rainbow-frame 3s linear infinite;
             display: inline-block;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
         }
 
-        @keyframes rainbow-text {
+        @keyframes rainbow-frame {
             0% { filter: hue-rotate(0deg); }
             100% { filter: hue-rotate(360deg); }
         }
@@ -215,67 +195,29 @@
             50% { opacity: 0.7; transform: scale(1.05); }
         }
 
+        /* --- OVERLAYS & ANIMATIONS --- */
         #jackpotOverlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 9998;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+            z-index: 9998; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s; backdrop-filter: blur(5px);
         }
-
         #jackpotOverlay.show { opacity: 1; }
 
         #jackpotMsg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: auto;
-            min-width: 280px;
-            max-width: 90%;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: auto; min-width: 280px; max-width: 90%;
             background: linear-gradient(135deg, #FFD700, #FF8C00, #FF4500);
-            color: white;
-            padding: 40px 30px;
-            border-radius: 35px;
-            font-size: 32px;
-            font-weight: 900;
-            text-align: center;
-            z-index: 9999;
-            border: 4px solid #FFFFFF;
-            box-shadow: 0 0 100px rgba(255, 215, 0, 0.6);
-            pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
-            white-space: nowrap;
+            color: white; padding: 40px 30px; border-radius: 35px;
+            font-size: 32px; font-weight: 900; text-align: center; z-index: 9999;
+            border: 4px solid #FFFFFF; box-shadow: 0 0 100px rgba(255, 215, 0, 0.6);
+            pointer-events: none; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); white-space: nowrap;
         }
-
-        #jackpotMsg span {
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            display: block;
-            margin-top: 15px;
-            opacity: 0.95;
-        }
-
-        #jackpotMsg.show {
-            transform: translate(-50%, -50%) scale(1);
-            animation: pulseGlow 1.5s infinite alternate;
-        }
+        #jackpotMsg.show { transform: translate(-50%, -50%) scale(1); animation: pulseGlow 1.5s infinite alternate; }
 
         #dragonEntity {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            font-size: 120px;
-            z-index: 10000;
-            pointer-events: none;
-            display: none;
-            filter: drop-shadow(0 0 30px gold);
+            position: fixed; top: 50%; left: 50%; font-size: 120px; z-index: 10000;
+            pointer-events: none; display: none; filter: drop-shadow(0 0 30px gold);
             transform: translate(-50%, -50%);
         }
 
@@ -296,7 +238,6 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-
         .ultra-shake { animation: ultraShake 0.1s infinite; }
         @keyframes ultraShake {
             0% { transform: translate(3px, 3px); }
@@ -304,73 +245,38 @@
             100% { transform: translate(3px, 3px); }
         }
 
+        /* --- UI COMPONENTS --- */
         .fab {
-            position: absolute;
-            bottom: calc(env(safe-area-inset-bottom) + 20px);
-            left: 50%;
-            transform: translateX(-50%);
-            width: 68px;
-            height: 68px;
+            position: absolute; bottom: calc(env(safe-area-inset-bottom) + 20px);
+            left: 50%; transform: translateX(-50%); width: 68px; height: 68px;
             background: linear-gradient(135deg, var(--primary), #0056b3);
-            color: white;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            border: none;
-            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.4);
-            z-index: 100;
+            color: white; border-radius: 24px; display: flex; align-items: center;
+            justify-content: center; font-size: 30px; border: none;
+            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.4); z-index: 100;
         }
 
         .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: none;
-            align-items: flex-end;
-            z-index: 2000;
-            backdrop-filter: blur(8px);
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4);
+            display: none; align-items: flex-end; z-index: 2000; backdrop-filter: blur(8px);
         }
 
         .modal-sheet {
-            background: var(--card);
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            border-radius: 30px 30px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px;
+            background: var(--card); width: 100%; max-width: 500px; margin: 0 auto;
+            border-radius: 30px 30px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px;
         }
 
         input {
-            width: 100%;
-            padding: 16px;
-            border-radius: var(--radius-md);
-            border: 2px solid #F2F2F7;
-            background: #F9F9FB;
-            font-size: 16px;
-            margin-bottom: 12px;
-            outline: none;
+            width: 100%; padding: 16px; border-radius: var(--radius-md);
+            border: 2px solid #F2F2F7; background: #F9F9FB; font-size: 16px;
+            margin-bottom: 12px; outline: none;
         }
 
         .btn-main {
-            width: 100%;
-            padding: 18px;
-            border-radius: var(--radius-md);
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
+            width: 100%; padding: 18px; border-radius: var(--radius-md); border: none;
+            background: var(--primary); color: white; font-weight: 700; font-size: 16px;
         }
 
-        .streak-fire {
-            display: inline-block;
-            animation: burn 0.5s infinite alternate;
-            color: var(--warning);
-            font-weight: 800;
-        }
-
+        .streak-fire { display: inline-block; animation: burn 0.5s infinite alternate; color: var(--warning); font-weight: 800; }
         @keyframes burn { from { transform: scale(1); } to { transform: scale(1.2); } }
 
         .page { display: none; animation: pageIn 0.3s ease-out; }
@@ -442,7 +348,7 @@
             <div class="modal-sheet">
                 <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ghi điểm</h2>
                 <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Nhập số dương cho người thua. Người thắng để trống.</p>
+                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Người thắng để trống điểm.</p>
                 <button id="saveScore" class="btn-main" style="background: var(--success);">Lưu kết quả</button>
                 <button id="delRound" class="btn-main" style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
                 <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Đóng</button>
@@ -460,7 +366,6 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
             document.getElementById('addRoundBtn').style.display = (id === 'pGame') ? 'flex' : 'none';
-            document.getElementById('mainScroll').scrollTo(0, 0);
         };
 
         const hideModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
@@ -468,14 +373,14 @@
         const renderLobby = () => {
             const list = document.getElementById('listTables');
             if (appData.length === 0) {
-                list.innerHTML = `<div style="text-align:center; padding:50px 0;"><div style="font-size: 60px;">🏸</div><p style="color:gray;">Chưa có dữ liệu</p></div>`;
+                list.innerHTML = `<div style="text-align:center; padding:50px 0;">🏸<p style="color:gray;">Chưa có dữ liệu</p></div>`;
             } else {
                 list.innerHTML = appData.map(t => `
                 <div class="pro-card" onclick="enterTable('${t.id}')">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <div style="font-weight:800; font-size:18px;">${t.name}</div>
-                            <div style="color:var(--gray); font-size:12px; margin-top:4px;">👤 ${t.players.length} người • 🏸 ${t.history.length} hiệp</div>
+                            <div style="color:var(--gray); font-size:12px;">👤 ${t.players.length} người • 🏸 ${t.history.length} hiệp</div>
                         </div>
                         <div style="color:var(--danger); font-size:24px; padding:10px" onclick="removeTable(event, '${t.id}')">×</div>
                     </div>
@@ -491,9 +396,7 @@
             let numP = history[0].length, streaks = new Array(numP).fill(0);
             for (let i = 0; i < numP; i++) {
                 let count = 0;
-                for (let j = history.length - 1; j >= 0; j--) {
-                    if (history[j][i] > 0) count++; else break;
-                }
+                for (let j = history.length - 1; j >= 0; j--) { if (history[j][i] > 0) count++; else break; }
                 streaks[i] = count;
             }
             return streaks;
@@ -513,33 +416,28 @@
 
             document.getElementById('hTotal').innerHTML = `<td>TỔNG</td>` + sums.map((s, i) => {
                 let badge = "";
-                if (hasData) {
+                if (hasData && !isMasked) {
                     if (streaks[i] >= 3) badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
-                    else if (!isMasked) {
-                        if (s === maxS && s > 0) badge = "👑";
-                        else if (s === minS && s < 0) badge = "🐟";
-                    }
+                    else if (s === maxS && s > 0) badge = "👑";
+                    else if (s === minS && s < 0) badge = "🐟";
                 }
-                return `<td><div style="font-size:11px; height:14px;">${badge}</div>${isMasked ? '•••' : s}</td>`;
+                return `<td><div style="font-size:10px; height:12px;">${badge}</div>${isMasked ? '•••' : s}</td>`;
             }).join('');
 
             document.getElementById('hBody').innerHTML = [...t.history].reverse().map((r, i) => {
                 let idx = t.history.length - 1 - i;
-                const is4 = r.length === 4;
                 const winPoint = Math.max(...r);
+                const is4 = r.length === 4;
 
-                return `<tr onclick="openScore(${idx})">
-                    <td>${idx + 1}</td>
-                    ${r.map(s => {
-                        let effectClass = "";
-                        if (is4 && s === winPoint && s > 0) {
-                            if (s === 120 && r.filter(x => x === -40).length === 3) effectClass = "score-dragon";
-                            else if (s === 60 && r.filter(x => x === -20).length === 3) effectClass = "score-jump";
-                            else if (s === 20 && r.filter(x => x === -20).length === 1 && r.filter(x => x === 0).length === 2) effectClass = "score-trick";
-                        }
-                        return `<td><span class="score-badge ${s > 0 ? 'win' : 'lose'} ${effectClass}">${s}</span></td>`;
-                    }).join('')}
-                </tr>`;
+                return `<tr onclick="openScore(${idx})"><td>${idx + 1}</td>${r.map(s => {
+                    let effectClass = "";
+                    if (is4 && s === winPoint && s > 0) {
+                        if (s === 120 && r.filter(x => x === -40).length === 3) effectClass = "score-dragon";
+                        else if (s === 60 && r.filter(x => x === -20).length === 3) effectClass = "score-jump";
+                        else if (s === 20 && r.filter(x => x === -20).length === 1 && r.filter(x => x === 0).length === 2) effectClass = "score-trick";
+                    }
+                    return `<td><span class="score-badge ${s > 0 ? 'win' : 'lose'} ${effectClass}">${s}</span></td>`;
+                }).join('')}</tr>`;
             }).join('');
         };
 
@@ -567,32 +465,35 @@
                 else { scores[i] = Math.abs(parseInt(inp.value)) * -1; if (parseInt(inp.value) === 0) scores[i] = 0; }
             });
 
-            if (emp !== 1) return alert("Phải có duy nhất 1 người thắng (để trống điểm)");
+            if (emp !== 1) return alert("Chỉ để trống 1 người thắng");
             const winnerPoint = -scores.reduce((a, b) => a + (b || 0), 0);
             scores[winI] = winnerPoint;
 
-            const is4Players = t.players.length === 4;
-            const isJumpSmash = is4Players && winnerPoint === 60 && scores.filter(s => s === -20).length === 3;
-            const isDragon = is4Players && winnerPoint === 120 && scores.filter(s => s === -40).length === 3;
-            const isTrickShot = is4Players && winnerPoint === 20 && scores.filter(s => s === -20).length === 1 && scores.filter(s => s === 0).length === 2;
+            const is4 = t.players.length === 4;
+            const isJump = is4 && winnerPoint === 60 && scores.filter(s => s === -20).length === 3;
+            const isDragon = is4 && winnerPoint === 120 && scores.filter(s => s === -40).length === 3;
+            const isTrick = is4 && winnerPoint === 20 && scores.filter(s => s === -20).length === 1 && scores.filter(s => s === 0).length === 2;
 
-            if (isJumpSmash || isDragon || isTrickShot) {
-                const shakeClass = isDragon ? 'ultra-shake' : 'shake-ani';
-                document.body.classList.add(shakeClass);
-                setTimeout(() => document.body.classList.remove(shakeClass), isDragon ? 4000 : 500);
-
+            if (isJump || isDragon || isTrick) {
+                document.body.classList.add(isDragon ? 'ultra-shake' : 'shake-ani');
                 const msg = document.getElementById('jackpotMsg');
                 const overlay = document.getElementById('jackpotOverlay');
                 const dragon = document.getElementById('dragonEntity');
-                const eTitle = document.getElementById('effTitle');
-                const eSub = document.getElementById('effSub');
-
-                if (isDragon) { eTitle.innerText = "🐉 RỒNG 🐉"; eSub.innerText = "🤩 +120"; dragon.style.display = 'block'; dragon.style.animation = "dragonCircle 2.5s linear infinite"; } 
-                else if (isJumpSmash) { eTitle.innerText = "🔥 JUMP SMASH 🔥"; eSub.innerText = "🥳 +60"; } 
-                else if (isTrickShot) { eTitle.innerText = "🏸 TRICK SHOT 🏸"; eSub.innerText = "😎 +20"; }
+                
+                if (isDragon) { 
+                    msg.children[0].innerText = "🐉 RỒNG 🐉"; msg.children[1].innerText = "🤩 +120"; 
+                    dragon.style.display = 'block'; dragon.style.animation = "dragonCircle 2.5s linear infinite";
+                } else if (isJump) {
+                    msg.children[0].innerText = "🔥 JUMP SMASH 🔥"; msg.children[1].innerText = "🥳 +60";
+                } else {
+                    msg.children[0].innerText = "🏸 TRICK SHOT 🏸"; msg.children[1].innerText = "😎 +20";
+                }
 
                 msg.classList.add('show'); overlay.classList.add('show');
-                setTimeout(() => { msg.classList.remove('show'); overlay.classList.remove('show'); dragon.style.display = 'none'; }, 4000);
+                setTimeout(() => { 
+                    msg.classList.remove('show'); overlay.classList.remove('show'); 
+                    dragon.style.display = 'none'; document.body.classList.remove('ultra-shake', 'shake-ani');
+                }, 4000);
 
                 var end = Date.now() + 4000;
                 (function frame() {
@@ -607,7 +508,6 @@
         };
 
         document.getElementById('privacyBtn').onclick = function () {
-            if (isMasked && !confirm("Hiển thị lại điểm số?")) return;
             isMasked = !isMasked;
             this.classList.toggle('privacy-active', isMasked);
             document.getElementById('pStatusIcon').innerText = isMasked ? "🔒" : "🔓";
