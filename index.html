@@ -477,14 +477,21 @@
 
             inps.forEach(inp => {
                 let i = parseInt(inp.dataset.idx);
-                if (inp.value === "") { emp++; winI = i; } 
-                else { 
+                if (inp.value === "") { 
+                    emp++; 
+                    winI = i; 
+                } else { 
+                    // Thay đổi tại đây: không dùng Math.abs để giữ nguyên dấu của người nhập
                     let rawVal = parseInt(inp.value) || 0;
-                    scores[i] = -Math.abs(rawVal);
+                    scores[i] = rawVal; 
                 }
             });
 
             if (emp !== 1) return alert("Chỉ để trống 1 người thắng");
+            
+            // Tính điểm người thắng dựa trên tổng các số âm của người thua
+            const sumLose = scores.filter(s => s !== null).reduce((a, b) => a + b, 0);
+            scores[winI] = -sumLose;
             const winnerPoint = -scores.reduce((a, b) => a + (b || 0), 0);
             scores[winI] = winnerPoint;
 
