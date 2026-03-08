@@ -425,12 +425,14 @@
             const streaks = getStreaks(t.history);
             let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
 
-            document.getElementById('hTotal').innerHTML = `<td>TỔNG</td>` + sums.map((s, i) => {
+            // Chữ TỔNG nhỏ và tinh tế hơn bằng CSS inline
+            document.getElementById('hTotal').innerHTML = `<td style="font-size: 11px; color: var(--gray); font-weight: normal; vertical-align: bottom;">TỔNG</td>` + sums.map((s, i) => {
                 let badge = "";
-                if (hasData && !isMasked) {
+                // Streak lửa vẫn hiện kể cả khi ẩn số
+                if (hasData) {
                     if (streaks[i] >= 3) badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
-                    else if (s === maxS && s > 0) badge = "👑";
-                    else if (s === minS && s < 0) badge = "🐟";
+                    else if (!isMasked && s === maxS && s > 0) badge = "👑";
+                    else if (!isMasked && s === minS && s < 0) badge = "🐟";
                 }
                 return `<td><div style="font-size:10px; height:12px;">${badge}</div>${isMasked ? '•••' : s}</td>`;
             }).join('');
@@ -498,12 +500,12 @@
                 const dragon = document.getElementById('dragonEntity');
                 
                 if (isDragon) { 
-                    msg.children[0].innerText = "🐉 RỒNG 🐉"; msg.children[1].innerText = "🤩 +120"; 
+                    msg.children[0].innerText = "🐉 RỒNG 🐉"; msg.children[1].innerText = "💀 UNSTOPPABLE"; 
                     dragon.style.display = 'block'; dragon.style.animation = "dragonCircle 2.5s linear infinite";
                 } else if (isJump) {
-                    msg.children[0].innerText = "🔥 JUMP SMASH 🔥"; msg.children[1].innerText = "🥳 +60";
+                    msg.children[0].innerText = "🔥 JUMP SMASH 🔥"; msg.children[1].innerText = "👑 DOMINATING";
                 } else {
-                    msg.children[0].innerText = "🏸 TRICK SHOT 🏸"; msg.children[1].innerText = "😎 +20";
+                    msg.children[0].innerText = "🏸 TRICK SHOT 🏸"; msg.children[1].innerText = "😏 GOTCHA!";
                 }
 
                 msg.classList.add('show'); overlay.classList.add('show');
@@ -527,7 +529,7 @@
         // Bắt sự kiện click chính xác hơn
         document.getElementById('privacyBtn').addEventListener('click', function(e) {
             e.preventDefault(); // Ngăn hành vi mặc định (nếu có)
-            if (isMasked && !confirm("Moment of truth... 🕵️‍♂️")) {
+            if (isMasked && !confirm("Bạn có chắc chắn muốn công khai điểm số không?")) {
                 return; 
             }
             isMasked = !isMasked;
