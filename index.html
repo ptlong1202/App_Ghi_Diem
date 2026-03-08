@@ -224,7 +224,7 @@
             pointer-events: none;
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
-            white-space: nowrap; /* Fix icon xuống dòng */
+            white-space: nowrap;
         }
 
         #jackpotMsg span {
@@ -241,7 +241,6 @@
             animation: pulseGlow 1.5s infinite alternate;
         }
 
-        /* Con rồng VIP */
         #dragonEntity {
             position: fixed;
             top: 50%;
@@ -255,13 +254,8 @@
         }
 
         @keyframes dragonCircle {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg) translateX(120px) rotate(0deg);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg) translateX(120px) rotate(-360deg);
-            }
+            0% { transform: translate(-50%, -50%) rotate(0deg) translateX(120px) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) translateX(120px) rotate(-360deg); }
         }
 
         @keyframes pulseGlow {
@@ -269,7 +263,6 @@
                 box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
                 transform: translate(-50%, -50%) scale(1);
             }
-
             to {
                 box-shadow: 0 0 80px rgba(255, 140, 0, 0.8);
                 transform: translate(-50%, -50%) scale(1.05);
@@ -281,49 +274,22 @@
         }
 
         @keyframes shake {
-
-            10%,
-            90% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            20%,
-            80% {
-                transform: translate3d(2px, 0, 0);
-            }
-
-            30%,
-            50%,
-            70% {
-                transform: translate3d(-4px, 0, 0);
-            }
-
-            40%,
-            60% {
-                transform: translate3d(4px, 0, 0);
-            }
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* Rung cực mạnh cho rồng */
         .ultra-shake {
             animation: ultraShake 0.1s infinite;
         }
 
         @keyframes ultraShake {
-            0% {
-                transform: translate(3px, 3px);
-            }
-
-            50% {
-                transform: translate(-3px, -3px);
-            }
-
-            100% {
-                transform: translate(3px, 3px);
-            }
+            0% { transform: translate(3px, 3px); }
+            50% { transform: translate(-3px, -3px); }
+            100% { transform: translate(3px, 3px); }
         }
 
-        /* Buttons & Forms */
         .fab {
             position: absolute;
             bottom: calc(env(safe-area-inset-bottom) + 20px);
@@ -392,13 +358,8 @@
         }
 
         @keyframes burn {
-            from {
-                transform: scale(1);
-            }
-
-            to {
-                transform: scale(1.2);
-            }
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
         }
 
         .page {
@@ -411,15 +372,8 @@
         }
 
         @keyframes pageIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -439,8 +393,7 @@
         <div class="scroll-content" id="mainScroll">
             <div id="pLobby" class="page active-page">
                 <div style="margin-bottom: 25px;">
-                    <p
-                        style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 5px;">
+                    <p style="font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 5px;">
                         PREMIUM SCOREBOARD</p>
                     <h1 style="font-size: 28px; letter-spacing: -0.5px;">🏸 Badminton Pro</h1>
                 </div>
@@ -454,8 +407,7 @@
                     <div id="privacyBtn" class="privacy-pill">
                         <span id="pStatusIcon">🔓</span> <span id="pStatusText">Công khai</span>
                     </div>
-                    <div id="roundLabel"
-                        style="font-weight: 800; font-size: 11px; background: #1c1c1e; color: white; padding: 4px 10px; border-radius: 8px;">
+                    <div id="roundLabel" style="font-weight: 800; font-size: 11px; background: #1c1c1e; color: white; padding: 4px 10px; border-radius: 8px;">
                         VÁN 0</div>
                 </div>
 
@@ -483,13 +435,9 @@
                     <input type="text" class="p-name-in" placeholder="Tên người chơi 1">
                     <input type="text" class="p-name-in" placeholder="Tên người chơi 2">
                 </div>
-                <button id="addPField"
-                    style="background: none; border: none; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">+
-                    Thêm thành viên</button>
+                <button id="addPField" style="background: none; border: none; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">+ Thêm thành viên</button>
                 <button id="confirmTable" class="btn-main">Bắt đầu trận đấu</button>
-                <button class="close-m"
-                    style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Hủy
-                    bỏ</button>
+                <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Hủy bỏ</button>
             </div>
         </div>
 
@@ -497,13 +445,10 @@
             <div class="modal-sheet">
                 <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ghi điểm</h2>
                 <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Nhập số dương cho
-                    người thua. Người thắng để trống.</p>
+                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Nhập số dương cho người thua. Người thắng để trống.</p>
                 <button id="saveScore" class="btn-main" style="background: var(--success);">Lưu kết quả</button>
-                <button id="delRound" class="btn-main"
-                    style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
-                <button class="close-m"
-                    style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Đóng</button>
+                <button id="delRound" class="btn-main" style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
+                <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px;">Đóng</button>
             </div>
         </div>
     </div>
@@ -594,7 +539,7 @@
                 if (idx >= 0 && t.history[idx][i] === 0 && t.history[idx].find(s => s > 0) !== t.history[idx][i]) val = "0";
 
                 return `<div><label style="font-size:11px; font-weight:700; color:gray;">${p}</label>
-                    <input type="text" class="score-v" data-idx="${i}" value="${val}"></div>`;
+                    <input type="text" inputmode="decimal" class="score-v" data-idx="${i}" value="${val}"></div>`;
             }).join('');
             document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx + 1) : "Ghi điểm mới";
             document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
@@ -634,7 +579,6 @@
                 const msg = document.getElementById('jackpotMsg');
                 const overlay = document.getElementById('jackpotOverlay');
                 const dragon = document.getElementById('dragonEntity');
-
                 const eTitle = document.getElementById('effTitle');
                 const eSub = document.getElementById('effSub');
 
