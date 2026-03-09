@@ -136,7 +136,10 @@
             color: var(--gray);
             text-transform: uppercase;
             letter-spacing: 1px;
+            cursor: pointer;
         }
+        
+        thead th:active { background: #ECECED; }
 
         .total-row td {
             padding: 15px 8px;
@@ -168,124 +171,52 @@
         .win { background: #E8F9EE; color: var(--success); }
         .lose { background: #FFF0F0; color: var(--danger); }
 
-        .score-trick {
-            color: #A020F0 !important;
-            font-weight: 900 !important;
-        }
+        .score-trick { color: #A020F0 !important; font-weight: 900 !important; }
 
         .score-jump {
             border: 2px solid transparent !important;
-            background: 
-                linear-gradient(var(--card), var(--card)) padding-box, 
-                linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff) border-box !important;
-            color: #ff3b30 !important;
-            font-weight: 900 !important;
-            animation: rainbow-rotate 3s linear infinite;
-            display: inline-block;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+            background: linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff) border-box !important;
+            color: #ff3b30 !important; font-weight: 900 !important; animation: rainbow-rotate 3s linear infinite; display: inline-block; box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
         }
 
-        @keyframes rainbow-rotate {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
+        @keyframes rainbow-rotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
 
         .score-dragon {
-            background: linear-gradient(135deg, #FFD700, #FFFACD, #FFD700) !important;
-            color: #000 !important;
-            border: 2px solid #B8860B !important;
-            font-weight: 900 !important;
-            box-shadow: 0 0 15px #FFD700, inset 0 0 5px #FFFFFF;
-            animation: dragon-vip 0.8s ease-in-out infinite alternate;
-            position: relative;
-            transform: scale(1.1);
+            background: linear-gradient(135deg, #FFD700, #FFFACD, #FFD700) !important; color: #000 !important; border: 2px solid #B8860B !important; font-weight: 900 !important; box-shadow: 0 0 15px #FFD700, inset 0 0 5px #FFFFFF; animation: dragon-vip 0.8s ease-in-out infinite alternate; position: relative; transform: scale(1.1);
         }
 
-        @keyframes dragon-vip {
-            from { transform: scale(1.05); box-shadow: 0 0 10px #FFD700; }
-            to { transform: scale(1.2); box-shadow: 0 0 25px #FFD700; }
-        }
+        @keyframes dragon-vip { from { transform: scale(1.05); box-shadow: 0 0 10px #FFD700; } to { transform: scale(1.2); box-shadow: 0 0 25px #FFD700; } }
 
-        #jackpotOverlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
-            z-index: 9998; opacity: 0; pointer-events: none;
-            transition: opacity 0.4s; backdrop-filter: blur(5px);
-        }
+        #jackpotOverlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.4s; backdrop-filter: blur(5px); }
         #jackpotOverlay.show { opacity: 1; }
 
         #jackpotMsg {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            width: auto; min-width: 280px; max-width: 90%;
-            background: linear-gradient(135deg, #FFD700, #FF8C00, #FF4500);
-            color: white; padding: 40px 30px; border-radius: 35px;
-            font-size: 32px; font-weight: 900; text-align: center; z-index: 9999;
-            border: 4px solid #FFFFFF; box-shadow: 0 0 100px rgba(255, 215, 0, 0.6);
-            pointer-events: none; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); white-space: nowrap;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: auto; min-width: 280px; max-width: 90%; background: linear-gradient(135deg, #FFD700, #FF8C00, #FF4500); color: white; padding: 40px 30px; border-radius: 35px; font-size: 32px; font-weight: 900; text-align: center; z-index: 9999; border: 4px solid #FFFFFF; box-shadow: 0 0 100px rgba(255, 215, 0, 0.6); pointer-events: none; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); white-space: nowrap;
         }
         #jackpotMsg.show { transform: translate(-50%, -50%) scale(1); animation: pulseGlow 1.5s infinite alternate; }
 
-        #dragonEntity {
-            position: fixed; top: 50%; left: 50%; font-size: 120px; z-index: 10000;
-            pointer-events: none; display: none; filter: drop-shadow(0 0 30px gold);
-            transform: translate(-50%, -50%);
-        }
+        #dragonEntity { position: fixed; top: 50%; left: 50%; font-size: 120px; z-index: 10000; pointer-events: none; display: none; filter: drop-shadow(0 0 30px gold); transform: translate(-50%, -50%); }
 
-        @keyframes dragonCircle {
-            0% { transform: translate(-50%, -50%) rotate(0deg) translateX(120px) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg) translateX(120px) rotate(-360deg); }
-        }
+        @keyframes dragonCircle { 0% { transform: translate(-50%, -50%) rotate(0deg) translateX(120px) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg) translateX(120px) rotate(-360deg); } }
 
-        @keyframes pulseGlow {
-            from { box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); transform: translate(-50%, -50%) scale(1); }
-            to { box-shadow: 0 0 80px rgba(255, 140, 0, 0.8); transform: translate(-50%, -50%) scale(1.05); }
-        }
+        @keyframes pulseGlow { from { box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); transform: translate(-50%, -50%) scale(1); } to { box-shadow: 0 0 80px rgba(255, 140, 0, 0.8); transform: translate(-50%, -50%) scale(1.05); } }
 
         .shake-ani { animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
         .ultra-shake { animation: ultraShake 0.1s infinite; }
-        @keyframes ultraShake {
-            0% { transform: translate(3px, 3px); }
-            50% { transform: translate(-3px, -3px); }
-            100% { transform: translate(3px, 3px); }
-        }
+        @keyframes ultraShake { 0% { transform: translate(3px, 3px); } 50% { transform: translate(-3px, -3px); } 100% { transform: translate(3px, 3px); } }
 
         .fab {
-            position: absolute; bottom: calc(env(safe-area-inset-bottom) + 20px);
-            left: 50%; transform: translateX(-50%); width: 68px; height: 68px;
-            background: linear-gradient(135deg, var(--primary), #0056b3);
-            color: white; border-radius: 24px; display: flex; align-items: center;
-            justify-content: center; font-size: 30px; border: none;
-            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.4); z-index: 100;
-            cursor: pointer;
+            position: absolute; bottom: calc(env(safe-area-inset-bottom) + 20px); left: 50%; transform: translateX(-50%); width: 68px; height: 68px; background: linear-gradient(135deg, var(--primary), #0056b3); color: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 30px; border: none; box-shadow: 0 10px 25px rgba(0, 122, 255, 0.4); z-index: 100; cursor: pointer;
         }
 
-        .modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4);
-            display: none; align-items: flex-end; z-index: 2000; backdrop-filter: blur(8px);
-        }
+        .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); display: none; align-items: flex-end; z-index: 2000; backdrop-filter: blur(8px); }
 
-        .modal-sheet {
-            background: var(--card); width: 100%; max-width: 500px; margin: 0 auto;
-            border-radius: 30px 30px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px;
-        }
+        .modal-sheet { background: var(--card); width: 100%; max-width: 500px; margin: 0 auto; border-radius: 30px 30px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom) + 30px) 20px; }
 
-        input {
-            width: 100%; padding: 16px; border-radius: var(--radius-md);
-            border: 2px solid #F2F2F7; background: #F9F9FB; font-size: 16px;
-            margin-bottom: 12px; outline: none;
-        }
+        input { width: 100%; padding: 16px; border-radius: var(--radius-md); border: 2px solid #F2F2F7; background: #F9F9FB; font-size: 16px; margin-bottom: 12px; outline: none; }
 
-        .btn-main {
-            width: 100%; padding: 18px; border-radius: var(--radius-md); border: none;
-            background: var(--primary); color: white; font-weight: 700; font-size: 16px;
-            cursor: pointer;
-        }
+        .btn-main { width: 100%; padding: 18px; border-radius: var(--radius-md); border: none; background: var(--primary); color: white; font-weight: 700; font-size: 16px; cursor: pointer; }
 
         .streak-fire { display: inline-block; animation: burn 0.5s infinite alternate; color: var(--warning); font-weight: 800; }
         @keyframes burn { from { transform: scale(1); } to { transform: scale(1.2); } }
@@ -293,6 +224,12 @@
         .page { display: none; animation: pageIn 0.3s ease-out; }
         .active-page { display: block; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Stats Style */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .stat-item { background: #F9F9FB; padding: 12px; border-radius: 12px; border: 1px solid #F2F2F7; }
+        .stat-label { font-size: 11px; color: var(--gray); margin-bottom: 4px; display: block; }
+        .stat-value { font-size: 18px; font-weight: 800; color: var(--text); }
     </style>
 </head>
 
@@ -365,6 +302,15 @@
                 <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px; cursor: pointer; padding: 10px;">Đóng</button>
             </div>
         </div>
+
+        <div id="mStats" class="modal">
+            <div class="modal-sheet">
+                <h2 id="statsPlayerName" style="text-align: center; margin-bottom: 5px;">Tên người chơi</h2>
+                <p style="text-align: center; font-size: 12px; color: var(--gray); margin-bottom: 15px;">Thống kê chi tiết cá nhân</p>
+                <div class="stats-grid" id="statsContent"></div>
+                <button class="close-m" style="width:100%; background: var(--bg); border: none; color: var(--text); margin-top: 20px; cursor: pointer; padding: 15px; border-radius: 12px; font-weight: 700;">Đóng</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -418,7 +364,7 @@
             if (!t) return;
             document.getElementById('tableName').innerText = t.name;
             document.getElementById('roundLabel').innerText = `VÁN ${t.history.length}`;
-            document.getElementById('hHead').innerHTML = `<tr><th>Hiệp</th>` + t.players.map(p => `<th>${p}</th>`).join('') + `</tr>`;
+            document.getElementById('hHead').innerHTML = `<tr><th>Hiệp</th>` + t.players.map((p, i) => `<th onclick="showPlayerStats(${i})">${p}</th>`).join('') + `</tr>`;
 
             let sums = new Array(t.players.length).fill(0);
             t.history.forEach(r => r.forEach((s, i) => sums[i] += s));
@@ -452,18 +398,59 @@
             }).join('');
         };
 
+        const showPlayerStats = (pIdx) => {
+            const t = appData.find(x => x.id === curId);
+            if (!t || t.history.length === 0) return alert("Chưa có dữ liệu hiệp đấu nào!");
+
+            let wins = 0, totalScore = 0, maxWinS = 0, maxLoseS = 0, currentWinS = 0, currentLoseS = 0;
+            let trick = 0, jump = 0, dragon = 0;
+            const is4 = t.players.length === 4;
+
+            t.history.forEach(r => {
+                const s = r[pIdx];
+                totalScore += s;
+                const winPoint = Math.max(...r);
+                
+                if (s > 0) {
+                    wins++; currentWinS++; currentLoseS = 0;
+                    if (currentWinS > maxWinS) maxWinS = currentWinS;
+                    // Check special hits
+                    if (is4 && s === winPoint) {
+                        if (s === 120 && r.filter(x => x === -40).length === 3) dragon++;
+                        else if (s === 60 && r.filter(x => x === -20).length === 3) jump++;
+                        else if (s === 20 && r.filter(x => x === -20).length === 1 && r.filter(x => x === 0).length === 2) trick++;
+                    }
+                } else if (s < 0) {
+                    currentLoseS++; currentWinS = 0;
+                    if (currentLoseS > maxLoseS) maxLoseS = currentLoseS;
+                } else {
+                    currentWinS = 0; currentLoseS = 0;
+                }
+            });
+
+            const avg = (totalScore / t.history.length).toFixed(1);
+
+            document.getElementById('statsPlayerName').innerText = t.players[pIdx];
+            document.getElementById('statsContent').innerHTML = `
+                <div class="stat-item"><span class="stat-label">Thắng</span><div class="stat-value">${wins} hiệp</div></div>
+                <div class="stat-item"><span class="stat-label">Điểm TB</span><div class="stat-value">${avg}</div></div>
+                <div class="stat-item"><span class="stat-label">Chuỗi thắng Max</span><div class="stat-value">${maxWinS}</div></div>
+                <div class="stat-item"><span class="stat-label">Chuỗi thua Max</span><div class="stat-value">${maxLoseS}</div></div>
+                <div class="stat-item"><span class="stat-label">Trick Shot</span><div class="stat-value">${trick}</div></div>
+                <div class="stat-item"><span class="stat-label">Jump Smash</span><div class="stat-value">${jump}</div></div>
+                <div class="stat-item" style="grid-column: span 2;"><span class="stat-label">Số lần Hóa Rồng</span><div class="stat-value">🐉 ${dragon}</div></div>
+            `;
+            document.getElementById('mStats').style.display = 'flex';
+        };
+
         const openScore = (idx = -1) => {
             editIdx = idx; 
             const t = appData.find(x => x.id === curId);
             document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
                 let val = "";
                 if (idx >= 0) {
-                    // Nếu là người thắng (điểm lớn nhất trong hiệp đó), để trống ô nhập
-                    if (t.history[idx][i] === Math.max(...t.history[idx])) {
-                        val = "";
-                    } else {
-                        val = t.history[idx][i]; // Hiện đúng giá trị âm/dương đã lưu
-                    }
+                    if (t.history[idx][i] === Math.max(...t.history[idx])) val = "";
+                    else val = t.history[idx][i];
                 }
                 return `<div><label style="font-size:11px; font-weight:700; color:gray;">${p}</label>
                         <input type="number" class="score-v" data-idx="${i}" value="${val}"></div>`;
@@ -481,19 +468,11 @@
 
             inps.forEach(inp => {
                 let i = parseInt(inp.dataset.idx);
-                if (inp.value === "") { 
-                    emp++; 
-                    winI = i; 
-                } else { 
-                    let val = parseInt(inp.value) || 0;
-                    scores[i] = val; // Nhập -2 là -2, 2 là 2
-                    sumOthers += val;
-                }
+                if (inp.value === "") { emp++; winI = i; } 
+                else { let val = parseInt(inp.value) || 0; scores[i] = val; sumOthers += val; }
             });
 
             if (emp !== 1) return alert("Chỉ để trống 1 người thắng");
-            
-            // Điểm người thắng là số đối của tổng các người còn lại (để tổng = 0)
             scores[winI] = -sumOthers;
             const winnerPoint = scores[winI];
 
@@ -507,7 +486,6 @@
                 const msg = document.getElementById('jackpotMsg');
                 const overlay = document.getElementById('jackpotOverlay');
                 const dragon = document.getElementById('dragonEntity');
-                
                 if (isDragon) { 
                     msg.children[0].innerText = "🐉 RỒNG 🐉"; msg.children[1].innerText = "💀 UNSTOPPABLE"; 
                     dragon.style.display = 'block'; dragon.style.animation = "dragonCircle 2.5s linear infinite";
@@ -516,13 +494,11 @@
                 } else {
                     msg.children[0].innerText = "🏸 TRICK SHOT 🏸"; msg.children[1].innerText = "😏 GOTCHA!";
                 }
-
                 msg.classList.add('show'); overlay.classList.add('show');
                 setTimeout(() => { 
                     msg.classList.remove('show'); overlay.classList.remove('show'); 
                     dragon.style.display = 'none'; document.body.classList.remove('ultra-shake', 'shake-ani');
                 }, 4000);
-
                 var end = Date.now() + 4000;
                 (function frame() {
                     confetti({ particleCount: 15, angle: 60, spread: 60, origin: { x: 0, y: 0.6 }, colors: ['#FFD700', '#FFA500'] });
