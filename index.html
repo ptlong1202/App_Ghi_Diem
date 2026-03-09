@@ -359,7 +359,7 @@
             <div class="modal-sheet">
                 <h2 id="scoreTitle" style="text-align: center; margin-bottom: 20px;">Ghi điểm</h2>
                 <div id="scoreInputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Người thắng để trống, người thua chỉ cần nhập số.</p>
+                <p style="font-size: 11px; color: var(--gray); text-align: center; margin: 15px 0;">* Người thắng để trống, người thua nhập số âm hoặc dương tùy ý.</p>
                 <button id="saveScore" class="btn-main" style="background: var(--success);">Lưu kết quả</button>
                 <button id="delRound" class="btn-main" style="background: var(--danger); display: none; margin-top: 10px;">Xóa ván đấu</button>
                 <button class="close-m" style="width:100%; background: none; border: none; color: var(--gray); margin-top: 15px; cursor: pointer; padding: 10px;">Đóng</button>
@@ -425,10 +425,8 @@
             const streaks = getStreaks(t.history);
             let maxS = Math.max(...sums), minS = Math.min(...sums), hasData = t.history.length > 0;
 
-            // Chữ TỔNG nhỏ và tinh tế hơn bằng CSS inline
             document.getElementById('hTotal').innerHTML = `<td style="font-size: 11px; color: var(--gray); font-weight: normal; vertical-align: bottom;">TỔNG</td>` + sums.map((s, i) => {
                 let badge = "";
-                // Streak lửa vẫn hiện kể cả khi ẩn số
                 if (hasData) {
                     if (streaks[i] >= 3) badge = `<span class="streak-fire">🔥${streaks[i]}</span>`;
                     else if (!isMasked && s === maxS && s > 0) badge = "👑";
@@ -455,15 +453,20 @@
         };
 
         const openScore = (idx = -1) => {
-            editIdx = idx; const t = appData.find(x => x.id === curId);
+            editIdx = idx; 
+            const t = appData.find(x => x.id === curId);
             document.getElementById('scoreInputs').innerHTML = t.players.map((p, i) => {
-                let val = (idx >= 0) ? t.history[idx][i] : "";
+                let val = "";
                 if (idx >= 0) {
-                    if (t.history[idx][i] === Math.max(...t.history[idx])) val = "";
-                    else val = Math.abs(t.history[idx][i]);
+                    // Nếu là người thắng (điểm lớn nhất trong hiệp đó), để trống ô nhập
+                    if (t.history[idx][i] === Math.max(...t.history[idx])) {
+                        val = "";
+                    } else {
+                        val = t.history[idx][i]; // Hiện đúng giá trị âm/dương đã lưu
+                    }
                 }
                 return `<div><label style="font-size:11px; font-weight:700; color:gray;">${p}</label>
-                    <input type="number" class="score-v" data-idx="${i}" value="${val}"></div>`;
+                        <input type="number" class="score-v" data-idx="${i}" value="${val}"></div>`;
             }).join('');
             document.getElementById('scoreTitle').innerText = idx >= 0 ? "Sửa hiệp " + (idx + 1) : "Ghi điểm mới";
             document.getElementById('delRound').style.display = idx >= 0 ? 'block' : 'none';
@@ -473,7 +476,8 @@
         document.getElementById('saveScore').onclick = () => {
             const t = appData.find(x => x.id === curId);
             const inps = document.querySelectorAll('.score-v');
-            let scores = new Array(t.players.length).fill(null), winI = -1, emp = 0;
+            let scores = new Array(t.players.length).fill(null);
+            let winI = -1, emp = 0, sumOthers = 0;
 
             inps.forEach(inp => {
                 let i = parseInt(inp.dataset.idx);
@@ -481,19 +485,17 @@
                     emp++; 
                     winI = i; 
                 } else { 
-                    // Thay đổi tại đây: không dùng Math.abs để giữ nguyên dấu của người nhập
-                    let rawVal = parseInt(inp.value) || 0;
-                    scores[i] = rawVal; 
+                    let val = parseInt(inp.value) || 0;
+                    scores[i] = val; // Nhập -2 là -2, 2 là 2
+                    sumOthers += val;
                 }
             });
 
             if (emp !== 1) return alert("Chỉ để trống 1 người thắng");
             
-            // Tính điểm người thắng dựa trên tổng các số âm của người thua
-            const sumLose = scores.filter(s => s !== null).reduce((a, b) => a + b, 0);
-            scores[winI] = -sumLose;
-            const winnerPoint = -scores.reduce((a, b) => a + (b || 0), 0);
-            scores[winI] = winnerPoint;
+            // Điểm người thắng là số đối của tổng các người còn lại (để tổng = 0)
+            scores[winI] = -sumOthers;
+            const winnerPoint = scores[winI];
 
             const is4 = t.players.length === 4;
             const isJump = is4 && winnerPoint === 60 && scores.filter(s => s === -20).length === 3;
@@ -533,12 +535,9 @@
             save(); hideModals(); renderGame();
         };
 
-        // Bắt sự kiện click chính xác hơn
         document.getElementById('privacyBtn').addEventListener('click', function(e) {
-            e.preventDefault(); // Ngăn hành vi mặc định (nếu có)
-            if (isMasked && !confirm("Moment of truth... 🕵️‍♂️")) {
-                return; 
-            }
+            e.preventDefault();
+            if (isMasked && !confirm("Moment of truth... 🕵️‍♂️")) return; 
             isMasked = !isMasked;
             this.classList.toggle('privacy-active', isMasked);
             document.getElementById('pStatusIcon').innerText = isMasked ? "🔒" : "🔓";
