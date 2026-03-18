@@ -171,9 +171,24 @@
         .win { background: #E8F9EE; color: var(--success); }
         .lose { background: #FFF0F0; color: var(--danger); }
 
+        /* --- TRICK SHOT & DOUBLE TRICK SHOT --- */
         .score-trick { color: #A020F0 !important; font-weight: 900 !important; border: 1.5px solid #A020F0; }
 
-        /* --- HIỆU ỨNG JUMP SMASH (SILVER BORDER + MIDNIGHT BG + CYAN TEXT) --- */
+        .score-double-trick {
+            background: linear-gradient(135deg, #A020F0, #6A0DAD) !important;
+            color: #FFFFFF !important;
+            font-weight: 900 !important;
+            border: 2px solid #00d2ff !important;
+            box-shadow: 0 0 10px rgba(160, 32, 240, 0.5), inset 0 0 5px #00d2ff;
+            animation: double-trick-pulse 1s infinite alternate;
+        }
+
+        @keyframes double-trick-pulse {
+            from { transform: scale(1); box-shadow: 0 0 10px rgba(160, 32, 240, 0.5); }
+            to { transform: scale(1.1); box-shadow: 0 0 18px rgba(0, 210, 255, 0.8); }
+        }
+
+        /* --- JUMP SMASH --- */
         .score-jump {
             border: 2px solid transparent !important;
             background: 
@@ -193,7 +208,7 @@
             100% { background-position: 200% 50%; }
         }
 
-        /* --- HIỆU ỨNG RỒNG (DRAGON VIP) --- */
+        /* --- RỒNG --- */
         .score-dragon {
             background: linear-gradient(135deg, #FFD700, #FFFACD, #FFD700) !important; 
             color: #000 !important; 
@@ -206,7 +221,7 @@
 
         @keyframes dragon-vip { from { transform: scale(1.05); box-shadow: 0 0 10px #FFD700; } to { transform: scale(1.2); box-shadow: 0 0 25px #FFD700; } }
 
-        /* --- OVERLAYS & ANIMATIONS --- */
+        /* --- OVERLAYS --- */
         #jackpotOverlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.4s; backdrop-filter: blur(5px); }
         #jackpotOverlay.show { opacity: 1; }
 
@@ -410,6 +425,7 @@
                     if (is4 && s === winPoint && s > 0) {
                         if (s === 120 && r.filter(x => x === -40).length === 3) effectClass = "score-dragon";
                         else if (s === 60 && r.filter(x => x === -20).length === 3) effectClass = "score-jump";
+                        else if (s === 40 && r.filter(x => x === -40).length === 1 && r.filter(x => x === 0).length === 2) effectClass = "score-double-trick";
                         else if (s === 20 && r.filter(x => x === -20).length === 1 && r.filter(x => x === 0).length === 2) effectClass = "score-trick";
                     }
                     return `<td><span class="score-badge ${s > 0 ? 'win' : 'lose'} ${effectClass}">${s}</span></td>`;
@@ -436,7 +452,8 @@
                     if (is4 && s === winPoint) {
                         if (s === 120 && r.filter(x => x === -40).length === 3) dragon++;
                         else if (s === 60 && r.filter(x => x === -20).length === 3) jump++;
-                        else if (s === 20 && r.filter(x => x === -20).length === 1 && r.filter(x => x === 0).length === 2) trick++;
+                        else if ((s === 20 && r.filter(x => x === -20).length === 1 && r.filter(x => x === 0).length === 2) || 
+                                 (s === 40 && r.filter(x => x === -40).length === 1 && r.filter(x => x === 0).length === 2)) trick++;
                     }
                 } else if (s < 0) {
                     currentLoseS++; currentWinS = 0;
@@ -497,9 +514,10 @@
             const is4 = t.players.length === 4;
             const isJump = is4 && winnerPoint === 60 && scores.filter(s => s === -20).length === 3;
             const isDragon = is4 && winnerPoint === 120 && scores.filter(s => s === -40).length === 3;
+            const isDoubleTrick = is4 && winnerPoint === 40 && scores.filter(s => s === -40).length === 1 && scores.filter(s => s === 0).length === 2;
             const isTrick = is4 && winnerPoint === 20 && scores.filter(s => s === -20).length === 1 && scores.filter(s => s === 0).length === 2;
 
-            if (isJump || isDragon || isTrick) {
+            if (isJump || isDragon || isTrick || isDoubleTrick) {
                 document.body.classList.add(isDragon ? 'ultra-shake' : 'shake-ani');
                 const msg = document.getElementById('jackpotMsg');
                 const overlay = document.getElementById('jackpotOverlay');
@@ -511,11 +529,15 @@
                     msg.style.color = "#1c1c1e";
                     dragonE.style.display = 'block'; dragonE.style.animation = "dragonCircle 2.5s linear infinite";
                 } else if (isJump) {
-                    msg.children[0].innerText = "⚡ JUMP SMASH ⚡"; msg.children[1].innerText = "💥 POWERFUL SHOT!";
+                    msg.children[0].innerText = "⚡ JUMP SMASH ⚡"; msg.children[1].innerText = "💥 POWERFUL SHOT";
                     msg.style.background = "linear-gradient(135deg, #141e30, #243b55)";
                     msg.style.color = "#00d2ff";
+                } else if (isDoubleTrick) {
+                    msg.children[0].innerText = "✨ DOUBLE TRICK ✨"; msg.children[1].innerText = "🔥 ABSOLUTE CINEMA!";
+                    msg.style.background = "linear-gradient(135deg, #A020F0, #00d2ff)";
+                    msg.style.color = "white";
                 } else {
-                    msg.children[0].innerText = "🏸 TRICK SHOT 🏸"; msg.children[1].innerText = "😏 GOTCHA!";
+                    msg.children[0].innerText = "🏸 TRICK SHOT 🏸"; msg.children[1].innerText = "😏 GOTCHA";
                     msg.style.background = "linear-gradient(135deg, #A020F0, #E0B0FF, #A020F0)";
                     msg.style.color = "white";
                 }
@@ -528,8 +550,9 @@
 
                 var end = Date.now() + 4000;
                 (function frame() {
-                    confetti({ particleCount: 15, angle: 60, spread: 60, origin: { x: 0, y: 0.6 }, colors: ['#00d2ff', '#C0C0C0', '#FFFFFF'] });
-                    confetti({ particleCount: 15, angle: 120, spread: 60, origin: { x: 1, y: 0.6 }, colors: ['#00d2ff', '#C0C0C0', '#FFFFFF'] });
+                    let colors = isDoubleTrick ? ['#A020F0', '#00d2ff', '#FFFFFF'] : (isDragon ? ['#FFD700', '#FFA500'] : ['#00d2ff', '#C0C0C0', '#FFFFFF']);
+                    confetti({ particleCount: 15, angle: 60, spread: 60, origin: { x: 0, y: 0.6 }, colors: colors });
+                    confetti({ particleCount: 15, angle: 120, spread: 60, origin: { x: 1, y: 0.6 }, colors: colors });
                     if (Date.now() < end) requestAnimationFrame(frame);
                 }());
             } else { confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } }); }
