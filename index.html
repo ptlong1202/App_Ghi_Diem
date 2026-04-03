@@ -450,18 +450,21 @@
             const t = appData.find(x => x.id === curId);
             if (!t || t.history.length === 0) return alert("Chưa có dữ liệu hiệp đấu nào!");
 
-            let wins = 0, totalScore = 0, maxWinS = 0, maxLoseS = 0, currentWinS = 0, currentLoseS = 0;
+            let wins = 0, losses = 0, maxWinS = 0, maxLoseS = 0, currentWinS = 0, currentLoseS = 0;
             let trick = 0, jump = 0, dragon = 0;
             const is4 = t.players.length === 4;
 
             t.history.forEach(r => {
                 const s = r[pIdx];
-                totalScore += s;
                 const winPoint = Math.max(...r);
                 
                 if (s > 0) {
-                    wins++; currentWinS++; currentLoseS = 0;
+                    wins++; 
+                    currentWinS++; 
+                    currentLoseS = 0;
                     if (currentWinS > maxWinS) maxWinS = currentWinS;
+
+                    // Logic kiểm tra các cú đánh đặc biệt (giữ nguyên từ logic ghi điểm)
                     if (is4 && s === winPoint) {
                         if (s === 120 && r.filter(x => x === -40).length === 3) dragon++;
                         else if (s === 60 && r.filter(x => x === -20).length === 3) jump++;
@@ -469,19 +472,20 @@
                                  (s === 40 && r.filter(x => x === -40).length === 1 && r.filter(x => x === 0).length === 2)) trick++;
                     }
                 } else if (s < 0) {
-                    currentLoseS++; currentWinS = 0;
+                    losses++;
+                    currentLoseS++; 
+                    currentWinS = 0;
                     if (currentLoseS > maxLoseS) maxLoseS = currentLoseS;
                 } else {
-                    currentWinS = 0; currentLoseS = 0;
+                    currentWinS = 0; 
+                    currentLoseS = 0;
                 }
             });
 
-            const avg = (totalScore / t.history.length).toFixed(1);
-
             document.getElementById('statsPlayerName').innerText = t.players[pIdx];
             document.getElementById('statsContent').innerHTML = `
-                <div class="stat-item"><span class="stat-label">Thắng</span><div class="stat-value">${wins} hiệp</div></div>
-                <div class="stat-item"><span class="stat-label">Điểm TB</span><div class="stat-value">${avg}</div></div>
+                <div class="stat-item"><span class="stat-label">Số trận Thắng</span><div class="stat-value">${wins} hiệp</div></div>
+                <div class="stat-item"><span class="stat-label">Số trận Thua</span><div class="stat-value">${losses} hiệp</div></div>
                 <div class="stat-item"><span class="stat-label">Chuỗi thắng Max</span><div class="stat-value">${maxWinS}</div></div>
                 <div class="stat-item"><span class="stat-label">Chuỗi thua Max</span><div class="stat-value">${maxLoseS}</div></div>
                 <div class="stat-item"><span class="stat-label">Trick Shot</span><div class="stat-value">${trick}</div></div>
