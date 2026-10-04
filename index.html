@@ -66,7 +66,15 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 .bak{background:rgba(255,149,0,.15);color:var(--warning);padding:12px 14px;border-radius:14px;font-size:13px;font-weight:700;margin-bottom:14px;cursor:pointer}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.btn-soft{padding:12px;border-radius:var(--rm);border:none;background:var(--card);font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
 .lrow{margin-bottom:10px}.lrow b{display:block;font-size:13px;margin-bottom:6px}
-.lrow input{width:80px;padding:8px;margin:0;font-size:14px}
+
+.num{display:flex;align-items:center;gap:4px;background:var(--soft);border:2px solid var(--line);border-radius:14px;padding:0 10px}.num:focus-within{border-color:var(--primary)}.num span{font-weight:800;font-size:18px}
+.num{cursor:pointer;min-width:84px;min-height:44px;user-select:none}.num b{font-size:18px;min-width:44px}.num b.ph{color:var(--gray);font-weight:600}
+.num.act{border-color:var(--primary);background:var(--card)}
+.num.act b::after{content:'';display:inline-block;width:2px;height:20px;background:var(--primary);margin-left:2px;vertical-align:middle;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+#numpad{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:500px;z-index:2100;grid-template-columns:repeat(4,1fr);grid-auto-rows:48px;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));background:var(--soft);border-top:1px solid var(--line)}
+.key{border:none;border-radius:12px;background:var(--card);font-size:22px;font-weight:600;color:var(--text);box-shadow:0 1px 0 rgba(0,0,0,.2);cursor:pointer}.key:active{background:var(--line)}
+.key.fn{font-size:16px}.key.go{grid-row:span 2;background:var(--primary);color:#fff;font-size:17px}
+.modal.np .sheet{margin-bottom:calc(236px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 236px - env(safe-area-inset-bottom,0px) - env(safe-area-inset-top,0px) - 20px);padding-bottom:16px}
 .sum{text-align:center;font-size:18px;margin:14px 0;min-height:24px}.hint{color:var(--gray);font-size:13px}
 .rk{display:flex;justify-content:space-between;padding:10px 4px;border-bottom:1px solid var(--line);font-weight:700}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;margin-top:6px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
@@ -78,6 +86,7 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 <body>
 <div id="jackpotOverlay"></div><div id="dragonEntity">🐉</div>
 <div id="jackpotMsg"><div id="effTitle"></div><span id="effSub"></span></div>
+<div id="numpad"></div>
 <div id="toast"></div>
 <div class="app">
 <div class="safe-top"></div>
@@ -178,7 +187,7 @@ const FX={dragon:['🐉 RỒNG 🐉','UNSTOPPABLE','linear-gradient(135deg,#FFD7
  jump:['⚡ JUMP SMASH ⚡','💥💥💥','linear-gradient(135deg,#141e30,#243b55)','#00d2ff',['#00d2ff','#C0C0C0','#FFFFFF']],
  double:['✨ DOUBLE TRICK ✨','CINEMATIC','linear-gradient(135deg,#A020F0,#00d2ff)','#fff',['#A020F0','#00d2ff','#FFFFFF']],
  trick:['🏸 TRICK SHOT 🏸','GOTCHA','linear-gradient(135deg,#A020F0,#E0B0FF,#A020F0)','#fff',['#A020F0','#E0B0FF','#FFFFFF']]};
-const PRE={normal:[[], 'Thường'],trick:[[20,0,0],'Trick'],double:[[40,0,0],'Double'],jump:[[20,20,20],'Jump'],dragon:[[40,40,40],'🐉 Rồng']};
+
 const fx=k=>{const[a,b,bg,c,cols]=FX[k],m=$('jackpotMsg'),d=$('dragonEntity'),ov=$('jackpotOverlay');
  $('effTitle').innerText=a;$('effSub').innerText=b;m.style.background=bg;m.style.color=c;
  document.body.classList.add(k==='dragon'?'ultra-shake':'shake-ani');
@@ -189,7 +198,7 @@ const fx=k=>{const[a,b,bg,c,cols]=FX[k],m=$('jackpotMsg'),d=$('dragonEntity'),ov
 
 /* ---- UI helpers ---- */
 const route=id=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));$('addRoundBtn').style.display=id==='pGame'?'block':'none'};
-const hideModals=()=>document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+const hideModals=()=>{document.querySelectorAll('.modal').forEach(m=>{m.style.display='none';m.classList.remove('np')});$('numpad').style.display='none'};
 const toast=(msg,fn)=>{const e=$('toast');e.innerHTML=`<span>${esc(msg)}</span>`+(fn?'<button id="tUndo">Hoàn tác</button>':'');e.classList.add('show');
  if(fn)$('tUndo').onclick=()=>{if(fn()!==false)e.classList.remove('show')};clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),6000)};
 const setUndo=f=>{undoFn=f;$('undoBtn').style.visibility=f?'visible':'hidden'};
@@ -217,7 +226,7 @@ const removeTable=(e,id)=>{e.stopPropagation();if(confirm('Xóa sân này?')){ap
 
 /* ---- Bảng điểm ---- */
 const renderGame=()=>{const t=cur();if(!t)return;
- $('tableName').innerText=t.name;$('roundLabel').innerText='VÁN '+t.history.length;$('todayLine').innerText='📅 Hôm nay: '+daily(t).n+' ván';
+ $('tableName').innerText=t.name;$('roundLabel').innerText='VÁN '+t.history.length;$('todayLine').innerText=isMasked?'':'📅 Hôm nay: '+daily(t).n+' ván';$('sumBtn').style.opacity=isMasked?.4:1;
  $('hHead').innerHTML='<tr><th>Hiệp</th>'+t.players.map((p,i)=>`<th onclick="showPlayerStats(${i})">${esc(p)}</th>`).join('')+'</tr>';
  const s=sums(t),st=streaks(t),mx=Math.max(...s),mn=Math.min(...s),has=t.history.length>0;
  $('hTotal').innerHTML='<tr class="total-row"><td style="font-size:11px;color:var(--gray);font-weight:400;vertical-align:bottom">TỔNG</td>'+s.map((v,i)=>{let b='';
@@ -228,15 +237,15 @@ const renderGame=()=>{const t=cur();if(!t)return;
 
 /* ---- Nhập ván thông minh ---- */
 const losersOf=t=>t.players.map((_,i)=>i).filter(i=>i!==E.win);
-const fillPen=()=>{const t=cur();if(E.pre==='normal'||E.win<0)return;losersOf(t).forEach((i,k)=>E.pen[i]=PRE[E.pre][0][k]||0)};
-const updSum=()=>{if(E.mode==='m')return $('sumBox').innerHTML=freeSum();const t=cur(),s=losersOf(t).reduce((a,i)=>a+(E.pen[i]||0),0);$('sumBox').innerHTML=E.win<0?'<span class="hint">Chọn người thắng để bắt đầu</span>':`${esc(t.players[E.win])}: <b style="color:var(--success)">+${s}</b>`};
-const setWin=i=>{E.win=i;E.pen[i]=0;fillPen();renderEntry()};
-const setPre=k=>{E.pre=k;fillPen();renderEntry()};
-const setMode=m=>{E.mode=m;E.win=-1;E.pen=E.pen.map(()=>0);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.pre='normal';renderEntry()};
-const modeChips=()=>'<div class="chips">'+[['w','🏆 1 người thắng'],['m','👥 Tự do (nhiều thắng/thua)']].map(([k,v])=>`<button class="chip sm ${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
+
+const updSum=()=>{syncNp();if(E.mode==='m')return $('sumBox').innerHTML=freeSum();const t=cur(),s=losersOf(t).reduce((a,i)=>a+(E.pen[i]||0),0);$('sumBox').innerHTML=E.win<0?'<span class="hint">Chọn người thắng để bắt đầu</span>':`${esc(t.players[E.win])}: <b style="color:var(--success)">+${s}</b>`};
+const setWin=i=>{E.win=i;E.pen[i]=0;E.buf='';E.act=losersOf(cur())[0];renderEntry()};
+
+const setMode=m=>{E.mode=m;E.win=-1;E.pen=E.pen.map(()=>0);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.act=-1;E.buf='';renderEntry()};
+const modeChips=()=>'<div class="chips">'+[['w','🏆 1 người thắng'],['m','👥 Tự do']].map(([k,v])=>`<button class="chip sm ${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
 /* Chế độ tự do: mỗi người 1 vai trò (Thắng/Thua/—) + số điểm; để trống 1 ô để app tự cân bằng */
-const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;renderEntry()};
-const setAmt=(i,v,quiet)=>{E.amt[i]=v;quiet?updSum():renderEntry()};
+const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;E.buf='';E.act=E.role[i]==='n'?-1:i;renderEntry()};
+const setAmt=(i,v)=>{E.amt[i]=v;E.buf='';if(E.act>=0)E.act=i;renderEntry()};
 const setAll=v=>{E.amt=E.amt.map((a,i)=>E.role[i]==='n'?null:v);renderEntry()};
 const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w'?(E.amt[i]||0):E.role[i]==='l'?-(E.amt[i]||0):0),
  bl=idx.filter(i=>E.role[i]!=='n'&&E.amt[i]==null);
@@ -246,25 +255,40 @@ const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w
 const freeSum=()=>{const t=cur(),m=mScores(t),parts=t.players.map((p,i)=>m.sc[i]?`${esc(p)} <b style="color:var(--${m.sc[i]>0?'success':'danger'})">${fmt(m.sc[i])}</b>`:'').filter(Boolean);
  return(parts.join(' · ')||'<span class="hint">Chọn vai trò cho từng người</span>')+(parts.length?(m.ok?' ✓':` <span style="color:var(--warning)">⚠️ lệch ${fmt(m.net)}</span>`):'')};
 const renderFree=()=>{const t=cur(),L=lv(t).filter(v=>v>0);
- $('scoreInputs').innerHTML=modeChips()+'<p class="hint" style="margin-top:10px">Chọn vai trò từng người. Tổng điểm thắng phải bằng tổng điểm thua; để trống 1 ô điểm, app sẽ tự tính.</p>'
+ $('scoreInputs').innerHTML=modeChips()+'<p class="hint" style="margin-top:10px">Chọn vai trò từng người. Tổng điểm thắng phải bằng tổng điểm thua; để trống 1 ô (bấm C để xoá), app sẽ tự tính.</p>'
  +'<div class="lbl">Cùng mức cho mọi người</div><div class="chips">'+L.map(v=>`<button class="chip sm" onclick="setAll(${v})">${v}</button>`).join('')+'</div>'
  +'<div class="lbl">Từng người</div>'
  +t.players.map((p,i)=>{const k=E.role[i];return`<div class="lrow"><b>${esc(p)}</b><div class="chips">`
   +[['w','Thắng'],['l','Thua'],['n','—']].map(([x,y])=>`<button class="chip sm ${k===x?'on':''}" onclick="setRole(${i},'${x}')">${y}</button>`).join('')
-  +(k==='n'?'':L.map(v=>`<button class="chip sm ${E.amt[i]===v?'on':''}" onclick="setAmt(${i},${v})">${v}</button>`).join('')+`<input type="number" min="0" inputmode="numeric" placeholder="tự động" value="${E.amt[i]==null||L.includes(E.amt[i])?'':E.amt[i]}" oninput="setAmt(${i},this.value===''?null:Math.abs(+this.value),1)">`)
+  +(k==='n'?'':`<div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--${k==='w'?'success':'danger'})">${k==='w'?'+':'−'}</span><b class="${E.amt[i]==null?'ph':''}">${E.amt[i]==null?'tự tính':E.amt[i]}</b></div>`+L.map(v=>`<button class="chip sm ${E.amt[i]===v?'on':''}" onclick="setAmt(${i},${v})">${v}</button>`).join(''))
   +'</div></div>'}).join('');
  updSum()};
-const setPen=(i,v,quiet)=>{E.pen[i]=v;quiet?updSum():renderEntry()};
+const setPen=(i,v)=>{E.pen[i]=v;E.buf='';if(E.act>=0)E.act=i;renderEntry()};
+/* ---- Bàn phím số riêng ---- */
+const syncNp=()=>{const on=E.act>=0;$('mScore').classList.toggle('np',on);$('numpad').style.display=on?'grid':'none';
+ if(on)requestAnimationFrame(()=>{const a=document.querySelector('.num.act');a&&a.scrollIntoView({block:'nearest'})})};
+const fieldList=()=>E.mode==='m'?cur().players.map((_,i)=>i).filter(i=>E.role[i]!=='n'):losersOf(cur());
+const actField=i=>{E.act=i;E.buf='';renderEntry()};
+const nextField=()=>{const l=fieldList(),k=l.indexOf(E.act);E.act=k>=0&&k<l.length-1?l[k+1]:-1;E.buf='';renderEntry()};
+const curVal=()=>E.mode==='m'?E.amt[E.act]:E.pen[E.act];
+const putVal=v=>{if(E.mode==='m')E.amt[E.act]=v;else E.pen[E.act]=v||0};
+const key=k=>{if(k==='N')return nextField();if(k==='X'){E.act=-1;return renderEntry()}if(E.act<0)return;let b=E.buf;
+ if(k==='C')b='';
+ else if(k==='B'){if(b===''&&curVal())b=String(curVal());b=b.slice(0,-1)}
+ else if(k==='00'&&(b===''||b==='0'))return;
+ else b=(b+k).replace(/^0+(?=\d)/,'').slice(0,4);
+ E.buf=b;putVal(b===''?(E.mode==='m'?null:0):+b);renderEntry()};
+$('numpad').innerHTML=[['1'],['2'],['3'],['⌫','B','fn'],['4'],['5'],['6'],['Tiếp ›','N','go'],['7'],['8'],['9'],['C','C','fn'],['0'],['00'],['Xong','X','fn']].map(([l,k,c])=>`<button class="key ${c||''}" onclick="key('${k||l}')">${l}</button>`).join('');
 const renderEntry=()=>{const t=cur(),L=lv(t);
- if(E.mode==='m')return renderFree();$('scoreInputs').innerHTML=`${modeChips()}<div class="lbl">1 · Ai thắng?</div><div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')}</div>`
- +(t.players.length===4?`<div class="lbl">Kiểu ván (tuỳ chọn)</div><div class="chips">${Object.entries(PRE).map(([k,v])=>`<button class="chip sm ${E.pre===k?'on':''}" onclick="setPre('${k}')">${v[1]}</button>`).join('')}</div>`:'')
- +'<div class="lbl">2 · Điểm thua của từng người</div>'
- +(E.win<0?'<p class="hint">Hãy chọn ở bước 1 trước</p>':losersOf(t).map(i=>`<div class="lrow"><b>${esc(t.players[i])}</b><div class="chips">${L.map(v=>`<button class="chip sm ${E.pen[i]===v?'on':''}" onclick="setPen(${i},${v})">${v?'-'+v:'0'}</button>`).join('')}<input type="number" min="0" inputmode="numeric" placeholder="khác" value="${L.includes(E.pen[i]||0)?'':E.pen[i]}" oninput="setPen(${i},Math.abs(+this.value||0),1)"></div></div>`).join(''));
+ if(E.mode==='m')return renderFree();$('scoreInputs').innerHTML=`${modeChips()}<div class="lbl">1 · Winners</div><div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')}</div>`
+ 
+ +'<div class="lbl">2 · Losers</div>'
+ +(E.win<0?'<p class="hint">Hãy chọn ở bước 1 trước</p>':losersOf(t).map(i=>`<div class="lrow"><b>${esc(t.players[i])}</b><div class="chips"><div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--danger)">−</span><b class="${E.pen[i]?'':'ph'}">${E.pen[i]||'0'}</b></div>${L.map(v=>`<button class="chip sm ${E.pen[i]===v?'on':''}" onclick="setPen(${i},${v})">${v?'-'+v:'0'}</button>`).join('')}</div></div>`).join(''));
  updSum()};
 const loadRow=r=>{const P=r.filter(x=>x>0).length;E.mode=P>1?'m':'w';
  if(E.mode==='m'){E.role=r.map(s=>s>0?'w':s<0?'l':'n');E.amt=r.map(s=>Math.abs(s));E.win=-1;E.pen=r.map(()=>0)}
  else{E.win=r.indexOf(Math.max(...r));E.pen=r.map((s,i)=>i===E.win?0:Math.abs(s))}};
-const openScore=(idx=-1)=>{const t=cur();editIdx=idx;E={win:-1,pen:new Array(t.players.length).fill(0),pre:'normal',mode:'w',role:new Array(t.players.length).fill('n'),amt:new Array(t.players.length).fill(null)};
+const openScore=(idx=-1)=>{const t=cur();editIdx=idx;E={win:-1,pen:new Array(t.players.length).fill(0),mode:'w',act:-1,buf:'',role:new Array(t.players.length).fill('n'),amt:new Array(t.players.length).fill(null)};
  if(idx>=0)loadRow(t.history[idx]);
  $('scoreTitle').innerText=idx>=0?'Sửa hiệp '+(idx+1):'Ghi điểm mới';
  $('delRound').style.display=idx>=0?'block':'none';
@@ -281,7 +305,7 @@ $('saveScore').onclick=()=>{const t=cur();if(E.mode!=='m'&&E.win<0)return toast(
 $('delRound').onclick=()=>{if(confirm('Xóa hiệp này?')){const ei=editIdx;hideModals();mutate(`Đã xóa ván ${ei+1}`,t=>{t.history.splice(ei,1);t.ts.splice(ei,1)})}};
 
 /* ---- Thống kê, biểu đồ, chia sẻ ---- */
-const showPlayerStats=pi=>{const t=cur();if(!t.history.length)return toast('Chưa có dữ liệu hiệp đấu');
+const showPlayerStats=pi=>{if(isMasked)return toast('🔒 Đang ẩn điểm. Chuyển sang Công khai để xem thống kê');const t=cur();if(!t.history.length)return toast('Chưa có dữ liệu hiệp đấu');
  const s=stats(t,pi),it=(l,v,sp)=>`<div class="stat" ${sp?'style="grid-column:span 2"':''}><small>${l}</small><b>${v}</b></div>`;
  $('statsTitle').innerText=t.players[pi];
  $('statsContent').innerHTML=`<div class="grid2">${it('Thắng',s.w+' hiệp')}${it('Thua',s.l+' hiệp')}${it('Chuỗi thắng max',s.mw)}${it('Chuỗi thua max',s.ml)}${it('Trick Shot',s.sp.trick+s.sp.double)}${it('Jump Smash',s.sp.jump)}${it('Số lần Hóa Rồng','🐉 '+s.sp.dragon,1)}</div>`;
@@ -289,11 +313,11 @@ const showPlayerStats=pi=>{const t=cur();if(!t.history.length)return toast('Chư
 const chart=t=>{const n=t.history.length;if(!n)return'';
  const cum=t.players.map((_,i)=>{let a=0;return[0,...t.history.map(r=>a+=r[i])]}),all=cum.flat(),mn=Math.min(...all),mx=Math.max(...all),W=300,H=150,P=8,rg=(mx-mn)||1;
  const X=k=>P+k*(W-2*P)/n,Y=v=>H-P-(v-mn)*(H-2*P)/rg;
- return`<div class="lbl">Diễn biến điểm tích luỹ</div><svg viewBox="0 0 ${W} ${H}" style="width:100%"><line x1="${P}" x2="${W-P}" y1="${Y(0)}" y2="${Y(0)}" stroke="#8E8E93" stroke-dasharray="3" opacity=".6"/>`
+ return`<div class="lbl">BIỂU ĐỒ</div><svg viewBox="0 0 ${W} ${H}" style="width:100%"><line x1="${P}" x2="${W-P}" y1="${Y(0)}" y2="${Y(0)}" stroke="#8E8E93" stroke-dasharray="3" opacity=".6"/>`
  +cum.map((c,i)=>`<polyline fill="none" stroke="${COL[i%6]}" stroke-width="2.5" stroke-linejoin="round" points="${c.map((v,k)=>X(k)+','+Y(v)).join(' ')}"/>`).join('')
  +'</svg><div class="legend">'+t.players.map((p,i)=>`<span><i style="background:${COL[i%6]}"></i>${esc(p)}</span>`).join('')+'</div>'};
 const medal=i=>['🥇','🥈','🥉'][i]||(i+1)+'.';
-$('sumBtn').onclick=()=>{const t=cur();$('statsTitle').innerText='Tổng kết · '+t.name;
+$('sumBtn').onclick=()=>{if(isMasked)return toast('🔒 Đang ẩn điểm. Chuyển sang Công khai để xem thống kê');const t=cur();$('statsTitle').innerText='Tổng kết · '+t.name;
  $('statsContent').innerHTML=rank(t).map((r,i)=>`<div class="rk"><span>${medal(i)} ${esc(r.p)}</span><span style="color:${r.s>=0?'var(--success)':'var(--danger)'}">${r.s>0?'+':''}${r.s}</span></div>`).join('')+dailyHtml(t)+chart(t)
  +'<div class="grid2"><button class="btn-main" onclick="shareText()">📋 Gửi văn bản</button><button class="btn-main" onclick="shareImg()">🖼 Gửi ảnh</button></div>';
  $('mStats').style.display='flex'};
