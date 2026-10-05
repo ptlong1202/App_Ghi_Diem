@@ -2,17 +2,23 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#007AFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BadmintonPro">
+<script>try{var _t=localStorage.getItem('pro_badminton_theme')||'auto';document.documentElement.dataset.theme=(_t==='dark'||(_t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))?'dark':'light'}catch(e){}</script>
 <title>🏸 Badminton Pro Scoreboard</title>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
-:root{--primary:#007AFF;--success:#34C759;--danger:#FF3B30;--warning:#FF9500;--bg:#F2F2F7;--card:#fff;--soft:#F9F9FB;--line:#F2F2F7;--text:#1C1C1E;--gray:#8E8E93;--rl:24px;--rm:16px;--shadow:0 8px 32px rgba(0,0,0,.05)}
-@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1C1C1E;--soft:#2C2C2E;--line:#2C2C2E;--text:#F2F2F7;--shadow:none}}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--primary:#007AFF;--success:#34C759;--danger:#FF3B30;--warning:#FF9500;--bg:#F2F2F7;--card:#fff;--soft:#F9F9FB;--line:#F2F2F7;--text:#1C1C1E;--gray:#8E8E93;--ac:#007AFF;--rlbg:#1C1C1E;--rlfg:#fff;--rl:24px;--rm:16px;--shadow:0 8px 32px rgba(0,0,0,.05)}
+:root[data-theme="dark"]{--bg:#000;--card:#1C1C1E;--soft:#2C2C2E;--line:#3A3A3C;--text:#fff;--gray:#B4B4BC;--primary:#0A84FF;--ac:#64B5FF;--success:#32D74B;--danger:#FF6B61;--warning:#FFB340;--rlbg:#F2F2F7;--rlfg:#1C1C1E;--shadow:none;color-scheme:dark}
+:root[data-theme="dark"] .win{background:rgba(50,215,75,.22)}
+:root[data-theme="dark"] .lose{background:rgba(255,107,97,.2)}
+:root[data-theme="dark"] .score-trick{color:#E3AEFF!important;border-color:#E3AEFF}
+:root[data-theme="dark"] #toast{background:#3A3A3C}
+.rl{font-weight:800;font-size:11px;background:var(--rlbg);color:var(--rlfg);padding:4px 10px;border-radius:8px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 body{display:flex;justify-content:center}
 button{font-family:inherit;color:inherit}
@@ -22,13 +28,13 @@ button{font-family:inherit;color:inherit}
 .nav{display:flex;justify-content:space-between;align-items:center;gap:8px;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:10px 0;margin-bottom:12px;position:sticky;top:0;z-index:99}
 .btn-glass{background:var(--card);border:none;width:40px;height:40px;border-radius:50%;box-shadow:var(--shadow);font-size:16px;cursor:pointer}
 .pill{background:var(--soft);padding:8px 14px;border-radius:40px;font-size:13px;font-weight:700;border:none;cursor:pointer}
-.pill.on{background:#1C1C1E;color:#fff}
+.pill.on{background:var(--rlbg);color:var(--rlfg)}
 .pro-card{background:var(--card);border-radius:var(--rl);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);cursor:pointer}
 .tw{background:var(--card);border-radius:var(--rl);box-shadow:var(--shadow);overflow:hidden}
 .ts{width:100%;overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 thead th{background:var(--soft);padding:15px 8px;font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;cursor:pointer}
-.total-row td{padding:12px 8px;font-size:22px;font-weight:800;color:var(--primary);text-align:center;border-bottom:2px solid var(--line)}
+.total-row td{padding:12px 8px;font-size:22px;font-weight:800;color:var(--ac);text-align:center;border-bottom:2px solid var(--line)}
 tbody td{padding:14px 8px;text-align:center;font-weight:600;border-top:1px solid var(--line);font-size:15px}
 tbody tr{cursor:pointer}
 .badge{padding:5px 10px;border-radius:8px;font-size:14px;display:inline-block;min-width:35px}
@@ -72,7 +78,7 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 .num.act{border-color:var(--primary);background:var(--card)}
 .num.act b::after{content:'';display:inline-block;width:2px;height:20px;background:var(--primary);margin-left:2px;vertical-align:middle;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
 #numpad{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:500px;z-index:2100;grid-template-columns:repeat(4,1fr);grid-auto-rows:48px;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));background:var(--soft);border-top:1px solid var(--line)}
-.key{border:none;border-radius:12px;background:var(--card);font-size:22px;font-weight:600;color:var(--text);box-shadow:0 1px 0 rgba(0,0,0,.2);cursor:pointer}.key:active{background:var(--line)}
+.key{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;border:none;border-radius:12px;background:var(--card);font-size:22px;font-weight:600;color:var(--text);box-shadow:0 1px 0 rgba(0,0,0,.2);cursor:pointer}.key:active{background:var(--line)}
 .key.fn{font-size:16px}.key.go{grid-row:span 2;background:var(--primary);color:#fff;font-size:17px}
 .modal.np .sheet{margin-bottom:calc(236px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 236px - env(safe-area-inset-bottom,0px) - env(safe-area-inset-top,0px) - 20px);padding-bottom:16px}
 .sum{text-align:center;font-size:18px;margin:14px 0;min-height:24px}.hint{color:var(--gray);font-size:13px}
@@ -92,8 +98,8 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 <div class="safe-top"></div>
 <div class="scroll">
   <div id="pLobby" class="page active">
-    <p style="font-size:10px;font-weight:800;color:var(--primary);letter-spacing:1.5px;margin-bottom:5px">PREMIUM SCOREBOARD</p>
-    <h1 style="font-size:28px;margin-bottom:22px">🏸 Badminton Pro</h1>
+    <p style="font-size:10px;font-weight:800;color:var(--ac);letter-spacing:1.5px;margin-bottom:5px">PREMIUM SCOREBOARD</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px"><h1 style="font-size:28px">🏸 Badminton Pro</h1><button class="btn-glass" id="setBtn" title="Cài đặt">⚙️</button></div>
     <div id="bakBanner"></div><div id="listTables"></div>
     <button id="addTableBtn" class="btn-main">+ Khởi tạo sân mới</button>
     <div class="row2"><button class="btn-soft" id="expBtn">⬇️ Xuất backup</button><button class="btn-soft" id="impBtn">⬆️ Nhập backup</button></div>
@@ -110,7 +116,7 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <h2 id="tableName" style="font-size:24px"></h2>
-      <span id="roundLabel" style="font-weight:800;font-size:11px;background:#1c1c1e;color:#fff;padding:4px 10px;border-radius:8px"></span>
+      <span id="roundLabel" class="rl"></span>
     </div>
     <p id="todayLine" style="font-size:12px;color:var(--gray);margin:-6px 0 12px"></p><div class="tw"><div class="ts"><table><thead id="hHead"></thead><tbody id="hTotal"></tbody><tbody id="hBody"></tbody></table></div></div>
   </div>
@@ -121,7 +127,7 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
   <h2 style="margin-bottom:16px">Cài đặt sân đấu</h2>
   <input id="inTableName" placeholder="Tên sân (VD: Sân THVL)">
   <div id="inPlayers"></div>
-  <button id="addPField" style="background:none;border:none;color:var(--primary);font-weight:700;margin-bottom:12px;cursor:pointer">+ Thêm thành viên</button>
+  <button id="addPField" style="background:none;border:none;color:var(--ac);font-weight:700;margin-bottom:12px;cursor:pointer">+ Thêm thành viên</button>
   <input id="inLevels" placeholder="Mức thua nhanh, VD: 0,20,40" inputmode="numeric">
   <button id="confirmTable" class="btn-main">Bắt đầu trận đấu</button>
   <button class="btn-ghost close-m">Hủy bỏ</button>
@@ -137,6 +143,16 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
   <button class="btn-ghost close-m">Đóng</button>
 </div></div>
 
+<div id="mSet" class="modal"><div class="sheet">
+  <h2 style="margin-bottom:14px">⚙️ Cài đặt</h2>
+  <div class="lbl" style="margin-top:0">Giao diện</div>
+  <div class="chips" id="themeChips"></div>
+  <div id="setTable" style="display:none">
+    <div class="lbl">Sân đang chơi</div>
+    <button class="btn-soft" id="lvBtn" style="width:100%;text-align:left;background:var(--soft)"></button>
+  </div>
+  <button class="btn-ghost close-m">Đóng</button>
+</div></div>
 <div id="mSync" class="modal"><div class="sheet">
   <h2 style="margin-bottom:6px">☁️ Đồng bộ GitHub Gist</h2>
   <p class="hint" style="margin-bottom:12px">Tạo token (classic) chỉ cần quyền <b>gist</b> tại github.com/settings/tokens. Dữ liệu nằm trong một Gist riêng tư của bạn. Máy khác: nhập cùng token và Gist ID (ô bên dưới tự điền sau lần đồng bộ đầu tiên).</p>
@@ -211,7 +227,7 @@ const fmt=v=>(v>0?'+':'')+v;
 const isToday=ts=>!!ts&&new Date(ts).toDateString()===new Date().toDateString();
 const daily=t=>{const rows=t.history.filter((_,i)=>isToday(t.ts[i]));return{n:rows.length,s:t.players.map((_,i)=>rows.reduce((a,r)=>a+r[i],0))}};
 const dailyHtml=t=>{const d=daily(t),tot=sums(t);if(!d.n)return'<div class="lbl">Hôm nay</div><p class="hint">Chưa có ván nào hôm nay</p>';
- return`<div class="lbl">Hôm nay · ${d.n} ván</div><table class="mini"><tr><th></th><th>Hôm nay</th><th>Điểm gốc</th><th>Tổng</th></tr>`+t.players.map((p,i)=>`<tr><td>${esc(p)}</td><td style="color:var(--${d.s[i]>=0?'success':'danger'})">${fmt(d.s[i])}</td><td>${fmt(tot[i]-d.s[i])}</td><td><b>${fmt(tot[i])}</b></td></tr>`).join('')+'</table>'};
+ return`<div class="lbl">Hôm nay · ${d.n} ván</div><table class="mini"><tr><th></th><th>Hôm nay</th><th>Trước đó</th><th>Tổng</th></tr>`+t.players.map((p,i)=>`<tr><td>${esc(p)}</td><td style="color:var(--${d.s[i]>=0?'success':'danger'})">${fmt(d.s[i])}</td><td>${fmt(tot[i]-d.s[i])}</td><td><b>${fmt(tot[i])}</b></td></tr>`).join('')+'</table>'};
 const rank=t=>{const s=sums(t);return t.players.map((p,i)=>({p,s:s[i]})).sort((a,b)=>b.s-a.s)};
 const streaks=t=>t.players.map((_,i)=>{let c=0;for(let j=t.history.length-1;j>=0&&t.history[j][i]>0;j--)c++;return c});
 const stats=(t,pi)=>{let w=0,l=0,mw=0,ml=0,cw=0,cl=0;const sp={dragon:0,jump:0,trick:0,double:0};
@@ -278,7 +294,7 @@ const key=k=>{if(k==='N')return nextField();if(k==='X'){E.act=-1;return renderEn
  E.buf=b;putVal(b===''?(E.mode==='m'?null:0):+b);renderEntry()};
 $('numpad').innerHTML=[['1'],['2'],['3'],['⌫','B','fn'],['4'],['5'],['6'],['Tiếp ›','N','go'],['7'],['8'],['9'],['C','C','fn'],['0'],['00'],['Xong','X','fn']].map(([l,k,c])=>`<button class="key ${c||''}" onclick="key('${k||l}')">${l}</button>`).join('');
 const renderEntry=()=>{const t=cur(),L=lv(t);
- if(E.mode==='m')return renderFree();$('scoreInputs').innerHTML=`${modeChips()}<div class="lbl">1 · Winners</div><div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')}</div>`
+ if(E.mode==='m')return renderFree();$('scoreInputs').innerHTML=`${modeChips()}<div class="lbl">1 · Wunners</div><div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')}</div>`
  
  +'<div class="lbl">2 · Losers</div>'
  +(E.win<0?'<p class="hint">Hãy chọn ở bước 1 trước</p>':losersOf(t).map(i=>`<div class="lrow"><b>${esc(t.players[i])}</b><div class="chips"><div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--danger)">−</span><b class="${E.pen[i]?'':'ph'}">${E.pen[i]||'0'}</b></div>${L.map(v=>`<button class="chip sm ${E.pen[i]===v?'on':''}" onclick="setPen(${i},${v})">${v?'-'+v:'0'}</button>`).join('')}</div></div>`).join(''));
@@ -333,7 +349,19 @@ const shareImg=()=>{const t=cur(),rk=rank(t),H=200+rk.length*84,c=document.creat
 
 /* ---- Sự kiện chung ---- */
 $('privacyBtn').onclick=function(){if(isMasked&&!confirm('Moment of truth... 🕵️‍♂️'))return;isMasked=!isMasked;this.classList.toggle('on',isMasked);this.innerText=isMasked?'🔒 Đang ẩn':'🔓 Công khai';renderGame()};
-$('cfgBtn').onclick=()=>{const t=cur(),v=prompt('Mức điểm thua nhanh (cách nhau bằng dấu phẩy)',lv(t).join(','));if(v!==null){t.levels=parseLv(v);t.mod=Date.now();save();toast('Đã cập nhật mức thua nhanh')}};
+/* ---- Cài đặt: giao diện sáng/tối + mức thua nhanh ---- */
+const THEME_KEY='pro_badminton_theme';
+let themeMode='auto';try{themeMode=localStorage.getItem(THEME_KEY)||'auto'}catch(e){}
+const applyTheme=()=>{const dark=themeMode==='dark'||(themeMode==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);
+ document.documentElement.dataset.theme=dark?'dark':'light';const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dark?'#000000':'#007AFF'};
+const renderThemeChips=()=>{$('themeChips').innerHTML=[['auto','🌓 Tự động'],['light','☀️ Sáng'],['dark','🌙 Tối']].map(([k,v])=>`<button class="chip ${themeMode===k?'on':''}" onclick="setTheme('${k}')">${v}</button>`).join('')};
+const setTheme=m=>{themeMode=m;try{localStorage.setItem(THEME_KEY,m)}catch(e){}applyTheme();renderThemeChips()};
+const lvText=()=>'Mức thua nhanh: '+lv(cur()).map(v=>v?'-'+v:'0').join(', ')+'   ›';
+const openSettings=()=>{renderThemeChips();const g=$('pGame').classList.contains('active')&&cur();$('setTable').style.display=g?'block':'none';if(g)$('lvBtn').innerText=lvText();$('mSet').style.display='flex'};
+$('cfgBtn').onclick=openSettings;$('setBtn').onclick=openSettings;
+$('lvBtn').onclick=()=>{const t=cur(),v=prompt('Mức điểm thua nhanh (cách nhau bằng dấu phẩy)',lv(t).join(','));if(v!==null){t.levels=parseLv(v);t.mod=Date.now();save();$('lvBtn').innerText=lvText();toast('Đã cập nhật mức thua nhanh')}};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(themeMode==='auto')applyTheme()});
+applyTheme();
 const addField=()=>{const i=document.createElement('input');i.className='p-name-in';i.placeholder='Tên người chơi '+($('inPlayers').children.length+1);$('inPlayers').appendChild(i)};
 $('addTableBtn').onclick=()=>{$('inTableName').value='';$('inLevels').value='';$('inPlayers').innerHTML='';addField();addField();$('mCreate').style.display='flex'};
 $('addPField').onclick=addField;
