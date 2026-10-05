@@ -211,7 +211,7 @@ const fmt=v=>(v>0?'+':'')+v;
 const isToday=ts=>!!ts&&new Date(ts).toDateString()===new Date().toDateString();
 const daily=t=>{const rows=t.history.filter((_,i)=>isToday(t.ts[i]));return{n:rows.length,s:t.players.map((_,i)=>rows.reduce((a,r)=>a+r[i],0))}};
 const dailyHtml=t=>{const d=daily(t),tot=sums(t);if(!d.n)return'<div class="lbl">Hôm nay</div><p class="hint">Chưa có ván nào hôm nay</p>';
- return`<div class="lbl">Hôm nay · ${d.n} ván</div><table class="mini"><tr><th></th><th>Hôm nay</th><th>Trước đó</th><th>Tổng</th></tr>`+t.players.map((p,i)=>`<tr><td>${esc(p)}</td><td style="color:var(--${d.s[i]>=0?'success':'danger'})">${fmt(d.s[i])}</td><td>${fmt(tot[i]-d.s[i])}</td><td><b>${fmt(tot[i])}</b></td></tr>`).join('')+'</table>'};
+ return`<div class="lbl">Hôm nay · ${d.n} ván</div><table class="mini"><tr><th></th><th>Hôm nay</th><th>Điểm gốc</th><th>Tổng</th></tr>`+t.players.map((p,i)=>`<tr><td>${esc(p)}</td><td style="color:var(--${d.s[i]>=0?'success':'danger'})">${fmt(d.s[i])}</td><td>${fmt(tot[i]-d.s[i])}</td><td><b>${fmt(tot[i])}</b></td></tr>`).join('')+'</table>'};
 const rank=t=>{const s=sums(t);return t.players.map((p,i)=>({p,s:s[i]})).sort((a,b)=>b.s-a.s)};
 const streaks=t=>t.players.map((_,i)=>{let c=0;for(let j=t.history.length-1;j>=0&&t.history[j][i]>0;j--)c++;return c});
 const stats=(t,pi)=>{let w=0,l=0,mw=0,ml=0,cw=0,cl=0;const sp={dragon:0,jump:0,trick:0,double:0};
@@ -246,7 +246,6 @@ const modeChips=()=>'<div class="chips">'+[['w','🏆 1 người thắng'],['m',
 /* Chế độ tự do: mỗi người 1 vai trò (Thắng/Thua/—) + số điểm; để trống 1 ô để app tự cân bằng */
 const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;E.buf='';E.act=E.role[i]==='n'?-1:i;renderEntry()};
 const setAmt=(i,v)=>{E.amt[i]=v;E.buf='';if(E.act>=0)E.act=i;renderEntry()};
-const setAll=v=>{E.amt=E.amt.map((a,i)=>E.role[i]==='n'?null:v);renderEntry()};
 const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w'?(E.amt[i]||0):E.role[i]==='l'?-(E.amt[i]||0):0),
  bl=idx.filter(i=>E.role[i]!=='n'&&E.amt[i]==null);
  if(bl.length===1)sc[bl[0]]=-sc.reduce((a,v)=>a+v,0);
@@ -256,7 +255,6 @@ const freeSum=()=>{const t=cur(),m=mScores(t),parts=t.players.map((p,i)=>m.sc[i]
  return(parts.join(' · ')||'<span class="hint">Chọn vai trò cho từng người</span>')+(parts.length?(m.ok?' ✓':` <span style="color:var(--warning)">⚠️ lệch ${fmt(m.net)}</span>`):'')};
 const renderFree=()=>{const t=cur(),L=lv(t).filter(v=>v>0);
  $('scoreInputs').innerHTML=modeChips()+'<p class="hint" style="margin-top:10px">Chọn vai trò từng người. Tổng điểm thắng phải bằng tổng điểm thua; để trống 1 ô (bấm C để xoá), app sẽ tự tính.</p>'
- +'<div class="lbl">Cùng mức cho mọi người</div><div class="chips">'+L.map(v=>`<button class="chip sm" onclick="setAll(${v})">${v}</button>`).join('')+'</div>'
  +'<div class="lbl">Từng người</div>'
  +t.players.map((p,i)=>{const k=E.role[i];return`<div class="lrow"><b>${esc(p)}</b><div class="chips">`
   +[['w','Thắng'],['l','Thua'],['n','—']].map(([x,y])=>`<button class="chip sm ${k===x?'on':''}" onclick="setRole(${i},'${x}')">${y}</button>`).join('')
@@ -313,7 +311,7 @@ const showPlayerStats=pi=>{if(isMasked)return toast('🔒 Đang ẩn điểm. Ch
 const chart=t=>{const n=t.history.length;if(!n)return'';
  const cum=t.players.map((_,i)=>{let a=0;return[0,...t.history.map(r=>a+=r[i])]}),all=cum.flat(),mn=Math.min(...all),mx=Math.max(...all),W=300,H=150,P=8,rg=(mx-mn)||1;
  const X=k=>P+k*(W-2*P)/n,Y=v=>H-P-(v-mn)*(H-2*P)/rg;
- return`<div class="lbl">BIỂU ĐỒ</div><svg viewBox="0 0 ${W} ${H}" style="width:100%"><line x1="${P}" x2="${W-P}" y1="${Y(0)}" y2="${Y(0)}" stroke="#8E8E93" stroke-dasharray="3" opacity=".6"/>`
+ return`<div class="lbl">Diễn biến điểm tích luỹ</div><svg viewBox="0 0 ${W} ${H}" style="width:100%"><line x1="${P}" x2="${W-P}" y1="${Y(0)}" y2="${Y(0)}" stroke="#8E8E93" stroke-dasharray="3" opacity=".6"/>`
  +cum.map((c,i)=>`<polyline fill="none" stroke="${COL[i%6]}" stroke-width="2.5" stroke-linejoin="round" points="${c.map((v,k)=>X(k)+','+Y(v)).join(' ')}"/>`).join('')
  +'</svg><div class="legend">'+t.players.map((p,i)=>`<span><i style="background:${COL[i%6]}"></i>${esc(p)}</span>`).join('')+'</div>'};
 const medal=i=>['🥇','🥈','🥉'][i]||(i+1)+'.';
