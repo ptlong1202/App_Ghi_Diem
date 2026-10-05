@@ -270,8 +270,8 @@ const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w
 const freeSum=()=>{const t=cur(),m=mScores(t),parts=t.players.map((p,i)=>m.sc[i]?`${esc(p)} <b style="color:var(--${m.sc[i]>0?'success':'danger'})">${fmt(m.sc[i])}</b>`:'').filter(Boolean);
  return(parts.join(' · ')||'<span class="hint">Chọn vai trò cho từng người</span>')+(parts.length?(m.ok?' ✓':` <span style="color:var(--warning)">⚠️ lệch ${fmt(m.net)}</span>`):'')};
 const renderFree=()=>{const t=cur(),L=lv(t).filter(v=>v>0);
- $('scoreInputs').innerHTML=modeChips()+'<p class="hint" style="margin-top:10px">Chọn vai trò từng người. Tổng điểm thắng phải bằng tổng điểm thua; để trống 1 ô (bấm C để xoá), app sẽ tự tính.</p>'
- +'<div class="lbl">Từng người</div>'
+ $('scoreInputs').innerHTML=modeChips()+'<p class="hint" style="margin-top:10px">Tổng điểm thắng phải bằng tổng điểm thua.</p>'
+ +'<div class="lbl">Người chơi</div>'
  +t.players.map((p,i)=>{const k=E.role[i];return`<div class="lrow"><b>${esc(p)}</b><div class="chips">`
   +[['w','Thắng'],['l','Thua'],['n','—']].map(([x,y])=>`<button class="chip sm ${k===x?'on':''}" onclick="setRole(${i},'${x}')">${y}</button>`).join('')
   +(k==='n'?'':`<div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--${k==='w'?'success':'danger'})">${k==='w'?'+':'−'}</span><b class="${E.amt[i]==null?'ph':''}">${E.amt[i]==null?'tự tính':E.amt[i]}</b></div>`+L.map(v=>`<button class="chip sm ${E.amt[i]===v?'on':''}" onclick="setAmt(${i},${v})">${v}</button>`).join(''))
@@ -294,7 +294,7 @@ const key=k=>{if(k==='N')return nextField();if(k==='X'){E.act=-1;return renderEn
  E.buf=b;putVal(b===''?(E.mode==='m'?null:0):+b);renderEntry()};
 $('numpad').innerHTML=[['1'],['2'],['3'],['⌫','B','fn'],['4'],['5'],['6'],['Tiếp ›','N','go'],['7'],['8'],['9'],['C','C','fn'],['0'],['00'],['Xong','X','fn']].map(([l,k,c])=>`<button class="key ${c||''}" onclick="key('${k||l}')">${l}</button>`).join('');
 const renderEntry=()=>{const t=cur(),L=lv(t);
- if(E.mode==='m')return renderFree();$('scoreInputs').innerHTML=`${modeChips()}<div class="lbl">1 · Wunners</div><div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')}</div>`
+ if(E.mode==='m')return renderFree();$('scoreInputs').innerHTML=`${modeChips()}<div class="lbl">1 · Winners</div><div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')}</div>`
  
  +'<div class="lbl">2 · Losers</div>'
  +(E.win<0?'<p class="hint">Hãy chọn ở bước 1 trước</p>':losersOf(t).map(i=>`<div class="lrow"><b>${esc(t.players[i])}</b><div class="chips"><div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--danger)">−</span><b class="${E.pen[i]?'':'ph'}">${E.pen[i]||'0'}</b></div>${L.map(v=>`<button class="chip sm ${E.pen[i]===v?'on':''}" onclick="setPen(${i},${v})">${v?'-'+v:'0'}</button>`).join('')}</div></div>`).join(''));
@@ -327,7 +327,7 @@ const showPlayerStats=pi=>{if(isMasked)return toast('🔒 Đang ẩn điểm. Ch
 const chart=t=>{const n=t.history.length;if(!n)return'';
  const cum=t.players.map((_,i)=>{let a=0;return[0,...t.history.map(r=>a+=r[i])]}),all=cum.flat(),mn=Math.min(...all),mx=Math.max(...all),W=300,H=150,P=8,rg=(mx-mn)||1;
  const X=k=>P+k*(W-2*P)/n,Y=v=>H-P-(v-mn)*(H-2*P)/rg;
- return`<div class="lbl">Diễn biến điểm tích luỹ</div><svg viewBox="0 0 ${W} ${H}" style="width:100%"><line x1="${P}" x2="${W-P}" y1="${Y(0)}" y2="${Y(0)}" stroke="#8E8E93" stroke-dasharray="3" opacity=".6"/>`
+ return`<div class="lbl">Biểu đồ</div><svg viewBox="0 0 ${W} ${H}" style="width:100%"><line x1="${P}" x2="${W-P}" y1="${Y(0)}" y2="${Y(0)}" stroke="#8E8E93" stroke-dasharray="3" opacity=".6"/>`
  +cum.map((c,i)=>`<polyline fill="none" stroke="${COL[i%6]}" stroke-width="2.5" stroke-linejoin="round" points="${c.map((v,k)=>X(k)+','+Y(v)).join(' ')}"/>`).join('')
  +'</svg><div class="legend">'+t.players.map((p,i)=>`<span><i style="background:${COL[i%6]}"></i>${esc(p)}</span>`).join('')+'</div>'};
 const medal=i=>['🥇','🥈','🥉'][i]||(i+1)+'.';
@@ -383,7 +383,9 @@ const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let sy=rd(SYK,{}),tomb=rd(TOMB,{}),syncing=false,again=false,syT,syErr='';
 const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
 const gh=async(url,opt={})=>{const res=await fetch('https://api.github.com'+url,{cache:'no-store',...opt,headers:{Authorization:'Bearer '+sy.token,Accept:'application/vnd.github+json','Content-Type':'application/json'}});
- if(!res.ok)throw new Error(res.status===401?'Token sai hoặc hết hạn':res.status===404?'Không tìm thấy Gist (kiểm tra ID/quyền token)':'Lỗi GitHub '+res.status);return res.json()};
+ if(!res.ok){let m='';try{m=(await res.json()).message||''}catch(e){}
+  throw new Error(res.status===401?'Token sai hoặc hết hạn (401)':res.status===404?'Không tìm thấy Gist: sai Gist ID, hoặc token thiếu quyền gist / không phải loại classic (404)':res.status===403?'GitHub từ chối (403): token thiếu quyền gist hoặc bị giới hạn. '+m:'Lỗi GitHub '+res.status+': '+m)}
+ return res.json()};
 const mergeData=(a,b,tb)=>{const m={};[...a,...b].forEach(t=>{if(!t||!t.id||!Array.isArray(t.history))return;const o=m[t.id],x=t.mod||0;
   if(!o||x>(o.mod||0)||(x===(o.mod||0)&&t.history.length>o.history.length))m[t.id]=t});
  return Object.values(m).filter(t=>!(tb[t.id]&&tb[t.id]>=(t.mod||0)))};
@@ -405,7 +407,7 @@ const syncNow=async()=>{if(!sy.token)return;
    if(id)await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files})});
    else{const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Badminton Pro data',public:false,files})});sy.gist=g.id}}
   sy.at=Date.now();wr(SYK,sy)
- }catch(e){syErr=e.message==='Failed to fetch'?'Không có mạng':e.message}
+ }catch(e){syErr=e instanceof TypeError?'Không kết nối được tới GitHub (mất mạng hoặc bị chặn): '+e.message:e instanceof SyntaxError?'Gist này không chứa dữ liệu của app (sai Gist ID?)':e.message}
  syncing=false;syncUI();
  if($('pGame').classList.contains('active')){cur()?renderGame():route('pLobby')}renderLobby();
  if(again){again=false;syncNow()}};
