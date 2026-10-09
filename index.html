@@ -71,12 +71,27 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 .mini{width:100%;border-collapse:collapse}.mini td,.mini th{padding:8px 4px;text-align:center;font-size:14px;border-top:1px solid var(--line)}.mini td:first-child{text-align:left;font-weight:700}.mini th{font-size:11px;color:var(--gray);border:none}
 .bak{background:rgba(255,149,0,.15);color:var(--warning);padding:12px 14px;border-radius:14px;font-size:13px;font-weight:700;margin-bottom:14px;cursor:pointer}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.btn-soft{padding:12px;border-radius:var(--rm);border:none;background:var(--card);font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
-.lrow{margin-bottom:10px}.lrow b{display:block;font-size:13px;margin-bottom:6px}
+.es{display:flex;flex-direction:column;overflow:hidden;padding:0}
+.eh{display:flex;align-items:center;gap:8px;padding:14px 14px 6px}.eh h2{flex:1;font-size:17px;text-align:center}.ea{display:flex;gap:6px;min-width:38px;justify-content:flex-end}
+.ib{width:38px;height:38px;border-radius:50%;border:none;background:var(--soft);font-size:16px;cursor:pointer}
+.eb{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 14px 10px}
+.ef{padding:10px 18px calc(env(safe-area-inset-bottom,0px) + 14px);border-top:1px solid var(--line)}
+.ef .sum{margin:0 0 8px;font-size:16px;min-height:22px}
+.modal.np .sheet.es{padding-bottom:0}.modal.np .ef{padding-bottom:12px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:3px;gap:2px}
+.seg button{flex:1;border:none;background:none;border-radius:10px;padding:10px 6px;font-weight:700;font-size:14px;color:var(--gray);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ac);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.seg.sm{flex:0 0 auto}.seg.sm button{padding:8px 10px;font-size:13px}
+.er{display:flex;align-items:center;gap:8px;padding:10px 12px;margin-top:8px;border-radius:14px;border:2px solid transparent;background:var(--soft);cursor:pointer;min-height:58px;user-select:none}
+.er.act{border-color:var(--primary)}.er.isw{background:rgba(50,215,75,.16)}
+.en{flex:1;min-width:0;font-weight:700;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev{min-width:72px;text-align:right;font-size:26px;font-weight:800;color:var(--danger)}.ev.ph{color:var(--gray);font-weight:600;font-size:18px}.ev.pos{color:var(--success)}
+.ev.act::after{content:'';display:inline-block;width:2px;height:24px;background:var(--primary);margin-left:2px;vertical-align:middle;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+.bg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.bp{padding:22px 8px;border-radius:16px;border:2px solid var(--line);background:var(--soft);font-size:17px;font-weight:800;cursor:pointer}.bp.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-main:disabled{opacity:.4;cursor:default}
+.lrow{margin-bottom:10px}.wtag{color:var(--success);font-weight:800;font-size:15px}.lrow b{display:block;font-size:13px;margin-bottom:6px}
 
-.num{display:flex;align-items:center;gap:4px;background:var(--soft);border:2px solid var(--line);border-radius:14px;padding:0 10px}.num:focus-within{border-color:var(--primary)}.num span{font-weight:800;font-size:18px}
-.num{cursor:pointer;min-width:84px;min-height:44px;user-select:none}.num b{font-size:18px;min-width:44px}.num b.ph{color:var(--gray);font-weight:600}
-.num.act{border-color:var(--primary);background:var(--card)}
-.num.act b::after{content:'';display:inline-block;width:2px;height:20px;background:var(--primary);margin-left:2px;vertical-align:middle;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
 #numpad{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:500px;z-index:2100;grid-template-columns:repeat(4,1fr);grid-auto-rows:48px;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));background:var(--soft);border-top:1px solid var(--line)}
 .key{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;border:none;border-radius:12px;background:var(--card);font-size:22px;font-weight:600;color:var(--text);box-shadow:0 1px 0 rgba(0,0,0,.2);cursor:pointer}.key:active{background:var(--line)}
 .key.fn{font-size:16px}.key.go{grid-row:span 2;background:var(--primary);color:#fff;font-size:17px}
@@ -86,6 +101,7 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;margin-top:6px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translate(-50%,30px);background:#1C1C1E;color:#fff;padding:12px 16px;border-radius:14px;display:flex;gap:14px;align-items:center;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:3000;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast button{background:none;border:none;color:#5AC8FA;font-weight:800;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -130,25 +146,20 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
   <button class="btn-ghost close-m">Hủy bỏ</button>
 </div></div>
 
-<div id="mScore" class="modal"><div class="sheet">
-  <h2 id="scoreTitle" style="text-align:center"></h2>
-  <div id="scoreInputs"></div>
-  <div id="sumBox" class="sum"></div>
-  <button id="saveScore" class="btn-main" style="background:var(--success)">Lưu kết quả</button>
-  <button id="repeatBtn" class="btn-main" style="background:var(--soft);color:var(--text);margin-top:10px">↻ Lặp ván trước</button>
-  <button id="delRound" class="btn-main" style="background:var(--danger);display:none;margin-top:10px">Xóa ván đấu</button>
-  <button class="btn-ghost close-m">Đóng</button>
+<div id="mScore" class="modal"><div class="sheet es">
+  <div class="eh"><button class="ib close-m" aria-label="Đóng">✕</button><h2 id="scoreTitle"></h2><div class="ea"><button id="repeatBtn" class="ib" title="Lặp ván trước">↻</button><button id="delRound" class="ib" title="Xóa ván" style="display:none">🗑</button></div></div>
+  <div id="scoreInputs" class="eb"></div>
+  <div class="ef"><div id="sumBox" class="sum"></div><button id="saveScore" class="btn-main" style="background:var(--success)">Lưu kết quả</button></div>
 </div></div>
-
 <div id="mSet" class="modal"><div class="sheet">
   <h2 style="margin-bottom:14px">⚙️ Cài đặt</h2>
   <div class="lbl" style="margin-top:0">Giao diện</div>
   <div class="chips" id="themeChips"></div>
-  <button class="btn-ghost close-m">Đóng</button>
+    <button class="btn-ghost close-m">Đóng</button>
 </div></div>
 <div id="mSync" class="modal"><div class="sheet">
   <h2 style="margin-bottom:6px">☁️ Đồng bộ GitHub Gist</h2>
-  <p class="hint" style="margin-bottom:12px">Tạo token (classic) chỉ cần quyền <b>gist</b> tại github.com/settings/tokens. Dữ liệu nằm trong một Gist riêng tư của bạn.</p>
+  <p class="hint" style="margin-bottom:12px">Tạo token (classic) chỉ cần quyền <b>gist</b> tại github.com/settings/tokens. Dữ liệu nằm trong một Gist riêng tư của bạn. Máy khác: nhập cùng token và Gist ID (ô bên dưới tự điền sau lần đồng bộ đầu tiên).</p>
   <input id="syToken" type="password" placeholder="GitHub token (ghp_...)" autocomplete="off">
   <input id="syGist" placeholder="Gist ID (để trống để tự tạo mới)" autocomplete="off">
   <p id="syStatus" class="hint" style="margin-bottom:12px"></p>
@@ -165,6 +176,7 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 
 <script>
 const KEY='pro_badminton_final',COL=['#007AFF','#FF3B30','#34C759','#FF9500','#A020F0','#5AC8FA'];
+/* ---- Lưu trữ bền vững: KHÔNG ĐỔI "KEY" giữa các bản cập nhật ---- */
 const BAK='pro_badminton_bak_',LASTBAK='pro_badminton_lastbak';
 const rounds=a=>Array.isArray(a)?a.reduce((n,t)=>n+((t&&t.history)||[]).length,0):-1;
 const readKey=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
@@ -184,7 +196,7 @@ const save=ns=>{try{localStorage.setItem(KEY,JSON.stringify(appData))}catch(e){t
 const cur=()=>appData.find(x=>x.id===curId);
 const cf=o=>window.confetti&&confetti(o);
 
-/* ---- Luật & hiệu ứng ---- */
+/* ---- Luật & hiệu ứng (một nơi duy nhất) ---- */
 const combo=r=>{if(r.length!==4)return null;const w=Math.max(...r),o=[...r];o.splice(r.indexOf(w),1);const c=v=>o.filter(x=>x===v).length;
  if(w===120&&c(-40)===3)return'dragon';if(w===60&&c(-20)===3)return'jump';
  if(w===40&&c(-40)===1&&c(0)===2)return'double';if(w===20&&c(-20)===1&&c(0)===2)return'trick';return null};
@@ -205,7 +217,7 @@ const fx=k=>{const[a,b,bg,c,cols]=FX[k],m=$('jackpotMsg'),d=$('dragonEntity'),ov
 /* ---- UI helpers ---- */
 const route=id=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));$('addRoundBtn').style.display=id==='pGame'?'block':'none'};
 const hideModals=()=>{document.querySelectorAll('.modal').forEach(m=>{m.style.display='none';m.classList.remove('np')});$('numpad').style.display='none'};
-const toast=(msg)=>{const e=$('toast');e.innerHTML=`<span>${esc(msg)}</span>`;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),3000)};
+const toast=msg=>{const e=$('toast');e.textContent=msg;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2500)};
 const mutate=(msg,fn)=>{const t=cur();fn(t);t.mod=Date.now();save();renderGame();toast(msg)};
 
 /* ---- Tính toán ---- */
@@ -222,7 +234,7 @@ const stats=(t,pi)=>{let w=0,l=0,mw=0,ml=0,cw=0,cl=0;const sp={dragon:0,jump:0,t
  else if(s<0){l++;cl++;cw=0;ml=Math.max(ml,cl)}else cw=cl=0});return{w,l,mw,ml,sp}};
 
 /* ---- Lobby ---- */
-const bakBanner=()=>{const last=+localStorage.getItem(LASTBAK)||0;$('bakBanner').innerHTML=rounds(appData)>0&&Date.now()-last>7*864e5?'<div class="bak" onclick="exportData()">⚠️ '+(last?'Đã hơn 7 ngày chưa':'Bạn chưa')+' sao lưu dữ liệu. Bấm để xuất backup.</div>':''};
+const bakBanner=()=>{const last=+localStorage.getItem(LASTBAK)||0;$('bakBanner').innerHTML=rounds(appData)>0&&Date.now()-last>7*864e5?'<div class="bak" onclick="exportData()">⚠️ '+(last?'Đã hơn 7 ngày chưa':'Bạn chưa')+' sao lưu dữ liệu. Bấm để xuất backup (lưu vào Tệp/iCloud).</div>':''};
 const renderLobby=()=>{bakBanner();$('listTables').innerHTML=appData.length?appData.map(t=>`<div class="pro-card" onclick="enterTable('${t.id}')"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:800;font-size:18px">${esc(t.name)}</div><div style="color:var(--gray);font-size:12px">👤 ${t.players.length} người • 🏸 ${t.history.length} hiệp</div></div><div style="color:var(--danger);font-size:24px;padding:10px" onclick="removeTable(event,'${t.id}')">×</div></div></div>`).join(''):`<div style="text-align:center;padding:50px 0">🏸<p style="color:var(--gray)">Chưa có dữ liệu sân đấu</p></div>`};
 const enterTable=id=>{curId=id;route('pGame');renderGame()};
 const removeTable=(e,id)=>{e.stopPropagation();if(confirm('Xóa sân này?')){appData=appData.filter(x=>x.id!==id);tomb[id]=Date.now();wr(TOMB,tomb);save();renderLobby()}};
@@ -238,76 +250,78 @@ const renderGame=()=>{const t=cur();if(!t)return;
  $('hBody').innerHTML=[...t.history].reverse().map((r,i)=>{const idx=t.history.length-1-i,cb=combo(r),wi=r.indexOf(Math.max(...r));
   return`<tr onclick="openScore(${idx})"><td>${idx+1}</td>${r.map((v,k)=>`<td><span class="badge ${v>0?'win':'lose'} ${cb&&k===wi?CLS[cb]:''}">${v}</span></td>`).join('')}</tr>`}).join('')};
 
-/* ---- Nhập ván tối giản & cơ chế Báo ---- */
-const losersOf=t=>t.players.map((_,i)=>i).filter(i=>i!==E.win);
-
-const updSum=()=>{syncNp();if(E.mode==='m')return $('sumBox').innerHTML=freeSum();const t=cur(),s=losersOf(t).reduce((a,i)=>a+(E.pen[i]||0),0);
- if(E.win<0)return $('sumBox').innerHTML='<span class="hint">Chọn người thắng hoặc bấm Báo</span>';
- $('sumBox').innerHTML=`${esc(t.players[E.win])}: <b style="color:var(--success)">+${s}</b>`};
-
-const setWin=i=>{E.win=i;E.pen[i]=0;E.buf='';const l=losersOf(cur());E.act=l.length?l[0]:-1;renderEntry()};
-
-const setBao=i=>{const t=cur();E.mode='w';E.win=i;t.players.forEach((_,k)=>{if(k!==i)E.pen[k]=20;else E.pen[i]=0});E.act=-1;renderEntry()};
-
-const setMode=m=>{E.mode=m;E.win=-1;E.pen=E.pen.map(()=>0);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.act=-1;E.buf='';renderEntry()};
-const modeChips=()=>'<div class="chips">'+[['w','🏆 1 người thắng'],['m','👥 Tự do']].map(([k,v])=>`<button class="chip sm ${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
-
-const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;E.buf='';E.act=E.role[i]==='n'?-1:i;renderEntry()};
+/* ---- Nhập ván: nhập điểm thua, người để trống là người thắng ---- */
+const BAO=20;
+const nulls=()=>E.pen.map((v,i)=>v==null?i:-1).filter(i=>i>=0);
+const sumPen=()=>E.pen.reduce((a,v)=>a+(v||0),0);
 const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w'?(E.amt[i]||0):E.role[i]==='l'?-(E.amt[i]||0):0),
  bl=idx.filter(i=>E.role[i]!=='n'&&E.amt[i]==null);
  if(bl.length===1)sc[bl[0]]=-sc.reduce((a,v)=>a+v,0);
  const net=sc.reduce((a,v)=>a+v,0),okSign=idx.every(i=>E.role[i]==='w'?sc[i]>0:E.role[i]==='l'?sc[i]<0:true);
  return{sc,net,ok:E.role.includes('w')&&E.role.includes('l')&&bl.length<=1&&net===0&&okSign}};
 const freeSum=()=>{const t=cur(),m=mScores(t),parts=t.players.map((p,i)=>m.sc[i]?`${esc(p)} <b style="color:var(--${m.sc[i]>0?'success':'danger'})">${fmt(m.sc[i])}</b>`:'').filter(Boolean);
- return(parts.join(' · ')||'<span class="hint">Chọn vai trò cho từng người</span>')+(parts.length?(m.ok?' ✓':` <span style="color:var(--warning)">⚠️ lệch ${fmt(m.net)}</span>`):'')};
+ return parts.join(' · ')+(parts.length?(m.ok?' ✓':` <span style="color:var(--warning)">⚠️ lệch ${fmt(m.net)}</span>`):'')};
+/* Một nguồn sự thật cho cả 3 chế độ: ok / điểm / lời nhắc / xem trước */
+const calc=()=>{const t=cur(),n=t.players.length;
+ if(E.mode==='m'){const m=mScores(t);return{ok:m.ok,sc:m.sc,msg:E.role.includes('w')&&E.role.includes('l')?'Tổng thắng phải bằng tổng thua':'Chọn người thắng và người thua',prev:freeSum()}}
+ if(E.mode==='b'){if(E.win<0)return{ok:false,msg:'Chọn người báo',prev:''};
+  return{ok:true,sc:t.players.map((_,i)=>i===E.win?BAO*(n-1):-BAO),prev:`${esc(t.players[E.win])} <b style="color:var(--success)">+${BAO*(n-1)}</b> · còn lại −${BAO}`}}
+ const z=nulls();
+ if(z.length>1)return{ok:false,msg:'Còn '+(z.length-1)+' người chưa nhập',prev:''};
+ if(!z.length)return{ok:false,msg:'Để trống 1 người thắng',prev:''};
+ const sc=E.pen.map(v=>v==null?0:-v),tot=-sc.reduce((a,b)=>a+b,0);
+ if(!tot)return{ok:false,msg:'Nhập điểm thua cho ít nhất 1 người',prev:''};
+ sc[z[0]]=tot;return{ok:true,sc,prev:`${esc(t.players[z[0]])} thắng <b style="color:var(--success)">+${tot}</b>`}};
+const updSum=()=>{syncNp();const c=calc(),b=$('saveScore');$('sumBox').innerHTML=c.prev||'';b.disabled=!c.ok;
+ b.innerText=c.ok?(editIdx>=0?'Lưu thay đổi':'Lưu ván '+(cur().history.length+1)):c.msg};
+const setWin=i=>{E.win=i;renderEntry()};
+const setMode=m=>{E.mode=m;E.win=-1;E.pen=E.pen.map(()=>null);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.act=m==='w'?0:-1;E.buf='';renderEntry()};
+const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;E.buf='';E.act=E.role[i]==='n'?-1:i;renderEntry()};
+const modeSeg=()=>'<div class="seg">'+[['w','🏆 Nhập thua'],['b','📣 Báo'],['m','👥 Tự do']].map(([k,v])=>`<button class="${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
 const renderFree=()=>{const t=cur();
- $('scoreInputs').innerHTML=modeChips()+'<p class="hint" style="margin-top:10px">Tổng điểm thắng phải bằng tổng điểm thua.</p>'
- +'<div class="lbl">Người chơi</div>'
- +t.players.map((p,i)=>{const k=E.role[i];return`<div class="lrow"><b>${esc(p)}</b><div class="chips">`
-  +[['w','Thắng'],['l','Thua'],['n','—']].map(([x,y])=>`<button class="chip sm ${k===x?'on':''}" onclick="setRole(${i},'${x}')">${y}</button>`).join('')
-  +(k==='n'?'':`<div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--${k==='w'?'success':'danger'})">${k==='w'?'+':'−'}</span><b class="${E.amt[i]==null?'ph':''}">${E.amt[i]==null?'tự tính':E.amt[i]}</b></div>`)
-  +'</div></div>'}).join('');
+ $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0">Tổng điểm thắng phải bằng tổng điểm thua.</p>'
+ +t.players.map((p,i)=>{const k=E.role[i],a=E.amt[i];return`<div class="er ${E.act===i?'act':''}" ${k==='n'?'':`onclick="actField(${i})"`}><span class="en">${esc(p)}</span><div class="seg sm">`
+  +[['w','Thắng'],['l','Thua'],['n','—']].map(([x,y])=>`<button class="${k===x?'on':''}" onclick="event.stopPropagation();setRole(${i},'${x}')">${y}</button>`).join('')+'</div>'
+  +(k==='n'?'':`<span class="ev ${a==null?'ph':k==='w'?'pos':''} ${E.act===i?'act':''}">${a==null?'tự tính':(k==='w'?'+':'−')+a}</span>`)+'</div>'}).join('');
  updSum()};
-
-/* ---- Bàn phím số ---- */
+const renderBao=()=>{const t=cur(),n=t.players.length;
+ $('scoreInputs').innerHTML=modeSeg()+'<div class="bg">'+t.players.map((p,i)=>`<button class="bp ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')+`</div><p class="hint" style="margin:12px 2px 0;text-align:center">Chạm tên người báo: +${BAO*(n-1)}, mỗi người còn lại −${BAO}.</p>`;
+ updSum()};
+const renderEntry=()=>{const t=cur();if(E.mode==='m')return renderFree();if(E.mode==='b')return renderBao();
+ const z=nulls(),w=z.length===1?z[0]:-1;
+ $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0">Gõ điểm thua từng người, người để trống là người thắng.</p>'
+ +t.players.map((p,i)=>{const v=E.pen[i];return`<div class="er ${E.act===i?'act':''} ${i===w?'isw':''}" onclick="actField(${i})"><span class="en">${esc(p)}</span>${i===w?`<span class="wtag">🏆 +${sumPen()}</span>`:''}<span class="ev ${v==null?'ph':''} ${E.act===i?'act':''}">${v==null?'—':v===0?'0':'−'+v}</span></div>`}).join('');
+ updSum()};
+/* ---- Bàn phím số riêng ---- */
 const syncNp=()=>{const on=E.act>=0;$('mScore').classList.toggle('np',on);$('numpad').style.display=on?'grid':'none';
- if(on)requestAnimationFrame(()=>{const a=document.querySelector('.num.act');a&&a.scrollIntoView({block:'nearest'})})};
-const fieldList=()=>E.mode==='m'?cur().players.map((_,i)=>i).filter(i=>E.role[i]!=='n'):losersOf(cur());
+ if(on)requestAnimationFrame(()=>{const a=document.querySelector('.er.act');a&&a.scrollIntoView({block:'nearest'})})};
 const actField=i=>{E.act=i;E.buf='';renderEntry()};
-const nextField=()=>{const l=fieldList(),k=l.indexOf(E.act);E.act=k>=0&&k<l.length-1?l[k+1]:-1;E.buf='';renderEntry()};
+const nextField=()=>{E.buf='';
+ if(E.mode==='m'){const l=cur().players.map((_,i)=>i).filter(i=>E.role[i]!=='n'),k=l.indexOf(E.act);E.act=k>=0&&k<l.length-1?l[k+1]:-1}
+ else{const z=nulls();if(z.length<=1)E.act=-1;else{const n=E.pen.length;let j=E.act;do{j=(j+1)%n}while(E.pen[j]!=null);E.act=j}}
+ renderEntry()};
 const curVal=()=>E.mode==='m'?E.amt[E.act]:E.pen[E.act];
-const putVal=v=>{if(E.mode==='m')E.amt[E.act]=v;else E.pen[E.act]=v||0};
+const putVal=v=>{if(E.mode==='m')E.amt[E.act]=v;else E.pen[E.act]=v};
 const key=k=>{if(k==='N')return nextField();if(k==='X'){E.act=-1;return renderEntry()}if(E.act<0)return;let b=E.buf;
  if(k==='C')b='';
- else if(k==='B'){if(b===''&&curVal())b=String(curVal());b=b.slice(0,-1)}
+ else if(k==='B'){if(b===''&&curVal()!=null)b=String(curVal());b=b.slice(0,-1)}
  else if(k==='00'&&(b===''||b==='0'))return;
  else b=(b+k).replace(/^0+(?=\d)/,'').slice(0,4);
- E.buf=b;putVal(b===''?(E.mode==='m'?null:0):+b);renderEntry()};
+ E.buf=b;putVal(b===''?null:+b);
+ if(E.mode==='w'&&(b.length===2||b==='0'))nextField();else renderEntry()};
 $('numpad').innerHTML=[['1'],['2'],['3'],['⌫','B','fn'],['4'],['5'],['6'],['Tiếp ›','N','go'],['7'],['8'],['9'],['C','C','fn'],['0'],['00'],['Xong','X','fn']].map(([l,k,c])=>`<button class="key ${c||''}" onclick="key('${k||l}')">${l}</button>`).join('');
-
-const renderEntry=()=>{const t=cur();
- if(E.mode==='m')return renderFree();
- $('scoreInputs').innerHTML=`${modeChips()}
- <div class="lbl">1 · Chọn người thắng</div>
- <div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">🏆 ${esc(p)}</button>`).join('')}</div>
- <div class="lbl" style="margin-top:12px">📢 Hoặc Báo nhanh (3 người còn lại -20)</div>
- <div class="chips">${t.players.map((p,i)=>`<button class="chip sm" style="border-color:var(--warning);color:var(--warning);font-weight:800" onclick="setBao(${i})">📢 ${esc(p)} báo</button>`).join('')}</div>
- <div class="lbl" style="margin-top:14px">2 · Nhập điểm thua</div>
- ${E.win<0?'<p class="hint">Hãy chọn người thắng hoặc bấm Báo nhanh</p>':losersOf(t).map(i=>`<div class="lrow"><b>${esc(t.players[i])}</b><div class="chips"><div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--danger)">−</span><b class="${E.pen[i]?'':'ph'}">${E.pen[i]||'0'}</b></div></div></div>`).join('')}`;
- updSum()};
-
-const loadRow=r=>{const P=r.filter(x=>x>0).length;E.mode=P>1?'m':'w';
- if(E.mode==='m'){E.role=r.map(s=>s>0?'w':s<0?'l':'n');E.amt=r.map(s=>Math.abs(s));E.win=-1;E.pen=r.map(()=>0)}
- else{E.win=r.indexOf(Math.max(...r));E.pen=r.map((s,i)=>i===E.win?0:Math.abs(s))}};
-const openScore=(idx=-1)=>{const t=cur();editIdx=idx;E={win:-1,pen:new Array(t.players.length).fill(0),mode:'w',act:-1,buf:'',role:new Array(t.players.length).fill('n'),amt:new Array(t.players.length).fill(null)};
- if(idx>=0)loadRow(t.history[idx]);
+const loadRow=r=>{const P=r.filter(x=>x>0).length;E.mode=P>1?'m':'w';E.buf='';
+ if(E.mode==='m'){E.role=r.map(s=>s>0?'w':s<0?'l':'n');E.amt=r.map(s=>Math.abs(s));E.win=-1;E.pen=r.map(()=>null)}
+ else{const w=r.indexOf(Math.max(...r));E.win=-1;E.pen=r.map((s,i)=>i===w?null:Math.abs(s))}};
+const openScore=(idx=-1)=>{const t=cur(),n=t.players.length;editIdx=idx;
+ E={win:-1,pen:new Array(n).fill(null),mode:'w',act:0,buf:'',role:new Array(n).fill('n'),amt:new Array(n).fill(null)};
+ if(idx>=0){loadRow(t.history[idx]);E.act=-1}
  $('scoreTitle').innerText=idx>=0?'Sửa hiệp '+(idx+1):'Ghi điểm mới';
- $('delRound').style.display=idx>=0?'block':'none';$('repeatBtn').style.display=idx<0&&t.history.length?'block':'none';
+ $('delRound').style.display=idx>=0?'':'none';
+ $('repeatBtn').style.display=idx<0&&t.history.length?'':'none';
  renderEntry();$('mScore').style.display='flex'};
-$('repeatBtn').onclick=()=>{const t=cur();loadRow(t.history[t.history.length-1]);renderEntry()};$('saveScore').onclick=()=>{const t=cur();if(E.mode!=='m'&&E.win<0)return toast('Hãy chọn người thắng hoặc báo');
- const M=E.mode==='m'?mScores(t):null,sc=M?M.sc:t.players.map((_,i)=>i===E.win?0:-(E.pen[i]||0)),tot=M?1:sc.reduce((a,b)=>a+b,0);
- if(M&&!M.ok)return toast('Cần ≥1 người thắng, ≥1 người thua và tổng cân bằng = 0');if(!tot)return toast('Cần nhập điểm cho ít nhất 1 người');
- if(!M)sc[E.win]=-tot;const cb=combo(sc),ei=editIdx;
+$('repeatBtn').onclick=()=>{const t=cur();loadRow(t.history[t.history.length-1]);E.act=-1;renderEntry()};
+$('saveScore').onclick=()=>{const c=calc();if(!c.ok)return;const sc=c.sc,cb=combo(sc),ei=editIdx,t=cur();
  cb?fx(cb):cf({particleCount:100,spread:70,origin:{y:.7}});
  navigator.vibrate&&navigator.vibrate(30);hideModals();
  mutate(ei>=0?`Đã sửa ván ${ei+1}`:`Đã lưu ván ${t.history.length+1}`,t=>{if(ei>=0)t.history[ei]=sc;else{t.history.push(sc);t.ts.push(Date.now())}})};
@@ -316,7 +330,8 @@ $('delRound').onclick=()=>{if(confirm('Xóa hiệp này?')){const ei=editIdx;hid
 /* ---- Thống kê, biểu đồ, chia sẻ ---- */
 const showPlayerStats=pi=>{if(isMasked)return toast('🔒 Đang ẩn điểm. Chuyển sang Công khai để xem thống kê');const t=cur();if(!t.history.length)return toast('Chưa có dữ liệu hiệp đấu');
  const s=stats(t,pi),it=(l,v,sp)=>`<div class="stat" ${sp?'style="grid-column:span 2"':''}><small>${l}</small><b>${v}</b></div>`;
- $('statsTitle').innerText=t.players[pi];$('statsContent').innerHTML=`<div class="grid2">${it('Thắng',s.w+' hiệp')}${it('Thua',s.l+' hiệp')}${it('Chuỗi thắng max',s.mw)}${it('Chuỗi thua max',s.ml)}${it('Trick Shot',s.sp.trick+s.sp.double)}${it('Jump Smash',s.sp.jump)}${it('Số lần Hóa Rồng','🐉 '+s.sp.dragon,1)}</div>`;
+ $('statsTitle').innerText=t.players[pi];
+ $('statsContent').innerHTML=`<div class="grid2">${it('Thắng',s.w+' hiệp')}${it('Thua',s.l+' hiệp')}${it('Chuỗi thắng max',s.mw)}${it('Chuỗi thua max',s.ml)}${it('Trick Shot',s.sp.trick+s.sp.double)}${it('Jump Smash',s.sp.jump)}${it('Số lần Hóa Rồng','🐉 '+s.sp.dragon,1)}</div>`;
  $('mStats').style.display='flex'};
 const chart=t=>{const n=t.history.length;if(!n)return'';
  const cum=t.players.map((_,i)=>{let a=0;return[0,...t.history.map(r=>a+=r[i])]}),all=cum.flat(),mn=Math.min(...all),mx=Math.max(...all),W=300,H=150,P=8,rg=(mx-mn)||1;
@@ -336,13 +351,14 @@ const shareImg=()=>{const t=cur(),rk=rank(t),H=200+rk.length*84,c=document.creat
  const F=s=>s+'px -apple-system,sans-serif';g.fillStyle='#fff';g.font='bold '+F(44);g.fillText('🏸 '+t.name,40,80);
  g.font=F(24);g.fillStyle='#9fb3c8';g.fillText(`${t.history.length} ván · ${new Date().toLocaleDateString('vi-VN')}`,40,120);
  rk.forEach((r,i)=>{const y=195+i*84;g.fillStyle='rgba(255,255,255,.08)';g.fillRect(30,y-46,660,68);g.font='bold '+F(32);g.fillStyle='#fff';g.textAlign='left';g.fillText(medal(i)+' '+r.p,50,y);
-  g.textAlign='right';g.fillStyle=r.s>=0?'#34C759':'#FF6B6B';g.fillText((r.s>0?'+':'' harvest)+r.s,670,y)});
+  g.textAlign='right';g.fillStyle=r.s>=0?'#34C759':'#FF6B6B';g.fillText((r.s>0?'+':'')+r.s,670,y)});
  c.toBlob(async b=>{const f=new File([b],'bang-diem.png',{type:'image/png'});
   if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]})}catch(e){}}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()}})};
 
 /* ---- Sự kiện chung ---- */
 $('privacyBtn').onclick=function(){if(isMasked&&!confirm('Moment of truth... 🕵️‍♂️'))return;isMasked=!isMasked;this.classList.toggle('on',isMasked);this.innerText=isMasked?'🔒 Đang ẩn':'🔓 Công khai';renderGame()};
+/* ---- Cài đặt: giao diện sáng/tối + mức thua nhanh ---- */
 const THEME_KEY='pro_badminton_theme';
 let themeMode='auto';try{themeMode=localStorage.getItem(THEME_KEY)||'auto'}catch(e){}
 const applyTheme=()=>{const dark=themeMode==='dark'||(themeMode==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);
@@ -353,18 +369,21 @@ const openSettings=()=>{renderThemeChips();$('mSet').style.display='flex'};
 $('cfgBtn').onclick=openSettings;$('setBtn').onclick=openSettings;
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(themeMode==='auto')applyTheme()});
 applyTheme();
-const addField=()=>{const i=document.createElement('input');i.className='p-name-in';i.placeholder='Tên người chơi '+($('inPlayers').children.length+1);$('inPlayers').appendChild(i)};$('addTableBtn').onclick=()=>{$('inTableName').value='';$('inPlayers').innerHTML='';addField();addField();addField();addField();$('mCreate').style.display='flex'};$('addPField').onclick=addField;
+const addField=()=>{const i=document.createElement('input');i.className='p-name-in';i.placeholder='Tên người chơi '+($('inPlayers').children.length+1);$('inPlayers').appendChild(i)};
+$('addTableBtn').onclick=()=>{$('inTableName').value='';$('inPlayers').innerHTML='';addField();addField();$('mCreate').style.display='flex'};
+$('addPField').onclick=addField;
 $('confirmTable').onclick=()=>{const ps=[...document.querySelectorAll('.p-name-in')].map(i=>i.value.trim()).filter(Boolean);
  if(ps.length<2)return alert('Cần ít nhất 2 người');
  const t={id:'t'+Date.now(),name:$('inTableName').value.trim()||'Sân mới',players:ps,history:[],ts:[],mod:Date.now()};
  appData.push(t);save();renderLobby();hideModals();enterTable(t.id)};
-$('addRoundBtn').onclick=()=>openScore(-1);$('backBtn').onclick=()=>{route('pLobby');renderLobby()};
+$('addRoundBtn').onclick=()=>openScore(-1);
+$('backBtn').onclick=()=>{route('pLobby');renderLobby()};
+
 document.querySelectorAll('.close-m').forEach(b=>b.onclick=hideModals);
 const exportData=async()=>{const name=`badminton-backup-${new Date().toISOString().slice(0,10)}.json`,blob=new Blob([JSON.stringify({app:'badminton-pro',at:Date.now(),data:appData})],{type:'application/json'}),f=new File([blob],name,{type:'application/json'});
  try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f]});else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}
   localStorage.setItem(LASTBAK,Date.now());renderLobby();toast('Đã xuất backup')}catch(e){}};
-
-/* ---- Đồng bộ GitHub Gist ---- */
+/* ---- Đồng bộ GitHub Gist (gộp theo từng sân, bản sửa sau cùng thắng; xóa sân dùng "tombstone") ---- */
 const SYK='pro_badminton_sync',TOMB='pro_badminton_tomb',GF='badminton-pro.json';
 const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
 const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -372,13 +391,13 @@ let sy=rd(SYK,{}),tomb=rd(TOMB,{}),syncing=false,again=false,syT,syErr='';
 const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
 const gh=async(url,opt={})=>{const res=await fetch('https://api.github.com'+url,{cache:'no-store',...opt,headers:{Authorization:'Bearer '+sy.token,Accept:'application/vnd.github+json','Content-Type':'application/json'}});
  if(!res.ok){let m='';try{m=(await res.json()).message||''}catch(e){}
-  throw new Error(res.status===401?'Token sai hoặc hết hạn (401)':res.status===404?'Không tìm thấy Gist (404)':res.status===403?'GitHub từ chối (403)':'+m')}
+  throw new Error(res.status===401?'Token sai hoặc hết hạn (401)':res.status===404?'Không tìm thấy Gist: sai Gist ID, hoặc token thiếu quyền gist / không phải loại classic (404)':res.status===403?'GitHub từ chối (403): token thiếu quyền gist hoặc bị giới hạn. '+m:'Lỗi GitHub '+res.status+': '+m)}
  return res.json()};
 const mergeData=(a,b,tb)=>{const m={};[...a,...b].forEach(t=>{if(!t||!t.id||!Array.isArray(t.history))return;const o=m[t.id],x=t.mod||0;
   if(!o||x>(o.mod||0)||(x===(o.mod||0)&&t.history.length>o.history.length))m[t.id]=t});
  return Object.values(m).filter(t=>!(tb[t.id]&&tb[t.id]>=(t.mod||0)))};
 const syncUI=()=>{const t=sy.at?new Date(sy.at).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}):'';
- $('syncBtn').innerText=sy.token?(syErr?'⚠️ Đồng bộ lỗi':'☁️ Đã đồng bộ'+(t?' lúc '+t:'')):'☁️ Bật đồng bộ GitHub Gist';
+ $('syncBtn').innerText=sy.token?(syErr?'⚠️ Đồng bộ lỗi — chạm để xem':'☁️ Đã đồng bộ'+(t?' lúc '+t:'')):'☁️ Bật đồng bộ GitHub Gist';
  $('syStatus').innerText=syErr?'Lỗi: '+syErr:(sy.token?'Đã kết nối'+(t?'. Đồng bộ lần cuối lúc '+t:''):'Chưa kết nối')};
 const syncNow=async()=>{if(!sy.token)return;
  if($('mScore').style.display==='flex'){clearTimeout(syT);syT=setTimeout(syncNow,4000);return}
@@ -395,12 +414,12 @@ const syncNow=async()=>{if(!sy.token)return;
    if(id)await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files})});
    else{const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Badminton Pro data',public:false,files})});sy.gist=g.id}}
   sy.at=Date.now();wr(SYK,sy)
- }catch(e){syErr=e.message}
+ }catch(e){syErr=e instanceof TypeError?'Không kết nối được tới GitHub (mất mạng hoặc bị chặn): '+e.message:e instanceof SyntaxError?'Gist này không chứa dữ liệu của app (sai Gist ID?)':e.message}
  syncing=false;syncUI();
  if($('pGame').classList.contains('active')){cur()?renderGame():route('pLobby')}renderLobby();
  if(again){again=false;syncNow()}};
 const scheduleSync=()=>{if(!sy.token)return;clearTimeout(syT);syT=setTimeout(syncNow,2500)};
-$('syncBtn').onclick=()=>{$('syToken').value=sy.token||'';$('syGist').value=sy.gist\vert{}\vert{}'';syncUI();$('mSync').style.display='flex'};
+$('syncBtn').onclick=()=>{$('syToken').value=sy.token||'';$('syGist').value=sy.gist||'';syncUI();$('mSync').style.display='flex'};
 $('sySave').onclick=()=>{const tk=$('syToken').value.trim();if(!tk)return toast('Hãy nhập GitHub token');
  sy={token:tk,gist:$('syGist').value.trim().replace(/.*\//,''),at:0};wr(SYK,sy);hideModals();toast('Đang đồng bộ…');syncNow()};
 $('syOff').onclick=()=>{if(!confirm('Ngắt đồng bộ? Dữ liệu trên máy vẫn được giữ nguyên.'))return;sy={};wr(SYK,sy);hideModals();syncUI();toast('Đã ngắt đồng bộ')};
@@ -408,7 +427,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncNow()}
 window.addEventListener('online',syncNow);
 setInterval(()=>{if(!document.hidden)syncNow()},60000);
 syncUI();syncNow();
-$('expBtn').onclick=exportData;$('impBtn').onclick=()=>$('impFile').click();$('impFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+$('expBtn').onclick=exportData;$('impBtn').onclick=()=>$('impFile').click();
+$('impFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
  try{const j=JSON.parse(await f.text()),arr=Array.isArray(j)?j:j.data;if(!Array.isArray(arr))throw 0;let n=0;
   arr.forEach(t=>{if(!t||!t.id||!Array.isArray(t.players)||!Array.isArray(t.history))return;const o=appData.find(x=>x.id===t.id);
    if(!o){appData.push(t);n++}else if(t.history.length>o.history.length){Object.assign(o,t);n++}});
