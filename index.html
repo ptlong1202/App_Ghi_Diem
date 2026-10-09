@@ -86,7 +86,6 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;margin-top:6px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translate(-50%,30px);background:#1C1C1E;color:#fff;padding:12px 16px;border-radius:14px;display:flex;gap:14px;align-items:center;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:3000;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
-#toast button{background:none;border:none;color:#5AC8FA;font-weight:800;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -109,10 +108,9 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
   <div id="pGame" class="page">
     <div class="nav">
       <button id="backBtn" class="btn-glass">←</button>
-      <button id="undoBtn" class="btn-glass" style="visibility:hidden" title="Hoàn tác">↶</button>
       <button id="privacyBtn" class="pill">🔓 Công khai</button>
       <button id="sumBtn" class="btn-glass" title="Tổng kết">📊</button>
-      <button id="cfgBtn" class="btn-glass" title="Mức thua nhanh">⚙️</button>
+      <button id="cfgBtn" class="btn-glass" title="Cài đặt">⚙️</button>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <h2 id="tableName" style="font-size:24px"></h2>
@@ -128,7 +126,6 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
   <input id="inTableName" placeholder="Tên sân (VD: Sân THVL)">
   <div id="inPlayers"></div>
   <button id="addPField" style="background:none;border:none;color:var(--ac);font-weight:700;margin-bottom:12px;cursor:pointer">+ Thêm thành viên</button>
-  <input id="inLevels" placeholder="Mức thua nhanh, VD: 0,20,40" inputmode="numeric">
   <button id="confirmTable" class="btn-main">Bắt đầu trận đấu</button>
   <button class="btn-ghost close-m">Hủy bỏ</button>
 </div></div>
@@ -147,15 +144,11 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
   <h2 style="margin-bottom:14px">⚙️ Cài đặt</h2>
   <div class="lbl" style="margin-top:0">Giao diện</div>
   <div class="chips" id="themeChips"></div>
-  <div id="setTable" style="display:none">
-    <div class="lbl">Sân đang chơi</div>
-    <button class="btn-soft" id="lvBtn" style="width:100%;text-align:left;background:var(--soft)"></button>
-  </div>
   <button class="btn-ghost close-m">Đóng</button>
 </div></div>
 <div id="mSync" class="modal"><div class="sheet">
   <h2 style="margin-bottom:6px">☁️ Đồng bộ GitHub Gist</h2>
-  <p class="hint" style="margin-bottom:12px">Tạo token (classic) chỉ cần quyền <b>gist</b> tại github.com/settings/tokens. Dữ liệu nằm trong một Gist riêng tư của bạn. Máy khác: nhập cùng token và Gist ID (ô bên dưới tự điền sau lần đồng bộ đầu tiên).</p>
+  <p class="hint" style="margin-bottom:12px">Tạo token (classic) chỉ cần quyền <b>gist</b> tại github.com/settings/tokens. Dữ liệu nằm trong một Gist riêng tư của bạn.</p>
   <input id="syToken" type="password" placeholder="GitHub token (ghp_...)" autocomplete="off">
   <input id="syGist" placeholder="Gist ID (để trống để tự tạo mới)" autocomplete="off">
   <p id="syStatus" class="hint" style="margin-bottom:12px"></p>
@@ -172,7 +165,6 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 
 <script>
 const KEY='pro_badminton_final',COL=['#007AFF','#FF3B30','#34C759','#FF9500','#A020F0','#5AC8FA'];
-/* ---- Lưu trữ bền vững: KHÔNG ĐỔI "KEY" giữa các bản cập nhật ---- */
 const BAK='pro_badminton_bak_',LASTBAK='pro_badminton_lastbak';
 const rounds=a=>Array.isArray(a)?a.reduce((n,t)=>n+((t&&t.history)||[]).length,0):-1;
 const readKey=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
@@ -185,16 +177,14 @@ const norm=()=>appData.forEach(t=>{t.ts=Array.isArray(t.ts)?t.ts:[];while(t.ts.l
 norm();
 try{const raw=localStorage.getItem(KEY);if(raw&&raw!==localStorage.getItem(BAK+'0')){['1','0'].forEach(n=>{const v=localStorage.getItem(BAK+n);if(v)localStorage.setItem(BAK+(+n+1),v)});localStorage.setItem(BAK+'0',raw)}}catch(e){}
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
-let curId=null,editIdx=-1,isMasked=false,E={},undoFn=null,toastT;
+let curId=null,editIdx=-1,isMasked=false,E={},toastT;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const save=ns=>{try{localStorage.setItem(KEY,JSON.stringify(appData))}catch(e){toast('⚠️ Không lưu được dữ liệu, hãy xuất backup ngay')}if(!ns)scheduleSync()};
 const cur=()=>appData.find(x=>x.id===curId);
-const lv=t=>t.levels||[0,20,40];
-const parseLv=s=>{const a=[...new Set([0,...String(s).split(/[,\s]+/).map(x=>Math.abs(parseInt(x))).filter(x=>x>0)])].sort((a,b)=>a-b);return a.length>1?a:[0,20,40]};
 const cf=o=>window.confetti&&confetti(o);
 
-/* ---- Luật & hiệu ứng (một nơi duy nhất) ---- */
+/* ---- Luật & hiệu ứng ---- */
 const combo=r=>{if(r.length!==4)return null;const w=Math.max(...r),o=[...r];o.splice(r.indexOf(w),1);const c=v=>o.filter(x=>x===v).length;
  if(w===120&&c(-40)===3)return'dragon';if(w===60&&c(-20)===3)return'jump';
  if(w===40&&c(-40)===1&&c(0)===2)return'double';if(w===20&&c(-20)===1&&c(0)===2)return'trick';return null};
@@ -215,11 +205,8 @@ const fx=k=>{const[a,b,bg,c,cols]=FX[k],m=$('jackpotMsg'),d=$('dragonEntity'),ov
 /* ---- UI helpers ---- */
 const route=id=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));$('addRoundBtn').style.display=id==='pGame'?'block':'none'};
 const hideModals=()=>{document.querySelectorAll('.modal').forEach(m=>{m.style.display='none';m.classList.remove('np')});$('numpad').style.display='none'};
-const toast=(msg,fn)=>{const e=$('toast');e.innerHTML=`<span>${esc(msg)}</span>`+(fn?'<button id="tUndo">Hoàn tác</button>':'');e.classList.add('show');
- if(fn)$('tUndo').onclick=()=>{if(fn()!==false)e.classList.remove('show')};clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),6000)};
-const setUndo=f=>{undoFn=f;$('undoBtn').style.visibility=f?'visible':'hidden'};
-const mutate=(msg,fn)=>{const t=cur(),snap=JSON.stringify([t.history,t.ts]);fn(t);t.mod=Date.now();save();renderGame();
- const u=()=>{if(!confirm('Hoàn tác: '+msg+'?'))return false;[t.history,t.ts]=JSON.parse(snap);t.mod=Date.now();save();renderGame();setUndo(null)};setUndo(u);toast(msg,u)};
+const toast=(msg)=>{const e=$('toast');e.innerHTML=`<span>${esc(msg)}</span>`;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),3000)};
+const mutate=(msg,fn)=>{const t=cur();fn(t);t.mod=Date.now();save();renderGame();toast(msg)};
 
 /* ---- Tính toán ---- */
 const sums=t=>t.players.map((_,i)=>t.history.reduce((a,r)=>a+r[i],0));
@@ -235,9 +222,9 @@ const stats=(t,pi)=>{let w=0,l=0,mw=0,ml=0,cw=0,cl=0;const sp={dragon:0,jump:0,t
  else if(s<0){l++;cl++;cw=0;ml=Math.max(ml,cl)}else cw=cl=0});return{w,l,mw,ml,sp}};
 
 /* ---- Lobby ---- */
-const bakBanner=()=>{const last=+localStorage.getItem(LASTBAK)||0;$('bakBanner').innerHTML=rounds(appData)>0&&Date.now()-last>7*864e5?'<div class="bak" onclick="exportData()">⚠️ '+(last?'Đã hơn 7 ngày chưa':'Bạn chưa')+' sao lưu dữ liệu. Bấm để xuất backup (lưu vào Tệp/iCloud).</div>':''};
+const bakBanner=()=>{const last=+localStorage.getItem(LASTBAK)||0;$('bakBanner').innerHTML=rounds(appData)>0&&Date.now()-last>7*864e5?'<div class="bak" onclick="exportData()">⚠️ '+(last?'Đã hơn 7 ngày chưa':'Bạn chưa')+' sao lưu dữ liệu. Bấm để xuất backup.</div>':''};
 const renderLobby=()=>{bakBanner();$('listTables').innerHTML=appData.length?appData.map(t=>`<div class="pro-card" onclick="enterTable('${t.id}')"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:800;font-size:18px">${esc(t.name)}</div><div style="color:var(--gray);font-size:12px">👤 ${t.players.length} người • 🏸 ${t.history.length} hiệp</div></div><div style="color:var(--danger);font-size:24px;padding:10px" onclick="removeTable(event,'${t.id}')">×</div></div></div>`).join(''):`<div style="text-align:center;padding:50px 0">🏸<p style="color:var(--gray)">Chưa có dữ liệu sân đấu</p></div>`};
-const enterTable=id=>{curId=id;setUndo(null);route('pGame');renderGame()};
+const enterTable=id=>{curId=id;route('pGame');renderGame()};
 const removeTable=(e,id)=>{e.stopPropagation();if(confirm('Xóa sân này?')){appData=appData.filter(x=>x.id!==id);tomb[id]=Date.now();wr(TOMB,tomb);save();renderLobby()}};
 
 /* ---- Bảng điểm ---- */
@@ -251,17 +238,21 @@ const renderGame=()=>{const t=cur();if(!t)return;
  $('hBody').innerHTML=[...t.history].reverse().map((r,i)=>{const idx=t.history.length-1-i,cb=combo(r),wi=r.indexOf(Math.max(...r));
   return`<tr onclick="openScore(${idx})"><td>${idx+1}</td>${r.map((v,k)=>`<td><span class="badge ${v>0?'win':'lose'} ${cb&&k===wi?CLS[cb]:''}">${v}</span></td>`).join('')}</tr>`}).join('')};
 
-/* ---- Nhập ván thông minh ---- */
+/* ---- Nhập ván tối giản & cơ chế Báo ---- */
 const losersOf=t=>t.players.map((_,i)=>i).filter(i=>i!==E.win);
 
-const updSum=()=>{syncNp();if(E.mode==='m')return $('sumBox').innerHTML=freeSum();const t=cur(),s=losersOf(t).reduce((a,i)=>a+(E.pen[i]||0),0);$('sumBox').innerHTML=E.win<0?'<span class="hint">Chọn người thắng để bắt đầu</span>':`${esc(t.players[E.win])}: <b style="color:var(--success)">+${s}</b>`};
-const setWin=i=>{E.win=i;E.pen[i]=0;E.buf='';E.act=losersOf(cur())[0];renderEntry()};
+const updSum=()=>{syncNp();if(E.mode==='m')return $('sumBox').innerHTML=freeSum();const t=cur(),s=losersOf(t).reduce((a,i)=>a+(E.pen[i]||0),0);
+ if(E.win<0)return $('sumBox').innerHTML='<span class="hint">Chọn người thắng hoặc bấm Báo</span>';
+ $('sumBox').innerHTML=`${esc(t.players[E.win])}: <b style="color:var(--success)">+${s}</b>`};
+
+const setWin=i=>{E.win=i;E.pen[i]=0;E.buf='';const l=losersOf(cur());E.act=l.length?l[0]:-1;renderEntry()};
+
+const setBao=i=>{const t=cur();E.mode='w';E.win=i;t.players.forEach((_,k)=>{if(k!==i)E.pen[k]=20;else E.pen[i]=0});E.act=-1;renderEntry()};
 
 const setMode=m=>{E.mode=m;E.win=-1;E.pen=E.pen.map(()=>0);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.act=-1;E.buf='';renderEntry()};
 const modeChips=()=>'<div class="chips">'+[['w','🏆 1 người thắng'],['m','👥 Tự do']].map(([k,v])=>`<button class="chip sm ${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
-/* Chế độ tự do: mỗi người 1 vai trò (Thắng/Thua/—) + số điểm; để trống 1 ô để app tự cân bằng */
+
 const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;E.buf='';E.act=E.role[i]==='n'?-1:i;renderEntry()};
-const setAmt=(i,v)=>{E.amt[i]=v;E.buf='';if(E.act>=0)E.act=i;renderEntry()};
 const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w'?(E.amt[i]||0):E.role[i]==='l'?-(E.amt[i]||0):0),
  bl=idx.filter(i=>E.role[i]!=='n'&&E.amt[i]==null);
  if(bl.length===1)sc[bl[0]]=-sc.reduce((a,v)=>a+v,0);
@@ -269,16 +260,16 @@ const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w
  return{sc,net,ok:E.role.includes('w')&&E.role.includes('l')&&bl.length<=1&&net===0&&okSign}};
 const freeSum=()=>{const t=cur(),m=mScores(t),parts=t.players.map((p,i)=>m.sc[i]?`${esc(p)} <b style="color:var(--${m.sc[i]>0?'success':'danger'})">${fmt(m.sc[i])}</b>`:'').filter(Boolean);
  return(parts.join(' · ')||'<span class="hint">Chọn vai trò cho từng người</span>')+(parts.length?(m.ok?' ✓':` <span style="color:var(--warning)">⚠️ lệch ${fmt(m.net)}</span>`):'')};
-const renderFree=()=>{const t=cur(),L=lv(t).filter(v=>v>0);
+const renderFree=()=>{const t=cur();
  $('scoreInputs').innerHTML=modeChips()+'<p class="hint" style="margin-top:10px">Tổng điểm thắng phải bằng tổng điểm thua.</p>'
  +'<div class="lbl">Người chơi</div>'
  +t.players.map((p,i)=>{const k=E.role[i];return`<div class="lrow"><b>${esc(p)}</b><div class="chips">`
   +[['w','Thắng'],['l','Thua'],['n','—']].map(([x,y])=>`<button class="chip sm ${k===x?'on':''}" onclick="setRole(${i},'${x}')">${y}</button>`).join('')
-  +(k==='n'?'':`<div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--${k==='w'?'success':'danger'})">${k==='w'?'+':'−'}</span><b class="${E.amt[i]==null?'ph':''}">${E.amt[i]==null?'tự tính':E.amt[i]}</b></div>`+L.map(v=>`<button class="chip sm ${E.amt[i]===v?'on':''}" onclick="setAmt(${i},${v})">${v}</button>`).join(''))
+  +(k==='n'?'':`<div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--${k==='w'?'success':'danger'})">${k==='w'?'+':'−'}</span><b class="${E.amt[i]==null?'ph':''}">${E.amt[i]==null?'tự tính':E.amt[i]}</b></div>`)
   +'</div></div>'}).join('');
  updSum()};
-const setPen=(i,v)=>{E.pen[i]=v;E.buf='';if(E.act>=0)E.act=i;renderEntry()};
-/* ---- Bàn phím số riêng ---- */
+
+/* ---- Bàn phím số ---- */
 const syncNp=()=>{const on=E.act>=0;$('mScore').classList.toggle('np',on);$('numpad').style.display=on?'grid':'none';
  if(on)requestAnimationFrame(()=>{const a=document.querySelector('.num.act');a&&a.scrollIntoView({block:'nearest'})})};
 const fieldList=()=>E.mode==='m'?cur().players.map((_,i)=>i).filter(i=>E.role[i]!=='n'):losersOf(cur());
@@ -293,23 +284,27 @@ const key=k=>{if(k==='N')return nextField();if(k==='X'){E.act=-1;return renderEn
  else b=(b+k).replace(/^0+(?=\d)/,'').slice(0,4);
  E.buf=b;putVal(b===''?(E.mode==='m'?null:0):+b);renderEntry()};
 $('numpad').innerHTML=[['1'],['2'],['3'],['⌫','B','fn'],['4'],['5'],['6'],['Tiếp ›','N','go'],['7'],['8'],['9'],['C','C','fn'],['0'],['00'],['Xong','X','fn']].map(([l,k,c])=>`<button class="key ${c||''}" onclick="key('${k||l}')">${l}</button>`).join('');
-const renderEntry=()=>{const t=cur(),L=lv(t);
- if(E.mode==='m')return renderFree();$('scoreInputs').innerHTML=`${modeChips()}<div class="lbl">1 · Winners</div><div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')}</div>`
- 
- +'<div class="lbl">2 · Losers</div>'
- +(E.win<0?'<p class="hint">Hãy chọn ở bước 1 trước</p>':losersOf(t).map(i=>`<div class="lrow"><b>${esc(t.players[i])}</b><div class="chips"><div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--danger)">−</span><b class="${E.pen[i]?'':'ph'}">${E.pen[i]||'0'}</b></div>${L.map(v=>`<button class="chip sm ${E.pen[i]===v?'on':''}" onclick="setPen(${i},${v})">${v?'-'+v:'0'}</button>`).join('')}</div></div>`).join(''));
+
+const renderEntry=()=>{const t=cur();
+ if(E.mode==='m')return renderFree();
+ $('scoreInputs').innerHTML=`${modeChips()}
+ <div class="lbl">1 · Chọn người thắng</div>
+ <div class="chips">${t.players.map((p,i)=>`<button class="chip ${i===E.win?'on':''}" onclick="setWin(${i})">🏆 ${esc(p)}</button>`).join('')}</div>
+ <div class="lbl" style="margin-top:12px">📢 Hoặc Báo nhanh (3 người còn lại -20)</div>
+ <div class="chips">${t.players.map((p,i)=>`<button class="chip sm" style="border-color:var(--warning);color:var(--warning);font-weight:800" onclick="setBao(${i})">📢 ${esc(p)} báo</button>`).join('')}</div>
+ <div class="lbl" style="margin-top:14px">2 · Nhập điểm thua</div>
+ ${E.win<0?'<p class="hint">Hãy chọn người thắng hoặc bấm Báo nhanh</p>':losersOf(t).map(i=>`<div class="lrow"><b>${esc(t.players[i])}</b><div class="chips"><div class="num ${E.act===i?'act':''}" onclick="actField(${i})"><span style="color:var(--danger)">−</span><b class="${E.pen[i]?'':'ph'}">${E.pen[i]||'0'}</b></div></div></div>`).join('')}`;
  updSum()};
+
 const loadRow=r=>{const P=r.filter(x=>x>0).length;E.mode=P>1?'m':'w';
  if(E.mode==='m'){E.role=r.map(s=>s>0?'w':s<0?'l':'n');E.amt=r.map(s=>Math.abs(s));E.win=-1;E.pen=r.map(()=>0)}
  else{E.win=r.indexOf(Math.max(...r));E.pen=r.map((s,i)=>i===E.win?0:Math.abs(s))}};
 const openScore=(idx=-1)=>{const t=cur();editIdx=idx;E={win:-1,pen:new Array(t.players.length).fill(0),mode:'w',act:-1,buf:'',role:new Array(t.players.length).fill('n'),amt:new Array(t.players.length).fill(null)};
  if(idx>=0)loadRow(t.history[idx]);
  $('scoreTitle').innerText=idx>=0?'Sửa hiệp '+(idx+1):'Ghi điểm mới';
- $('delRound').style.display=idx>=0?'block':'none';
- $('repeatBtn').style.display=idx<0&&t.history.length?'block':'none';
+ $('delRound').style.display=idx>=0?'block':'none';$('repeatBtn').style.display=idx<0&&t.history.length?'block':'none';
  renderEntry();$('mScore').style.display='flex'};
-$('repeatBtn').onclick=()=>{const t=cur();loadRow(t.history[t.history.length-1]);renderEntry()};
-$('saveScore').onclick=()=>{const t=cur();if(E.mode!=='m'&&E.win<0)return toast('Hãy chọn người ở bước 1');
+$('repeatBtn').onclick=()=>{const t=cur();loadRow(t.history[t.history.length-1]);renderEntry()};$('saveScore').onclick=()=>{const t=cur();if(E.mode!=='m'&&E.win<0)return toast('Hãy chọn người thắng hoặc báo');
  const M=E.mode==='m'?mScores(t):null,sc=M?M.sc:t.players.map((_,i)=>i===E.win?0:-(E.pen[i]||0)),tot=M?1:sc.reduce((a,b)=>a+b,0);
  if(M&&!M.ok)return toast('Cần ≥1 người thắng, ≥1 người thua và tổng cân bằng = 0');if(!tot)return toast('Cần nhập điểm cho ít nhất 1 người');
  if(!M)sc[E.win]=-tot;const cb=combo(sc),ei=editIdx;
@@ -321,8 +316,7 @@ $('delRound').onclick=()=>{if(confirm('Xóa hiệp này?')){const ei=editIdx;hid
 /* ---- Thống kê, biểu đồ, chia sẻ ---- */
 const showPlayerStats=pi=>{if(isMasked)return toast('🔒 Đang ẩn điểm. Chuyển sang Công khai để xem thống kê');const t=cur();if(!t.history.length)return toast('Chưa có dữ liệu hiệp đấu');
  const s=stats(t,pi),it=(l,v,sp)=>`<div class="stat" ${sp?'style="grid-column:span 2"':''}><small>${l}</small><b>${v}</b></div>`;
- $('statsTitle').innerText=t.players[pi];
- $('statsContent').innerHTML=`<div class="grid2">${it('Thắng',s.w+' hiệp')}${it('Thua',s.l+' hiệp')}${it('Chuỗi thắng max',s.mw)}${it('Chuỗi thua max',s.ml)}${it('Trick Shot',s.sp.trick+s.sp.double)}${it('Jump Smash',s.sp.jump)}${it('Số lần Hóa Rồng','🐉 '+s.sp.dragon,1)}</div>`;
+ $('statsTitle').innerText=t.players[pi];$('statsContent').innerHTML=`<div class="grid2">${it('Thắng',s.w+' hiệp')}${it('Thua',s.l+' hiệp')}${it('Chuỗi thắng max',s.mw)}${it('Chuỗi thua max',s.ml)}${it('Trick Shot',s.sp.trick+s.sp.double)}${it('Jump Smash',s.sp.jump)}${it('Số lần Hóa Rồng','🐉 '+s.sp.dragon,1)}</div>`;
  $('mStats').style.display='flex'};
 const chart=t=>{const n=t.history.length;if(!n)return'';
  const cum=t.players.map((_,i)=>{let a=0;return[0,...t.history.map(r=>a+=r[i])]}),all=cum.flat(),mn=Math.min(...all),mx=Math.max(...all),W=300,H=150,P=8,rg=(mx-mn)||1;
@@ -342,41 +336,35 @@ const shareImg=()=>{const t=cur(),rk=rank(t),H=200+rk.length*84,c=document.creat
  const F=s=>s+'px -apple-system,sans-serif';g.fillStyle='#fff';g.font='bold '+F(44);g.fillText('🏸 '+t.name,40,80);
  g.font=F(24);g.fillStyle='#9fb3c8';g.fillText(`${t.history.length} ván · ${new Date().toLocaleDateString('vi-VN')}`,40,120);
  rk.forEach((r,i)=>{const y=195+i*84;g.fillStyle='rgba(255,255,255,.08)';g.fillRect(30,y-46,660,68);g.font='bold '+F(32);g.fillStyle='#fff';g.textAlign='left';g.fillText(medal(i)+' '+r.p,50,y);
-  g.textAlign='right';g.fillStyle=r.s>=0?'#34C759':'#FF6B6B';g.fillText((r.s>0?'+':'')+r.s,670,y)});
+  g.textAlign='right';g.fillStyle=r.s>=0?'#34C759':'#FF6B6B';g.fillText((r.s>0?'+':'' harvest)+r.s,670,y)});
  c.toBlob(async b=>{const f=new File([b],'bang-diem.png',{type:'image/png'});
   if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]})}catch(e){}}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()}})};
 
 /* ---- Sự kiện chung ---- */
 $('privacyBtn').onclick=function(){if(isMasked&&!confirm('Moment of truth... 🕵️‍♂️'))return;isMasked=!isMasked;this.classList.toggle('on',isMasked);this.innerText=isMasked?'🔒 Đang ẩn':'🔓 Công khai';renderGame()};
-/* ---- Cài đặt: giao diện sáng/tối + mức thua nhanh ---- */
 const THEME_KEY='pro_badminton_theme';
 let themeMode='auto';try{themeMode=localStorage.getItem(THEME_KEY)||'auto'}catch(e){}
 const applyTheme=()=>{const dark=themeMode==='dark'||(themeMode==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);
  document.documentElement.dataset.theme=dark?'dark':'light';const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dark?'#000000':'#007AFF'};
 const renderThemeChips=()=>{$('themeChips').innerHTML=[['auto','🌓 Tự động'],['light','☀️ Sáng'],['dark','🌙 Tối']].map(([k,v])=>`<button class="chip ${themeMode===k?'on':''}" onclick="setTheme('${k}')">${v}</button>`).join('')};
 const setTheme=m=>{themeMode=m;try{localStorage.setItem(THEME_KEY,m)}catch(e){}applyTheme();renderThemeChips()};
-const lvText=()=>'Mức thua nhanh: '+lv(cur()).map(v=>v?'-'+v:'0').join(', ')+'   ›';
-const openSettings=()=>{renderThemeChips();const g=$('pGame').classList.contains('active')&&cur();$('setTable').style.display=g?'block':'none';if(g)$('lvBtn').innerText=lvText();$('mSet').style.display='flex'};
+const openSettings=()=>{renderThemeChips();$('mSet').style.display='flex'};
 $('cfgBtn').onclick=openSettings;$('setBtn').onclick=openSettings;
-$('lvBtn').onclick=()=>{const t=cur(),v=prompt('Mức điểm thua nhanh (cách nhau bằng dấu phẩy)',lv(t).join(','));if(v!==null){t.levels=parseLv(v);t.mod=Date.now();save();$('lvBtn').innerText=lvText();toast('Đã cập nhật mức thua nhanh')}};
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(themeMode==='auto')applyTheme()});
 applyTheme();
-const addField=()=>{const i=document.createElement('input');i.className='p-name-in';i.placeholder='Tên người chơi '+($('inPlayers').children.length+1);$('inPlayers').appendChild(i)};
-$('addTableBtn').onclick=()=>{$('inTableName').value='';$('inLevels').value='';$('inPlayers').innerHTML='';addField();addField();$('mCreate').style.display='flex'};
-$('addPField').onclick=addField;
+const addField=()=>{const i=document.createElement('input');i.className='p-name-in';i.placeholder='Tên người chơi '+($('inPlayers').children.length+1);$('inPlayers').appendChild(i)};$('addTableBtn').onclick=()=>{$('inTableName').value='';$('inPlayers').innerHTML='';addField();addField();addField();addField();$('mCreate').style.display='flex'};$('addPField').onclick=addField;
 $('confirmTable').onclick=()=>{const ps=[...document.querySelectorAll('.p-name-in')].map(i=>i.value.trim()).filter(Boolean);
  if(ps.length<2)return alert('Cần ít nhất 2 người');
- const t={id:'t'+Date.now(),name:$('inTableName').value.trim()||'Sân mới',players:ps,levels:parseLv($('inLevels').value),history:[],ts:[],mod:Date.now()};
+ const t={id:'t'+Date.now(),name:$('inTableName').value.trim()||'Sân mới',players:ps,history:[],ts:[],mod:Date.now()};
  appData.push(t);save();renderLobby();hideModals();enterTable(t.id)};
-$('addRoundBtn').onclick=()=>openScore(-1);
-$('backBtn').onclick=()=>{route('pLobby');renderLobby()};
-$('undoBtn').onclick=()=>undoFn&&undoFn();
+$('addRoundBtn').onclick=()=>openScore(-1);$('backBtn').onclick=()=>{route('pLobby');renderLobby()};
 document.querySelectorAll('.close-m').forEach(b=>b.onclick=hideModals);
 const exportData=async()=>{const name=`badminton-backup-${new Date().toISOString().slice(0,10)}.json`,blob=new Blob([JSON.stringify({app:'badminton-pro',at:Date.now(),data:appData})],{type:'application/json'}),f=new File([blob],name,{type:'application/json'});
  try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f]});else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}
   localStorage.setItem(LASTBAK,Date.now());renderLobby();toast('Đã xuất backup')}catch(e){}};
-/* ---- Đồng bộ GitHub Gist (gộp theo từng sân, bản sửa sau cùng thắng; xóa sân dùng "tombstone") ---- */
+
+/* ---- Đồng bộ GitHub Gist ---- */
 const SYK='pro_badminton_sync',TOMB='pro_badminton_tomb',GF='badminton-pro.json';
 const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
 const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -384,13 +372,13 @@ let sy=rd(SYK,{}),tomb=rd(TOMB,{}),syncing=false,again=false,syT,syErr='';
 const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
 const gh=async(url,opt={})=>{const res=await fetch('https://api.github.com'+url,{cache:'no-store',...opt,headers:{Authorization:'Bearer '+sy.token,Accept:'application/vnd.github+json','Content-Type':'application/json'}});
  if(!res.ok){let m='';try{m=(await res.json()).message||''}catch(e){}
-  throw new Error(res.status===401?'Token sai hoặc hết hạn (401)':res.status===404?'Không tìm thấy Gist: sai Gist ID, hoặc token thiếu quyền gist / không phải loại classic (404)':res.status===403?'GitHub từ chối (403): token thiếu quyền gist hoặc bị giới hạn. '+m:'Lỗi GitHub '+res.status+': '+m)}
+  throw new Error(res.status===401?'Token sai hoặc hết hạn (401)':res.status===404?'Không tìm thấy Gist (404)':res.status===403?'GitHub từ chối (403)':'+m')}
  return res.json()};
 const mergeData=(a,b,tb)=>{const m={};[...a,...b].forEach(t=>{if(!t||!t.id||!Array.isArray(t.history))return;const o=m[t.id],x=t.mod||0;
   if(!o||x>(o.mod||0)||(x===(o.mod||0)&&t.history.length>o.history.length))m[t.id]=t});
  return Object.values(m).filter(t=>!(tb[t.id]&&tb[t.id]>=(t.mod||0)))};
 const syncUI=()=>{const t=sy.at?new Date(sy.at).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}):'';
- $('syncBtn').innerText=sy.token?(syErr?'⚠️ Đồng bộ lỗi — chạm để xem':'☁️ Đã đồng bộ'+(t?' lúc '+t:'')):'☁️ Bật đồng bộ GitHub Gist';
+ $('syncBtn').innerText=sy.token?(syErr?'⚠️ Đồng bộ lỗi':'☁️ Đã đồng bộ'+(t?' lúc '+t:'')):'☁️ Bật đồng bộ GitHub Gist';
  $('syStatus').innerText=syErr?'Lỗi: '+syErr:(sy.token?'Đã kết nối'+(t?'. Đồng bộ lần cuối lúc '+t:''):'Chưa kết nối')};
 const syncNow=async()=>{if(!sy.token)return;
  if($('mScore').style.display==='flex'){clearTimeout(syT);syT=setTimeout(syncNow,4000);return}
@@ -407,12 +395,12 @@ const syncNow=async()=>{if(!sy.token)return;
    if(id)await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files})});
    else{const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Badminton Pro data',public:false,files})});sy.gist=g.id}}
   sy.at=Date.now();wr(SYK,sy)
- }catch(e){syErr=e instanceof TypeError?'Không kết nối được tới GitHub (mất mạng hoặc bị chặn): '+e.message:e instanceof SyntaxError?'Gist này không chứa dữ liệu của app (sai Gist ID?)':e.message}
+ }catch(e){syErr=e.message}
  syncing=false;syncUI();
  if($('pGame').classList.contains('active')){cur()?renderGame():route('pLobby')}renderLobby();
  if(again){again=false;syncNow()}};
 const scheduleSync=()=>{if(!sy.token)return;clearTimeout(syT);syT=setTimeout(syncNow,2500)};
-$('syncBtn').onclick=()=>{$('syToken').value=sy.token||'';$('syGist').value=sy.gist||'';syncUI();$('mSync').style.display='flex'};
+$('syncBtn').onclick=()=>{$('syToken').value=sy.token||'';$('syGist').value=sy.gist\vert{}\vert{}'';syncUI();$('mSync').style.display='flex'};
 $('sySave').onclick=()=>{const tk=$('syToken').value.trim();if(!tk)return toast('Hãy nhập GitHub token');
  sy={token:tk,gist:$('syGist').value.trim().replace(/.*\//,''),at:0};wr(SYK,sy);hideModals();toast('Đang đồng bộ…');syncNow()};
 $('syOff').onclick=()=>{if(!confirm('Ngắt đồng bộ? Dữ liệu trên máy vẫn được giữ nguyên.'))return;sy={};wr(SYK,sy);hideModals();syncUI();toast('Đã ngắt đồng bộ')};
@@ -420,8 +408,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncNow()}
 window.addEventListener('online',syncNow);
 setInterval(()=>{if(!document.hidden)syncNow()},60000);
 syncUI();syncNow();
-$('expBtn').onclick=exportData;$('impBtn').onclick=()=>$('impFile').click();
-$('impFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+$('expBtn').onclick=exportData;$('impBtn').onclick=()=>$('impFile').click();$('impFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
  try{const j=JSON.parse(await f.text()),arr=Array.isArray(j)?j:j.data;if(!Array.isArray(arr))throw 0;let n=0;
   arr.forEach(t=>{if(!t||!t.id||!Array.isArray(t.players)||!Array.isArray(t.history))return;const o=appData.find(x=>x.id===t.id);
    if(!o){appData.push(t);n++}else if(t.history.length>o.history.length){Object.assign(o,t);n++}});
