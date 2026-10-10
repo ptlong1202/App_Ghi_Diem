@@ -89,6 +89,13 @@ input{width:100%;padding:14px;border-radius:var(--rm);border:2px solid var(--lin
 .ev.act::after{content:'';display:inline-block;width:2px;height:24px;background:var(--primary);margin-left:2px;vertical-align:middle;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
 .bg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .bp{padding:22px 8px;border-radius:16px;border:2px solid var(--line);background:var(--soft);font-size:17px;font-weight:800;cursor:pointer}.bp.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.bo{display:flex;gap:8px;margin-top:10px}
+.x2{border:2px solid var(--line);background:var(--soft);border-radius:12px;padding:0 16px;font-weight:900;font-size:17px;color:var(--gray);cursor:pointer}
+.x2.on{background:var(--warning);border-color:var(--warning);color:#2b1700}
+.bp.w{background:var(--success);border-color:var(--success);color:#06260f}
+.bp.l{background:var(--danger);border-color:var(--danger);color:#fff}
+:root[data-theme="dark"] .bp.l{color:#1C1C1E}
+.bp:disabled{opacity:.3;cursor:default}
 .btn-main:disabled{opacity:.4;cursor:default}
 .lrow{margin-bottom:10px}.wtag{color:var(--success);font-weight:800;font-size:15px}.lrow b{display:block;font-size:13px;margin-bottom:6px}
 
@@ -251,7 +258,7 @@ const renderGame=()=>{const t=cur();if(!t)return;
   return`<tr onclick="openScore(${idx})"><td>${idx+1}</td>${r.map((v,k)=>`<td><span class="badge ${v>0?'win':'lose'} ${cb&&k===wi?CLS[cb]:''}">${v}</span></td>`).join('')}</tr>`}).join('')};
 
 /* ---- Nhập ván: nhập điểm thua, người để trống là người thắng ---- */
-const BAO=20;
+const U=20;
 const nulls=()=>E.pen.map((v,i)=>v==null?i:-1).filter(i=>i>=0);
 const sumPen=()=>E.pen.reduce((a,v)=>a+(v||0),0);
 const mScores=t=>{const idx=t.players.map((_,i)=>i),sc=idx.map(i=>E.role[i]==='w'?(E.amt[i]||0):E.role[i]==='l'?-(E.amt[i]||0):0),
@@ -264,8 +271,11 @@ const freeSum=()=>{const t=cur(),m=mScores(t),parts=t.players.map((p,i)=>m.sc[i]
 /* Một nguồn sự thật cho cả 3 chế độ: ok / điểm / lời nhắc / xem trước */
 const calc=()=>{const t=cur(),n=t.players.length;
  if(E.mode==='m'){const m=mScores(t);return{ok:m.ok,sc:m.sc,msg:E.role.includes('w')&&E.role.includes('l')?'Tổng thắng phải bằng tổng thua':'Chọn người thắng và người thua',prev:freeSum()}}
- if(E.mode==='b'){if(E.win<0)return{ok:false,msg:'Chọn người báo',prev:''};
-  return{ok:true,sc:t.players.map((_,i)=>i===E.win?BAO*(n-1):-BAO),prev:`${esc(t.players[E.win])} <b style="color:var(--success)">+${BAO*(n-1)}</b> · còn lại −${BAO}`}}
+ if(E.mode==='b'){const k=E.x2?2:1,tq=E.bt==='tq',nm=i=>esc(t.players[i]);
+  if(E.win<0)return{ok:false,msg:tq?'Chọn người thắng':'Chọn người báo',prev:''};
+  if(tq&&E.lose<0)return{ok:false,msg:'Chọn người thua',prev:''};
+  const sc=t.players.map((_,i)=>tq?(i===E.win?U*k:i===E.lose?-U*k:0):(i===E.win?U*k*(n-1):-U*k));
+  return{ok:true,sc,prev:tq?`${nm(E.win)} <b style="color:var(--success)">+${U*k}</b> · ${nm(E.lose)} <b style="color:var(--danger)">−${U*k}</b>`:`${nm(E.win)} <b style="color:var(--success)">+${U*k*(n-1)}</b> · còn lại −${U*k}`}}
  const z=nulls();
  if(z.length>1)return{ok:false,msg:'Còn '+(z.length-1)+' người chưa nhập',prev:''};
  if(!z.length)return{ok:false,msg:'Để trống 1 người thắng',prev:''};
@@ -274,22 +284,32 @@ const calc=()=>{const t=cur(),n=t.players.length;
  sc[z[0]]=tot;return{ok:true,sc,prev:`${esc(t.players[z[0]])} thắng <b style="color:var(--success)">+${tot}</b>`}};
 const updSum=()=>{syncNp();const c=calc(),b=$('saveScore');$('sumBox').innerHTML=c.prev||'';b.disabled=!c.ok;
  b.innerText=c.ok?(editIdx>=0?'Lưu thay đổi':'Lưu ván '+(cur().history.length+1)):c.msg};
-const setWin=i=>{E.win=i;renderEntry()};
-const setMode=m=>{E.mode=m;E.win=-1;E.pen=E.pen.map(()=>null);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.act=m==='w'?0:-1;E.buf='';renderEntry()};
+const setWin=i=>{E.win=i;if(E.lose===i)E.lose=-1;renderEntry()};
+const setLose=i=>{E.lose=i;if(E.win===i)E.win=-1;renderEntry()};
+const setBt=v=>{E.bt=v;if(v==='bao')E.lose=-1;renderEntry()};
+const setX2=()=>{E.x2=!E.x2;renderEntry()};
+const setMode=m=>{E.mode=m;E.win=-1;E.lose=-1;E.x2=false;E.bt='bao';E.pen=E.pen.map(()=>null);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.act=m==='w'?0:-1;E.buf='';renderEntry()};
 const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;E.buf='';E.act=E.role[i]==='n'?-1:i;renderEntry()};
-const modeSeg=()=>'<div class="seg">'+[['w','🏆 Classic'],['b','📣 Báo'],['m','👥 Tự do']].map(([k,v])=>`<button class="${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
+const modeSeg=()=>'<div class="seg">'+[['w','🏆 Nhập thua'],['b','💥 Bùng nổ'],['m','👥 Tự do']].map(([k,v])=>`<button class="${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
 const renderFree=()=>{const t=cur();
  $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0">Tổng điểm thắng phải bằng tổng điểm thua.</p>'
  +t.players.map((p,i)=>{const k=E.role[i],a=E.amt[i];return`<div class="er ${E.act===i?'act':''}" ${k==='n'?'':`onclick="actField(${i})"`}><span class="en">${esc(p)}</span><div class="seg sm">`
   +[['w','Thắng'],['l','Thua'],['n','—']].map(([x,y])=>`<button class="${k===x?'on':''}" onclick="event.stopPropagation();setRole(${i},'${x}')">${y}</button>`).join('')+'</div>'
   +(k==='n'?'':`<span class="ev ${a==null?'ph':k==='w'?'pos':''} ${E.act===i?'act':''}">${a==null?'tự tính':(k==='w'?'+':'−')+a}</span>`)+'</div>'}).join('');
  updSum()};
-const renderBao=()=>{const t=cur(),n=t.players.length;
- $('scoreInputs').innerHTML=modeSeg()+'<div class="bg">'+t.players.map((p,i)=>`<button class="bp ${i===E.win?'on':''}" onclick="setWin(${i})">${esc(p)}</button>`).join('')+`</div><p class="hint" style="margin:12px 2px 0;text-align:center">Chạm tên người báo: +${BAO*(n-1)}, mỗi người còn lại −${BAO}.</p>`;
+/* Bùng nổ: Báo (thắng +60, 3 người −20) | Tứ quý (thắng +20, 1 người −20, còn lại 0); x2 nhân đôi.
+   Điểm khớp với combo nên tự kích hoạt hiệu ứng: Báo=Jump Smash, Báo x2=Rồng, Tứ quý=Trick Shot, Tứ quý x2=Double Trick */
+const renderBao=()=>{const t=cur(),n=t.players.length,tq=E.bt==='tq',k=E.x2?2:1,c=calc(),cb=c.ok?combo(c.sc):null;
+ const grid=(pick,cls,sel,off)=>'<div class="bg">'+t.players.map((p,i)=>`<button class="bp ${i===sel?cls:''}" ${i===off?'disabled':''} onclick="${pick}(${i})">${esc(p)}</button>`).join('')+'</div>';
+ $('scoreInputs').innerHTML=modeSeg()
+ +`<div class="bo"><div class="seg" style="flex:1">${[['bao','Báo'],['tq','Tứ quý']].map(([v,l])=>`<button class="${E.bt===v?'on':''}" onclick="setBt('${v}')">${l}</button>`).join('')}</div><button class="x2 ${E.x2?'on':''}" onclick="setX2()">x2</button></div>`
+ +`<div class="lbl">${tq?'Người thắng +'+U*k:'Người báo +'+U*k*(n-1)}</div>`+grid('setWin','w',E.win,tq?E.lose:-1)
+ +(tq?`<div class="lbl">Người thua −${U*k}</div>`+grid('setLose','l',E.lose,E.win):`<p class="hint" style="margin:12px 2px 0;text-align:center">Mỗi người còn lại −${U*k}</p>`)
+ +(cb?`<p style="text-align:center;font-weight:800;margin-top:12px">${FX[cb][0]}</p>`:'');
  updSum()};
 const renderEntry=()=>{const t=cur();if(E.mode==='m')return renderFree();if(E.mode==='b')return renderBao();
  const z=nulls(),w=z.length===1?z[0]:-1;
- $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0"></p>'
+ $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0">Gõ điểm thua từng người, người để trống là người thắng.</p>'
  +t.players.map((p,i)=>{const v=E.pen[i];return`<div class="er ${E.act===i?'act':''} ${i===w?'isw':''}" onclick="actField(${i})"><span class="en">${esc(p)}</span>${i===w?`<span class="wtag">🏆 +${sumPen()}</span>`:''}<span class="ev ${v==null?'ph':''} ${E.act===i?'act':''}">${v==null?'—':v===0?'0':'−'+v}</span></div>`}).join('');
  updSum()};
 /* ---- Bàn phím số riêng ---- */
@@ -314,7 +334,7 @@ const loadRow=r=>{const P=r.filter(x=>x>0).length;E.mode=P>1?'m':'w';E.buf='';
  if(E.mode==='m'){E.role=r.map(s=>s>0?'w':s<0?'l':'n');E.amt=r.map(s=>Math.abs(s));E.win=-1;E.pen=r.map(()=>null)}
  else{const w=r.indexOf(Math.max(...r));E.win=-1;E.pen=r.map((s,i)=>i===w?null:Math.abs(s))}};
 const openScore=(idx=-1)=>{const t=cur(),n=t.players.length;editIdx=idx;
- E={win:-1,pen:new Array(n).fill(null),mode:'w',act:0,buf:'',role:new Array(n).fill('n'),amt:new Array(n).fill(null)};
+ E={win:-1,lose:-1,x2:false,bt:'bao',pen:new Array(n).fill(null),mode:'w',act:0,buf:'',role:new Array(n).fill('n'),amt:new Array(n).fill(null)};
  if(idx>=0){loadRow(t.history[idx]);E.act=-1}
  $('scoreTitle').innerText=idx>=0?'Sửa hiệp '+(idx+1):'Ghi điểm mới';
  $('delRound').style.display=idx>=0?'':'none';
