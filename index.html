@@ -290,7 +290,7 @@ const setBt=v=>{E.bt=v;if(v==='bao')E.lose=-1;renderEntry()};
 const setX2=()=>{E.x2=!E.x2;renderEntry()};
 const setMode=m=>{E.mode=m;E.win=-1;E.lose=-1;E.x2=false;E.bt='bao';E.pen=E.pen.map(()=>null);E.role=E.pen.map(()=>'n');E.amt=E.pen.map(()=>null);E.act=m==='w'?0:-1;E.buf='';renderEntry()};
 const setRole=(i,k)=>{E.role[i]=E.role[i]===k?'n':k;if(E.role[i]==='n')E.amt[i]=null;E.buf='';E.act=E.role[i]==='n'?-1:i;renderEntry()};
-const modeSeg=()=>'<div class="seg">'+[['w','🏆 Nhập thua'],['b','💥 Bùng nổ'],['m','👥 Tự do']].map(([k,v])=>`<button class="${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
+const modeSeg=()=>'<div class="seg">'+[['w','🏆 Classic'],['b','💥 Bùng nổ'],['m','👥 Tự do']].map(([k,v])=>`<button class="${E.mode===k?'on':''}" onclick="setMode('${k}')">${v}</button>`).join('')+'</div>';
 const renderFree=()=>{const t=cur();
  $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0">Tổng điểm thắng phải bằng tổng điểm thua.</p>'
  +t.players.map((p,i)=>{const k=E.role[i],a=E.amt[i];return`<div class="er ${E.act===i?'act':''}" ${k==='n'?'':`onclick="actField(${i})"`}><span class="en">${esc(p)}</span><div class="seg sm">`
@@ -309,7 +309,7 @@ const renderBao=()=>{const t=cur(),n=t.players.length,tq=E.bt==='tq',k=E.x2?2:1,
  updSum()};
 const renderEntry=()=>{const t=cur();if(E.mode==='m')return renderFree();if(E.mode==='b')return renderBao();
  const z=nulls(),w=z.length===1?z[0]:-1;
- $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0">Gõ điểm thua từng người, người để trống là người thắng.</p>'
+ $('scoreInputs').innerHTML=modeSeg()+'<p class="hint" style="margin:10px 2px 0"></p>'
  +t.players.map((p,i)=>{const v=E.pen[i];return`<div class="er ${E.act===i?'act':''} ${i===w?'isw':''}" onclick="actField(${i})"><span class="en">${esc(p)}</span>${i===w?`<span class="wtag">🏆 +${sumPen()}</span>`:''}<span class="ev ${v==null?'ph':''} ${E.act===i?'act':''}">${v==null?'—':v===0?'0':'−'+v}</span></div>`}).join('');
  updSum()};
 /* ---- Bàn phím số riêng ---- */
